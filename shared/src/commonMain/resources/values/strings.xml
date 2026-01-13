@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="english">English</string>
+    <string name="uzbek">O'zbek</string>
+    <string name="russian">Русский</string>
+
+    <string name="unknown_error">Unknown error</string>
+    <string name="not_found">Not found</string>
+
+    <string name="cancel">Cancel</string>
+
+    <string name="sign_in_continue">Sign in to continue</string>
+    <string name="continue_telegram">Continue with Telegram</string>
+    <string name="continue_google">Continue with Google</string>
+
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+
+    <string name="search">Search</string>
+    <string name="latest">Latest</string>
+    <string name="in_progress">In Progress</string>
+    <string name="favourite_lessons">Favourite</string>
+    <string name="downloads">Downloads</string>
+    <string name="most_snipped">Most snipped</string>
+
+
+    <string name="authors">Authors</string>
+    <string name="topics">Topics</string>
+    <string name="lessons">Lessons</string>
+
+    <string name="snips">Snips</string>
+    <string name="your_snips">Your snips</string>
+    <string name="search_your_snip">Search your snips</string>
+
+    <string name="queue">Queue</string>
+    <string name="playing_next">Playing next</string>
+    <string name="clear_queue_message">Do you want to clear your queue?</string>
+    <string name="clear">Clear</string>
+
+    <string name="play_all">Play all</string>
+    <string name="play_now">Play now</string>
+    <string name="no">No</string>
+
+    <string name="download">Download</string>
+    <string name="downloading">Downloading... %d%</string>
+    <string name="resume_download">Resume download</string>
+    <string name="remove_download">Remove download</string>
+    <string name="mark_completed">Mark as completed</string>
+    <string name="mark_not_played">Mark as not played</string>
+    <string name="add_favourite">Add to favourites</string>
+    <string name="lesson_is_favourite">Favourite</string>
+    <string name="delete">Delete</string>
+
+    <string name="create_snip">Create snip</string>
+    <string name="update_snip">Update snip</string>
+    <string name="play">Play</string>
+    <string name="stop">Stop</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="write_note">Write a note…</string>
+    <string name="save">Save</string>
+
+    <string name="sync_notification_title">Syncing in background</string>
+    <string name="sync_notification_message">Keeping your data up to date</string>
+
+    <string name="download_notification_title">Media downloads</string>
+    <string name="download_notification_message">Shows progress while audio is being downloaded for offline use</string>
+
+    <string name="storage_usage">Storage Usage</string>
+    <string name="cache">Cache</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="clear_download">Clear Downloads</string>
+    <string name="signout">Sign out</string>
+
+    <plurals name="snip">
+        <item quantity="one">%d snip</item>
+        <item quantity="other">%d snips</item>
+    </plurals>
+
+    <plurals name="lesson">
+        <item quantity="one">%d lesson</item>
+        <item quantity="other">%d lessons</item>
+    </plurals>
+
+</resources>

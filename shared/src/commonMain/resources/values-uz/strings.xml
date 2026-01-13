@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="english">English</string>
+    <string name="uzbek">O'zbek</string>
+    <string name="russian">Русский</string>
+    <string name="unknown_error">Nomalum xatolik</string>
+    <string name="sign_in_continue">Davom etish uchun kiring</string>
+    <string name="home">Asosiy</string>
+    <string name="profile">Profil</string>
+</resources>

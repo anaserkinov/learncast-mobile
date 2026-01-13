@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_package = "me.anasmusa.learncast";
+
+message PreferenceData {
+  message User {
+    int64 id = 1;
+    string firstName = 2;
+    optional string lastName = 3;
+    optional string avatarPath = 4;
+    optional string email = 5;
+    optional string telegramUsername = 6;
+  }
+
+  optional User user = 1;
+  optional string accessToken = 2;
+  optional string refreshToken = 3;
+  optional string lang = 4;
+  bool isNightMode = 5;
+}
