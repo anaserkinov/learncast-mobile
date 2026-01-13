@@ -1,16 +1,16 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import com.android.utils.forEach
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-import java.awt.AWTEventMulticaster.add
+import org.w3c.dom.NodeList
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
 import kotlin.apply
+import kotlin.collections.set
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -224,17 +224,29 @@ fun orderStrings(locale: String, order: Map<String, Int>){
 
     val strings = doc.getElementsByTagName("string")
     val stringMap = mutableMapOf<String, String>()
-
     for (i in 0 until strings.length) {
         val node = strings.item(i)
         val name = node.attributes.getNamedItem("name").nodeValue
         val value = node.textContent
         stringMap[name] = value
     }
-
     val sortedStrings = stringMap.entries.sortedWith(
         compareBy { order[it.key] }
     )
+
+
+    val plurals = doc.getElementsByTagName("plurals")
+    val pluralMap = mutableMapOf<String, NodeList>()
+    for (i in 0 until plurals.length) {
+        val node = plurals.item(i)
+        val name = node.attributes.getNamedItem("name").nodeValue
+        val value = node.childNodes
+        pluralMap[name] = value
+    }
+    val sortedPlurals = pluralMap.entries.sortedWith(
+        compareBy { order[it.key] }
+    )
+
 
     // Clear existing elements
     val root = doc.documentElement
@@ -248,6 +260,14 @@ fun orderStrings(locale: String, order: Map<String, Int>){
         stringElement.setAttribute("name", key)
         stringElement.textContent = value
         root.appendChild(stringElement)
+    }
+    for ((key, value) in sortedPlurals) {
+        val pluralElement = doc.createElement("plurals")
+        pluralElement.setAttribute("name", key)
+        value.forEach {
+            pluralElement.appendChild(it)
+        }
+        root.appendChild(pluralElement)
     }
 
     // Write back to file

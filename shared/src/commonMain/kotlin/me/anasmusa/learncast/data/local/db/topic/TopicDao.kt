@@ -41,6 +41,9 @@ internal interface TopicDao {
             query.append(" title LIKE ?")
             args.add("%${search}%")
         }
+
+        query.append(" ORDER BY id DESC")
+
         return getTopics(
             RoomRawQuery(query.toString()){ it.bind(args) }
         )

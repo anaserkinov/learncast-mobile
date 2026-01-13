@@ -99,7 +99,7 @@ fun App(
 
     var stringsLoaded by remember { mutableStateOf(Resource.isLoaded) }
 
-    Resource.setLocale("en") {
+    Resource.setLocale("uz") {
         stringsLoaded = true
     }
 

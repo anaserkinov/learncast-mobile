@@ -31,6 +31,9 @@ internal interface AuthorDao {
             query.append("name LIKE ?")
             args.add("%${search}%")
         }
+
+        query.append(" ORDER BY lessonCount DESC, id DESC")
+
         return getAuthors(
             RoomRawQuery(query.toString()){ it.bind(args) }
         )
