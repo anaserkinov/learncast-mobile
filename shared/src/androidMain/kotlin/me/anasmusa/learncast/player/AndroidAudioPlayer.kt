@@ -24,61 +24,69 @@ import org.koin.core.qualifier.named
 internal class AndroidAudioPlayer(
     context: Context,
     audioPath: String,
-    startPosition: Long
-) : AudioPlayer, KoinComponent {
-
+    startPosition: Long,
+) : AudioPlayer,
+    KoinComponent {
     override val playbackState = MutableStateFlow(STATE_LOADING)
 
-    private val exoPlayer = ExoPlayer.Builder(
-        context,
-        ProgressiveMediaSource.Factory(
-            createCacheDataSourceFactory(
-                downloadCache = get(named(DownloadCacheScope.ID)),
-                playbackCache = get(named(PlaybackCacheScope.ID)),
-                httpDataSourceFactory = HttpDataSourceFactory(get<TokenManager>())
-            )
-        )
-    ).build()
+    private val exoPlayer =
+        ExoPlayer
+            .Builder(
+                context,
+                ProgressiveMediaSource.Factory(
+                    createCacheDataSourceFactory(
+                        downloadCache = get(named(DownloadCacheScope.ID)),
+                        playbackCache = get(named(PlaybackCacheScope.ID)),
+                        httpDataSourceFactory = HttpDataSourceFactory(get<TokenManager>()),
+                    ),
+                ),
+            ).build()
 
     init {
         exoPlayer.addListener(
             object : Player.Listener {
                 override fun onEvents(
                     player: Player,
-                    events: Player.Events
+                    events: Player.Events,
                 ) {
                     super.onEvents(player, events)
                     when {
                         events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) -> {
                             playbackState.value =
-                                if (player.playbackState == Player.STATE_BUFFERING) STATE_LOADING
-                                else if (player.isPlaying) STATE_PLAYING
-                                else STATE_PAUSED
+                                if (player.playbackState == Player.STATE_BUFFERING) {
+                                    STATE_LOADING
+                                } else if (player.isPlaying) {
+                                    STATE_PLAYING
+                                } else {
+                                    STATE_PAUSED
+                                }
                         }
 
                         events.contains(Player.EVENT_IS_PLAYING_CHANGED) -> {
                             playbackState.value =
-                                if (player.isPlaying) STATE_PLAYING
-                                else STATE_PAUSED
+                                if (player.isPlaying) {
+                                    STATE_PLAYING
+                                } else {
+                                    STATE_PAUSED
+                                }
                         }
                     }
                 }
-            }
+            },
         )
 
         exoPlayer.playWhenReady = false
         exoPlayer.setMediaItem(
-            MediaItem.Builder()
+            MediaItem
+                .Builder()
                 .setUri(audioPath.normalizeUrl())
                 .build(),
-            startPosition
+            startPosition,
         )
         exoPlayer.prepare()
     }
 
-    override fun getCurrentPositonMs(): Long {
-        return exoPlayer.currentPosition
-    }
+    override fun getCurrentPositonMs(): Long = exoPlayer.currentPosition
 
     override fun start(from: Long) {
         exoPlayer.playWhenReady = true
@@ -95,10 +103,10 @@ internal class AndroidAudioPlayer(
     override fun destroy() {
         exoPlayer.release()
     }
-
 }
 
 @OptIn(UnstableApi::class)
-internal actual fun createAudioPlayer(audioPath: String, startPosition: Long): AudioPlayer {
-    return AndroidAudioPlayer(ApplicationLoader.context, audioPath, startPosition)
-}
+internal actual fun createAudioPlayer(
+    audioPath: String,
+    startPosition: Long,
+): AudioPlayer = AndroidAudioPlayer(ApplicationLoader.context, audioPath, startPosition)

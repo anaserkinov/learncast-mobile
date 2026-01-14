@@ -40,17 +40,18 @@ import me.anasmusa.learncast.theme.icon.SearchIcon
 fun RowScope.SearchButton(
     searchQuery: String?,
     onQueryChanged: (value: String?) -> Unit,
-    leftContent: (@Composable RowScope.(weight: Float) -> Unit)? = null
-){
+    leftContent: (@Composable RowScope.(weight: Float) -> Unit)? = null,
+) {
     val focusRequester = remember { FocusRequester() }
 
-    if (leftContent != null){
+    if (leftContent != null) {
         val topicButtonWeight by animateFloatAsState(
             if (searchQuery != null) 0f else 1f,
-            animationSpec = tween(300)
+            animationSpec = tween(300),
         )
-        if (topicButtonWeight != 0f)
+        if (topicButtonWeight != 0f) {
             leftContent.invoke(this, topicButtonWeight)
+        }
     }
 
     if (searchQuery != null) {
@@ -61,35 +62,39 @@ fun RowScope.SearchButton(
             modifier = Modifier.weight(1f),
             text = searchQuery,
             focusRequester = focusRequester,
-            onTextChange = onQueryChanged
+            onTextChange = onQueryChanged,
         )
-    }else
+    } else {
         PrimaryButton(
             modifier = Modifier.weight(1f),
             icon = SearchIcon,
-            title = Strings.search
+            title = Strings.SEARCH,
         ) {
             onQueryChanged("")
         }
+    }
     AnimatedContent(
         targetState = searchQuery != null,
         transitionSpec = {
             slideInHorizontally(
                 initialOffsetX = { it },
-            ) togetherWith slideOutHorizontally(
-                targetOffsetX = { it }
-            )
+            ) togetherWith
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                )
         },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
-        if (it)
+        if (it) {
             TextButton(
-                modifier = Modifier
-                    .padding(start = 8.dp),
-                onClick = { onQueryChanged(null) }
+                modifier =
+                    Modifier
+                        .padding(start = 8.dp),
+                onClick = { onQueryChanged(null) },
             ) {
-                Text(text = Strings.cancel.string())
+                Text(text = Strings.CANCEL.string())
             }
+        }
     }
 }
 
@@ -98,18 +103,18 @@ fun SearchInput(
     modifier: Modifier,
     text: String,
     focusRequester: FocusRequester,
-    onTextChange: (text: String) -> Unit
+    onTextChange: (text: String) -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(8.dp))
-            .padding(12.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.tertiaryContainer, RoundedCornerShape(8.dp))
+                .padding(12.dp),
     ) {
-
         Icon(
             imageVector = SearchIcon,
-            contentDescription = null
+            contentDescription = null,
         )
 
         val colors = TextFieldDefaults.colors()
@@ -118,9 +123,10 @@ fun SearchInput(
         val textColor = colors.textColor(enabled = true, isError = false, focused = interactionSource.collectIsFocusedAsState().value)
         val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
         BasicTextField(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .focusRequester(focusRequester),
+            modifier =
+                Modifier
+                    .padding(start = 8.dp)
+                    .focusRequester(focusRequester),
             value = text,
             onValueChange = onTextChange,
             singleLine = true,
@@ -129,16 +135,16 @@ fun SearchInput(
             decorationBox = { innerTextField ->
                 if (text.isEmpty()) {
                     Text(
-                        modifier = Modifier
-                            .alpha(0.5f),
-                        text = Strings.search.string(),
+                        modifier =
+                            Modifier
+                                .alpha(0.5f),
+                        text = Strings.SEARCH.string(),
                         maxLines = 1,
-                        style = mergedTextStyle
+                        style = mergedTextStyle,
                     )
                 }
                 innerTextField()
-            }
+            },
         )
-
     }
 }

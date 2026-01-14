@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 class PageResponse<out T>(
     val items: List<T>,
-    @SerialName("next_cursor") val nextCursor: String?
+    @SerialName("next_cursor") val nextCursor: String?,
 )

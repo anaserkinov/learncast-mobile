@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class RefreshTokenRequest(
-    @SerialName("refresh_token") val refreshToken: String
+    @SerialName("refresh_token") val refreshToken: String,
 )

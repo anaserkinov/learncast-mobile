@@ -51,26 +51,28 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable
-private fun TopicListScreenPreview(){
+private fun TopicListScreenPreview() {
     AppTheme {
         _TopicListScreen(
-            state = TopicListState(
-                null,
-                false,
-                flowOf(PagingData.from(
-                    listOf(getSampleTopic())
-                ))
-            ),
+            state =
+                TopicListState(
+                    null,
+                    false,
+                    flowOf(
+                        PagingData.from(
+                            listOf(getSampleTopic()),
+                        ),
+                    ),
+                ),
             onBackClicked = {},
             onQueryChanged = {},
-            onTopicClicked = {}
+            onTopicClicked = {},
         )
     }
 }
 
 @Composable
 fun TopicListScreen() {
-
     val env = LocalAppEnvironment.current
     val viewModel = koinViewModel<TopicListViewModel>()
     val state by viewModel.state.collectAsState()
@@ -84,30 +86,30 @@ fun TopicListScreen() {
             viewModel.handle(
                 TopicListIntent.UpdateSearchQuery(
                     query = if (it == "") null else it,
-                    inSearchMode = it != null
-                )
+                    inSearchMode = it != null,
+                ),
             )
         },
         onTopicClicked = {
             env.navigate(Screen.Topic(it))
-        }
+        },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun  _TopicListScreen(
+private fun _TopicListScreen(
     state: TopicListState,
     onBackClicked: () -> Unit,
     onQueryChanged: (value: String?) -> Unit,
-    onTopicClicked: (topic: Topic) -> Unit
-){
+    onTopicClicked: (topic: Topic) -> Unit,
+) {
     val pagingState = state.topics.collectAsLazyPagingItems()
 
     Scaffold(
-        modifier = Modifier
-            .background(backgroundBrush()),
+        modifier =
+            Modifier
+                .background(backgroundBrush()),
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
@@ -115,47 +117,50 @@ private fun  _TopicListScreen(
                 title = {
                     Text(
                         modifier = Modifier,
-                        text = Strings.topics.string(),
+                        text = Strings.TOPICS.string(),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = onBackClicked
+                        onClick = onBackClicked,
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 },
             )
-        }
+        },
     ) {
-        PullToRefreshBox (
-            modifier = Modifier
-                .padding(it),
+        PullToRefreshBox(
+            modifier =
+                Modifier
+                    .padding(it),
             isRefreshing = pagingState.loadState.refresh is LoadState.Loading,
-            onRefresh = { pagingState.refresh() }
+            onRefresh = { pagingState.refresh() },
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                        ),
             ) {
                 stickyHeader {
                     Row(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .padding(bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         SearchButton(
-                            searchQuery = if (state.inSearchMode) state.searchQuery?:"" else null,
-                            onQueryChanged = onQueryChanged
+                            searchQuery = if (state.inSearchMode) state.searchQuery ?: "" else null,
+                            onQueryChanged = onQueryChanged,
                         )
                     }
                 }
@@ -165,26 +170,27 @@ private fun  _TopicListScreen(
 //                    key = pagingState.itemKey { it.id }
                 ) { index ->
                     val topic = pagingState[index]
-                    if (topic != null)
+                    if (topic != null) {
                         TopicCell(
                             topic = topic,
                             onClick = {
                                 onTopicClicked(topic)
-                            }
+                            },
                         )
+                    }
                 }
 
-                if (pagingState.loadState.append is LoadState.Loading)
+                if (pagingState.loadState.append is LoadState.Loading) {
                     item {
                         LoadingIndicator(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                                    .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
+                }
             }
         }
     }
-
 }

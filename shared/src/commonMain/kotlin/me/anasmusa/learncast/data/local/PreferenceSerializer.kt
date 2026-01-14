@@ -18,7 +18,10 @@ object PreferenceSerializer : OkioSerializer<PreferenceData> {
         }
     }
 
-    override suspend fun writeTo(t: PreferenceData, sink: BufferedSink) {
+    override suspend fun writeTo(
+        t: PreferenceData,
+        sink: BufferedSink,
+    ) {
         sink.write(t.encode())
     }
 }

@@ -10,4 +10,15 @@ plugins {
     alias(libs.plugins.skie) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.ktlint) apply false
+}
+
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        debug.set(true)
+        filter {
+            exclude("**/BaseViewModel.kt")
+        }
+    }
 }

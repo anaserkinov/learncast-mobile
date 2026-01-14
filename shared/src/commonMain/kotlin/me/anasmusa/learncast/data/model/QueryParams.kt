@@ -4,5 +4,5 @@ class QueryParams(
     val sort: QuerySort? = null,
     val order: QueryOrder? = null,
     val authorId: String? = null,
-    val topicId: String? = null
+    val topicId: String? = null,
 )

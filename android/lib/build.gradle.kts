@@ -75,6 +75,8 @@ dependencies {
 
     implementation(libs.haze)
 
+    implementation(libs.androidx.media3.session)
+
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
 

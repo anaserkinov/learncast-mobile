@@ -2,16 +2,11 @@ package me.anasmusa.learncast.nav
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.ui.unit.IntOffset
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -27,26 +22,29 @@ import me.anasmusa.learncast.screen.snip.SnipListScreen
 import me.anasmusa.learncast.screen.topic.TopicListScreen
 import me.anasmusa.learncast.screen.topic.TopicScreen
 
-fun entryProvider(): (NavKey) -> NavEntry<NavKey> {
-    return entryProvider {
-        val noAnimation = NavDisplay.transitionSpec {
-            EnterTransition.None togetherWith ExitTransition.None
-        } + NavDisplay.popTransitionSpec {
-            EnterTransition.None togetherWith ExitTransition.None
-        } + NavDisplay.predictivePopTransitionSpec {
-            EnterTransition.None togetherWith ExitTransition.None
-        }
+fun entryProvider(): (NavKey) -> NavEntry<NavKey> =
+    entryProvider {
+        val noAnimation =
+            NavDisplay.transitionSpec {
+                EnterTransition.None togetherWith ExitTransition.None
+            } +
+                NavDisplay.popTransitionSpec {
+                    EnterTransition.None togetherWith ExitTransition.None
+                } +
+                NavDisplay.predictivePopTransitionSpec {
+                    EnterTransition.None togetherWith ExitTransition.None
+                }
         entry<Screen.Entrance> { }
         entry<Screen.Login> { LoginScreen() }
 
         entry<Screen.Home>(
-            metadata = noAnimation
+            metadata = noAnimation,
         ) { HomeScreen() }
         entry<Screen.Snips>(
-            metadata = noAnimation
+            metadata = noAnimation,
         ) { SnipListScreen() }
         entry<Screen.Profile>(
-            metadata = noAnimation
+            metadata = noAnimation,
         ) { ProfileScreen() }
 
         entry<Screen.TopicList> {
@@ -63,15 +61,22 @@ fun entryProvider(): (NavKey) -> NavEntry<NavKey> {
             AuthorScreen(it.author)
         }
 
-        entry<Screen.Search>(metadata = NavDisplay.transitionSpec {
-            fadeIn(initialAlpha = 0.5f) + scaleIn(initialScale = 0.8f) togetherWith ExitTransition.None
-        } + NavDisplay.popTransitionSpec {
-            EnterTransition.None togetherWith fadeOut(targetAlpha = 0f)
-        } + NavDisplay.predictivePopTransitionSpec {
-            EnterTransition.None togetherWith fadeOut(targetAlpha = 0.5f) + scaleOut(targetScale = 0.8f)
-        }) {
+        entry<Screen.Search>(
+            metadata =
+                NavDisplay.transitionSpec {
+                    fadeIn(initialAlpha = 0.5f) + scaleIn(initialScale = 0.8f) togetherWith ExitTransition.None
+                } +
+                    NavDisplay.popTransitionSpec {
+                        EnterTransition.None togetherWith fadeOut(targetAlpha = 0f)
+                    } +
+                    NavDisplay.predictivePopTransitionSpec {
+                        EnterTransition.None togetherWith fadeOut(targetAlpha = 0.5f) + scaleOut(targetScale = 0.8f)
+                    },
+        ) {
             SearchScreen(
-                it.authorId, it.topicId, it.selectedTab
+                it.authorId,
+                it.topicId,
+                it.selectedTab,
             )
         }
 
@@ -79,4 +84,3 @@ fun entryProvider(): (NavKey) -> NavEntry<NavKey> {
             StorageUsageScreen()
         }
     }
-}

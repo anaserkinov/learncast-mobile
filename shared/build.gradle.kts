@@ -165,7 +165,7 @@ tasks.register("generateStringResources") {
                 val index = constants.size
                 val name = node.attributes.getNamedItem("name").nodeValue
                 orders[name] = index
-                constants.add("    const val $name = ${index + 1}")
+                constants.add("    const val ${name.uppercase()} = ${index + 1}")
             }
         }
 
@@ -176,21 +176,22 @@ tasks.register("generateStringResources") {
             plurals.forEach { node ->
                 val name = node.attributes.getNamedItem("name").nodeValue
                 orders[name] = index
-                constants.add("    const val $name = ${index + 1}")
+                constants.add("    const val ${name.uppercase()} = ${index + 1}")
                 index += 7
             }
         }
 
-        val content = """
+        val content =
+            """
             |package me.anasmusa.learncast
             |
             |object Strings {
             |
-            |    internal const val pluralFirstIndex = $pluralFirstIndex
+            |    internal const val PLURAL_FIRST_INDEX = $pluralFirstIndex
             |
             |${constants.joinToString("\n")}
             |}
-        """.trimMargin()
+            """.trimMargin()
 
         outputFile.parentFile.mkdirs()
         outputFile.writeText(content)
@@ -198,7 +199,7 @@ tasks.register("generateStringResources") {
         orderStrings("uz", orders)
 //        orderStrings("ru", orders)
 
-        //android
+        // android
         listOf("values", "values-uz").forEach {
             val sourceFile = file("src/commonMain/resources/$it/strings.xml")
             val targetDir = file("$rootDir/android/lib/src/main/assets/$it/")
@@ -206,7 +207,7 @@ tasks.register("generateStringResources") {
             sourceFile.copyTo(targetDir.resolve("strings.xml"), overwrite = true)
         }
 
-        //ios
+        // ios
         val targetDir = file("$rootDir/ios/Resources/")
         targetDir.mkdirs()
         listOf("", "-uz").forEach {
@@ -278,5 +279,4 @@ fun orderStrings(locale: String, order: Map<String, Int>){
     val source = DOMSource(doc)
     val result = StreamResult(inputFile)
     transformer.transform(source, result)
-
 }

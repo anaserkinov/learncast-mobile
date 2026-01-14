@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 class SnipCountResponse(
     @SerialName("lesson_id") val lessonId: Long,
-    @SerialName("user_snip_count") val count: Long
+    @SerialName("user_snip_count") val count: Long,
 )

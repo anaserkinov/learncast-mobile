@@ -8,22 +8,19 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 class SwiftPagingDataPresenter<T : Any>(
     mainContext: CoroutineContext = EmptyCoroutineContext,
-    cachedPagingData: PagingData<T>? = null
+    cachedPagingData: PagingData<T>? = null,
 ) : PagingDataPresenter<T>(mainContext, cachedPagingData) {
-
     lateinit var onEvent: (PagingDataEvent<T>) -> Unit
 
     override suspend fun presentPagingDataEvent(event: PagingDataEvent<T>) {
         onEvent(event)
     }
 
-    suspend fun collectFromPagingData(pagingData: PagingData<T>){
+    suspend fun collectFromPagingData(pagingData: PagingData<T>) {
         collectFrom(pagingData)
     }
 }
 
 fun <T : Any> createSwiftPagingPresenter(
-    cached: PagingData<T>?
-): SwiftPagingDataPresenter<T> {
-    return SwiftPagingDataPresenter(cachedPagingData =  cached)
-}
+    cached: PagingData<T>?,
+): SwiftPagingDataPresenter<T> = SwiftPagingDataPresenter(cachedPagingData = cached)

@@ -57,7 +57,6 @@ import me.anasmusa.learncast.core.LocalAppEnvironment
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PLAYING
 import me.anasmusa.learncast.core.formatTime
-import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.string
 import me.anasmusa.learncast.theme.icon.Close
 import me.anasmusa.learncast.theme.icon.PlayArrowIcon
@@ -75,18 +74,22 @@ fun SnipEditScreenPreview() {
         _SnipEditScreen(
             clientSnipId = "",
             queueItemId = 0L,
-            state = SnipEditState(
-                STATE_LOADING,
-                false
-            ),
-            rangeSelectorState = TimeRangeSelectorState(
-                0, 11, 60 * 60
-            ),
+            state =
+                SnipEditState(
+                    STATE_LOADING,
+                    false,
+                ),
+            rangeSelectorState =
+                TimeRangeSelectorState(
+                    0,
+                    11,
+                    60 * 60,
+                ),
             note = "adgdsgerfg",
             colors = LocalAppEnvironment.current.backgroundColors,
             onDismissRequest = {},
             onNoteChanged = {},
-            sendIntent = {}
+            sendIntent = {},
         )
     }
 }
@@ -101,13 +104,14 @@ fun SnipEditScreen(
     audioPath: String,
     note: String?,
     colors: List<Color>,
-    onDismissRequest: (saved: Boolean) -> Unit
+    onDismissRequest: (saved: Boolean) -> Unit,
 ) {
-    val owner = remember {
-        object : ViewModelStoreOwner {
-            override val viewModelStore = ViewModelStore()
+    val owner =
+        remember {
+            object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
         }
-    }
     val viewModel = koinViewModel<SnipEditViewModel>(viewModelStoreOwner = owner)
 
     val state by viewModel.state.collectAsState()
@@ -118,15 +122,15 @@ fun SnipEditScreen(
             SnipEdiIntent.Init(
                 clientSnipId = clientSnipId,
                 audioPath = audioPath,
-                startPosition = startAt
-            )
+                startPosition = startAt,
+            ),
         )
         onDispose { owner.viewModelStore.clear() }
     }
 
     LaunchedEffect(viewModel) {
         viewModel.subscribe {
-            when(it){
+            when (it) {
                 SnipEditEvent.Finish ->
                     onDismissRequest(true)
                 is SnipEditEvent.OnSnipLoaded -> {
@@ -138,12 +142,17 @@ fun SnipEditScreen(
     }
 
     val rangeSelectorState =
-        rememberSaveable(saver = Saver(save = { "${it.start},${it.end},${it.total}" }, restore = {
-            val s = it.split(',')
-            TimeRangeSelectorState(s[0].toInt(), s[1].toInt(), s[2].toInt())
-        })) {
+        rememberSaveable(
+            saver =
+                Saver(save = { "${it.start},${it.end},${it.total}" }, restore = {
+                    val s = it.split(',')
+                    TimeRangeSelectorState(s[0].toInt(), s[1].toInt(), s[2].toInt())
+                }),
+        ) {
             TimeRangeSelectorState(
-                (startAt / 1000).toInt(), (endAt / 1000).toInt(), (duration / 1000).toInt()
+                (startAt / 1000).toInt(),
+                (endAt / 1000).toInt(),
+                (duration / 1000).toInt(),
             )
         }
 
@@ -156,8 +165,8 @@ fun SnipEditScreen(
                     viewModel.handle(
                         SnipEdiIntent.Start(
                             rangeSelectorState.start,
-                            rangeSelectorState.start + 5
-                        )
+                            rangeSelectorState.start + 5,
+                        ),
                     )
                 }
         }
@@ -169,8 +178,8 @@ fun SnipEditScreen(
                     viewModel.handle(
                         SnipEdiIntent.Start(
                             rangeSelectorState.end - 5,
-                            rangeSelectorState.end
-                        )
+                            rangeSelectorState.end,
+                        ),
                     )
                 }
         }
@@ -189,7 +198,7 @@ fun SnipEditScreen(
         },
         sendIntent = {
             viewModel.handle(it)
-        }
+        },
     )
 }
 
@@ -204,7 +213,7 @@ private fun _SnipEditScreen(
     colors: List<Color>,
     onDismissRequest: (saved: Boolean) -> Unit,
     onNoteChanged: (value: String) -> Unit,
-    sendIntent: (SnipEdiIntent) -> Unit
+    sendIntent: (SnipEdiIntent) -> Unit,
 ) {
     val duration by remember {
         derivedStateOf {
@@ -221,42 +230,48 @@ private fun _SnipEditScreen(
         onDismissRequest = { onDismissRequest(false) },
         dragHandle = null,
         sheetGesturesEnabled = false,
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
     ) {
         Column(
-            modifier = Modifier
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors,
-                        startY = gradientStartY,
-                        endY = gradientEndY
-                    ),
-                )
-                .padding(horizontal = 12.dp)
-                .verticalScroll(rememberScrollState())
+            modifier =
+                Modifier
+                    .background(
+                        brush =
+                            Brush.verticalGradient(
+                                colors,
+                                startY = gradientStartY,
+                                endY = gradientEndY,
+                            ),
+                    ).padding(horizontal = 12.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
-
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
             ) {
                 Text(
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    text = formatTime(duration)
+                    modifier =
+                        Modifier
+                            .align(Alignment.Center),
+                    text = formatTime(duration),
                 )
 
                 FilledIconButton(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterEnd),
                     onClick = { onDismissRequest(false) },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color.White.copy(alpha = 0.15f)
-                    ),
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.White.copy(alpha = 0.15f),
+                        ),
                 ) {
                     Icon(
-                        imageVector = Close, contentDescription = null, tint = Color.White
+                        imageVector = Close,
+                        contentDescription = null,
+                        tint = Color.White,
                     )
                 }
             }
@@ -265,80 +280,96 @@ private fun _SnipEditScreen(
                 modifier = Modifier.padding(top = 16.dp),
                 state = rangeSelectorState,
                 color = Color.White.copy(alpha = 0.3f),
-                currentPosition = if (state.playbackState == STATE_PLAYING)
-                    (state.currentPositionMs / 1000).toInt()
-                else -1
+                currentPosition =
+                    if (state.playbackState == STATE_PLAYING) {
+                        (state.currentPositionMs / 1000).toInt()
+                    } else {
+                        -1
+                    },
             )
 
             TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                 value = note,
                 onValueChange = {
-                    if (it.length <= 128)
+                    if (it.length <= 128) {
                         onNoteChanged(it)
+                    }
                 },
                 label = {
                     Text(
-                        text = Strings.write_note.string()
+                        text = Strings.WRITE_NOTE.string(),
                     )
                 },
-                colors = TextFieldDefaults.colors(
-                    unfocusedContainerColor = lerp(colors.first(), colors.last(), 0.8f),
-                    focusedContainerColor = lerp(colors.first(), colors.last(), 0.8f)
-                )
+                colors =
+                    TextFieldDefaults.colors(
+                        unfocusedContainerColor = lerp(colors.first(), colors.last(), 0.8f),
+                        focusedContainerColor = lerp(colors.first(), colors.last(), 0.8f),
+                    ),
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                if (state.playbackState == STATE_LOADING)
+                if (state.playbackState == STATE_LOADING) {
                     CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(start = 20.dp)
+                        modifier =
+                            Modifier
+                                .padding(start = 20.dp),
                     )
-                else
+                } else {
                     TextButton(
                         border = BorderStroke(1.dp, LocalContentColor.current),
                         onClick = {
                             sendIntent(
-                                if (state.playbackState == STATE_PLAYING)
+                                if (state.playbackState == STATE_PLAYING) {
                                     SnipEdiIntent.Stop
-                                else
+                                } else {
                                     SnipEdiIntent.Start(
                                         rangeSelectorState.start,
-                                        rangeSelectorState.end
+                                        rangeSelectorState.end,
                                     )
+                                },
                             )
-                        }
+                        },
                     ) {
                         Icon(
-                            modifier = Modifier
-                                .padding(end = 8.dp),
-                            imageVector = if (state.playbackState == STATE_PLAYING)
-                                Stop
-                            else
-                                PlayArrowIcon,
-                            contentDescription = null
+                            modifier =
+                                Modifier
+                                    .padding(end = 8.dp),
+                            imageVector =
+                                if (state.playbackState == STATE_PLAYING) {
+                                    Stop
+                                } else {
+                                    PlayArrowIcon
+                                },
+                            contentDescription = null,
                         )
                         Text(
-                            text = if (state.playbackState == STATE_PLAYING)
-                                Strings.stop.string()
-                            else
-                                Strings.play.string()
+                            text =
+                                if (state.playbackState == STATE_PLAYING) {
+                                    Strings.STOP.string()
+                                } else {
+                                    Strings.PLAY.string()
+                                },
                         )
                     }
+                }
 
-                if (state.isLoading)
+                if (state.isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(end = 20.dp)
+                        modifier =
+                            Modifier
+                                .padding(end = 20.dp),
                     )
-                else
+                } else {
                     Button(
                         modifier = Modifier,
                         onClick = {
@@ -348,15 +379,16 @@ private fun _SnipEditScreen(
                                     queueItemId,
                                     rangeSelectorState.start,
                                     rangeSelectorState.end,
-                                    note
-                                )
+                                    note,
+                                ),
                             )
-                        }
+                        },
                     ) {
                         Text(
-                            text = Strings.save.string()
+                            text = Strings.SAVE.string(),
                         )
                     }
+                }
             }
         }
     }

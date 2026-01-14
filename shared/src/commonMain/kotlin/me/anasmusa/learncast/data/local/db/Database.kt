@@ -5,8 +5,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
-import me.anasmusa.learncast.data.local.db.topic.TopicDao
-import me.anasmusa.learncast.data.local.db.topic.TopicEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import me.anasmusa.learncast.data.local.db.author.AuthorDao
@@ -21,14 +19,15 @@ import me.anasmusa.learncast.data.local.db.outbox.ListenOutboxEntity
 import me.anasmusa.learncast.data.local.db.outbox.OutboxDao
 import me.anasmusa.learncast.data.local.db.outbox.OutboxEntity
 import me.anasmusa.learncast.data.local.db.outbox.SnipOutboxEntity
-import me.anasmusa.learncast.data.local.db.paging_state.PagingStateDao
-import me.anasmusa.learncast.data.local.db.paging_state.PagingStateEntity
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemDao
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemEntity
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemWithState
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
+import me.anasmusa.learncast.data.local.db.queue.QueueItemDao
+import me.anasmusa.learncast.data.local.db.queue.QueueItemEntity
+import me.anasmusa.learncast.data.local.db.queue.QueueItemWithState
 import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
-
+import me.anasmusa.learncast.data.local.db.topic.TopicDao
+import me.anasmusa.learncast.data.local.db.topic.TopicEntity
 
 @Database(
     entities = [
@@ -43,29 +42,34 @@ import me.anasmusa.learncast.data.local.db.snip.SnipEntity
         SnipOutboxEntity::class,
         ListenOutboxEntity::class,
         PagingStateEntity::class,
-        DownloadStateEntity::class
+        DownloadStateEntity::class,
     ],
     views = [
-        QueueItemWithState::class
+        QueueItemWithState::class,
     ],
-    version = 1
+    version = 1,
 )
 @TypeConverters(
     LocalDateTimeConverter::class,
-    DurationConverter::class
+    DurationConverter::class,
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
-
     internal abstract fun getAuthorDao(): AuthorDao
-    internal abstract fun getTopicDao(): TopicDao
-    internal abstract fun getLessonDao(): LessonDao
-    internal abstract fun getSnipDao(): SnipDao
-    internal abstract fun getQueueItemDao(): QueueItemDao
-    internal abstract fun getOutboxDao(): OutboxDao
-    internal abstract fun getPagingStateDao(): PagingStateDao
-    internal abstract fun getDownloadDao(): DownloadDao
 
+    internal abstract fun getTopicDao(): TopicDao
+
+    internal abstract fun getLessonDao(): LessonDao
+
+    internal abstract fun getSnipDao(): SnipDao
+
+    internal abstract fun getQueueItemDao(): QueueItemDao
+
+    internal abstract fun getOutboxDao(): OutboxDao
+
+    internal abstract fun getPagingStateDao(): PagingStateDao
+
+    internal abstract fun getDownloadDao(): DownloadDao
 }
 
 // The Room compiler generates the `actual` implementations.
@@ -76,9 +80,8 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
 
 expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
 
-fun getAppDatabase(): AppDatabase {
-    return getDatabaseBuilder()
+fun getAppDatabase(): AppDatabase =
+    getDatabaseBuilder()
         .fallbackToDestructiveMigration(true)
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
-}

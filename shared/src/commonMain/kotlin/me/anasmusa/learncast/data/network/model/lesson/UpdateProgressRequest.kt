@@ -10,5 +10,5 @@ class UpdateProgressRequest(
     val status: UserProgressStatus?,
     @SerialName("started_at") val startedAt: Instant,
     @SerialName("completed_at") val completedAt: Instant?,
-    @SerialName("last_position_ms") val lastPositionMs: Long
+    @SerialName("last_position_ms") val lastPositionMs: Long,
 )

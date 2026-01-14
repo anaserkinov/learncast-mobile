@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -27,39 +26,39 @@ import me.anasmusa.learncast.theme.icon.Sidebar
 fun QueueButton(
     modifier: Modifier = Modifier,
     count: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-    IconButton (
+    IconButton(
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 modifier = Modifier,
                 imageVector = Sidebar,
-                contentDescription = null
+                contentDescription = null,
             )
 
             Box(
-                modifier =  Modifier
-                    .height(16.dp)
-                    .widthIn(min = 16.dp)
-                    .background(
-                        color = LocalContentColor.current,
-                        shape = RoundedCornerShape(2.dp)
-                    )
-                    .padding(horizontal = 2.dp),
-                contentAlignment = Alignment.Center
-            ){
+                modifier =
+                    Modifier
+                        .height(16.dp)
+                        .widthIn(min = 16.dp)
+                        .background(
+                            color = LocalContentColor.current,
+                            shape = RoundedCornerShape(2.dp),
+                        ).padding(horizontal = 2.dp),
+                contentAlignment = Alignment.Center,
+            ) {
                 Text(
                     text = count.toString(),
                     color = Color.Black,
                     fontSize = 12.sp,
                     lineHeight = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
         }

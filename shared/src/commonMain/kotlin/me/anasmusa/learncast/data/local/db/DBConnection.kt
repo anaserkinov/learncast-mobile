@@ -4,23 +4,20 @@ import androidx.room.TransactionScope
 import androidx.room.immediateTransaction
 import androidx.room.useWriterConnection
 
-interface DBConnection {
-
+internal interface DBConnection {
     suspend fun <R> inWriteTransaction(run: suspend TransactionScope<R>.() -> R)
 
     suspend fun clearAllTables()
 }
 
-internal class DBConnectionImpl(
-    private val db: AppDatabase
-): DBConnection {
+internal abstract class DBConnectionImpl(
+    protected val db: AppDatabase,
+) : DBConnection {
     override suspend fun <R> inWriteTransaction(run: suspend TransactionScope<R>.() -> R) {
         db.useWriterConnection {
             it.immediateTransaction(run)
         }
     }
-
-    override suspend fun clearAllTables() {
-        db.clearAllTables()
-    }
 }
+
+internal expect fun createDBConnection(db: AppDatabase): DBConnection

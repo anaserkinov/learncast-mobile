@@ -1,11 +1,14 @@
 package me.anasmusa.learncast.core
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import me.anasmusa.learncast.nav.Screen
 import dev.chrisbanes.haze.HazeState
+import me.anasmusa.learncast.nav.Screen
 
 class AppEnvironment(
     val backStack: NavBackStack<NavKey>,
@@ -13,17 +16,18 @@ class AppEnvironment(
     val backgroundColors: List<Color>,
     val playerBackgroundColors: List<Color>,
     val isNightMode: Boolean,
-    val changeNightMode: () -> Unit
-){
-    fun navigate(screen: Screen){
+    val changeNightMode: () -> Unit,
+) {
+    fun navigate(screen: Screen) {
         backStack.add(screen)
     }
-    fun popBack(){
+
+    fun popBack() {
         backStack.removeAt(backStack.lastIndex)
     }
 }
 
-val LocalAppEnvironment = staticCompositionLocalOf <AppEnvironment> { error("LocalAppEnvironment error") }
+val LocalAppEnvironment = staticCompositionLocalOf<AppEnvironment> { error("LocalAppEnvironment error") }
 
 @Composable
 fun ProvideAppEnvironment(
@@ -33,18 +37,19 @@ fun ProvideAppEnvironment(
     playerBackgroundColors: List<Color>,
     isNightMode: Boolean,
     changeNightMode: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
-    val appEnvironment = remember {
-        AppEnvironment(
-            backStack,
-            hazeState,
-            backgroundColors,
-            playerBackgroundColors,
-            isNightMode,
-            changeNightMode
-        )
-    }
+    val appEnvironment =
+        remember {
+            AppEnvironment(
+                backStack,
+                hazeState,
+                backgroundColors,
+                playerBackgroundColors,
+                isNightMode,
+                changeNightMode,
+            )
+        }
 
     CompositionLocalProvider(LocalAppEnvironment provides appEnvironment) {
         content()

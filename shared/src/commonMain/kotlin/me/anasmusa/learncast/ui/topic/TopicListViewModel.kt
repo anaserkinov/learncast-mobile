@@ -23,21 +23,22 @@ import me.anasmusa.learncast.ui.BaseViewModel
 data class TopicListState(
     val searchQuery: String? = null,
     val inSearchMode: Boolean = false,
-    val topics: Flow<PagingData<Topic>> = emptyFlow()
-): BaseState
+    val topics: Flow<PagingData<Topic>> = emptyFlow(),
+) : BaseState
 
-sealed interface TopicListIntent: BaseIntent{
-    data class UpdateSearchQuery(val query: String?, val inSearchMode: Boolean): TopicListIntent
+sealed interface TopicListIntent : BaseIntent {
+    data class UpdateSearchQuery(
+        val query: String?,
+        val inSearchMode: Boolean,
+    ) : TopicListIntent
 }
 
-sealed interface TopicListEvent: BaseEvent
-
+sealed interface TopicListEvent : BaseEvent
 
 @OptIn(FlowPreview::class)
 class TopicListViewModel(
-    private val topicRepository: TopicRepository
-): BaseViewModel<TopicListState, TopicListIntent, TopicListEvent>() {
-
+    private val topicRepository: TopicRepository,
+) : BaseViewModel<TopicListState, TopicListIntent, TopicListEvent>() {
     override val state: StateFlow<TopicListState>
         field = MutableStateFlow(TopicListState())
 
@@ -50,7 +51,7 @@ class TopicListViewModel(
                 .collectLatest { query ->
                     state.update {
                         it.copy(
-                            topics = topicRepository.page(query, null)
+                            topics = topicRepository.page(query, null),
                         )
                     }
                 }
@@ -59,14 +60,15 @@ class TopicListViewModel(
 
     override fun handle(intent: TopicListIntent) {
         super.handle(intent)
-        when(intent){
+        when (intent) {
             is TopicListIntent.UpdateSearchQuery -> updateSearchQuery(intent.query, intent.inSearchMode)
         }
     }
 
-
-    private fun updateSearchQuery(value: String?, inSearchMode: Boolean){
+    private fun updateSearchQuery(
+        value: String?,
+        inSearchMode: Boolean,
+    ) {
         state.update { it.copy(searchQuery = value, inSearchMode = inSearchMode) }
     }
-
 }

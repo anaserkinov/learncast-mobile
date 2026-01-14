@@ -11,5 +11,5 @@ class AuthorEntity(
     val name: String,
     val avatarPath: String?,
     val createdAt: LocalDateTime,
-    val lessonCount: Long
+    val lessonCount: Long,
 )

@@ -17,5 +17,5 @@ class DownloadStateEntity(
     val startMs: Long?,
     val endMs: Long?,
     val state: DownloadState,
-    val percentDownloaded: Float
+    val percentDownloaded: Float,
 )

@@ -8,8 +8,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.animateTo
-import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,7 +43,6 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import me.anasmusa.learncast.theme.icon.HomeIcon
 import com.simplestarts.app.ui.theme.icons.PersonIcon
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -63,12 +60,11 @@ import me.anasmusa.learncast.theme.MontserratTypography
 import me.anasmusa.learncast.theme.backgroundColors
 import me.anasmusa.learncast.theme.darkScheme
 import me.anasmusa.learncast.theme.icon.CutIcon
+import me.anasmusa.learncast.theme.icon.HomeIcon
 import me.anasmusa.learncast.theme.playerBackgroundColors
 import me.anasmusa.learncast.ui.AppEvent
 import me.anasmusa.learncast.ui.AppIntent
 import me.anasmusa.learncast.ui.AppViewModel
-import me.anasmusa.learncast.ui.player.PlayerEvent
-import me.anasmusa.learncast.ui.player.PlayerViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import java.io.BufferedReader
 import java.io.File
@@ -77,25 +73,27 @@ import kotlin.math.min
 @Composable
 fun App(
     backgroundColors: List<Color>,
-    playerBackgroundColors: List<Color>
+    playerBackgroundColors: List<Color>,
 ) {
     val density = LocalDensity.current
     val expandedPx = LocalWindowInfo.current.containerSize.height
     val windowBottomInset = NavigationBarDefaults.windowInsets.getBottom(density)
 
-    val anchors = remember(windowBottomInset) {
-        val collapsedPx = with(density) { (80 + 64).dp.toPx() }
-        DraggableAnchors {
-            "expanded" at 0f
-            "collapsed" at (expandedPx - collapsedPx - windowBottomInset)
+    val anchors =
+        remember(windowBottomInset) {
+            val collapsedPx = with(density) { (80 + 64).dp.toPx() }
+            DraggableAnchors {
+                "expanded" at 0f
+                "collapsed" at (expandedPx - collapsedPx - windowBottomInset)
+            }
         }
-    }
-    val draggableState = remember(anchors) {
-        AnchoredDraggableState(
-            initialValue = "collapsed",
-            anchors = anchors
-        )
-    }
+    val draggableState =
+        remember(anchors) {
+            AnchoredDraggableState(
+                initialValue = "collapsed",
+                anchors = anchors,
+            )
+        }
 
     var stringsLoaded by remember { mutableStateOf(Resource.isLoaded) }
 
@@ -136,26 +134,31 @@ fun App(
             val activity = LocalActivity.current
             LaunchedEffect(selectedPage) {
                 backStack.removeAll { it != Screen.Home && it != Screen.Snips && it != Screen.Profile }
-                val screen = when (selectedPage) {
-                    0 -> Screen.Home
-                    1 -> Screen.Snips
-                    else -> Screen.Profile
-                }
+                val screen =
+                    when (selectedPage) {
+                        0 -> Screen.Home
+                        1 -> Screen.Snips
+                        else -> Screen.Profile
+                    }
                 val index = backStack.indexOf(screen)
                 backStack.add(
-                    if (index != -1) backStack.removeAt(index)
-                    else screen
+                    if (index != -1) {
+                        backStack.removeAt(index)
+                    } else {
+                        screen
+                    },
                 )
             }
             BackHandler(
-                enabled = backStack.size <= 3 && backStack.all { it == Screen.Home || it == Screen.Snips || it == Screen.Profile }
+                enabled = backStack.size <= 3 && backStack.all { it == Screen.Home || it == Screen.Snips || it == Screen.Profile },
             ) {
-                if (selectedPage != 0) selectedPage = 0
-                else activity?.finish()
+                if (selectedPage != 0) {
+                    selectedPage = 0
+                } else {
+                    activity?.finish()
+                }
             }
         }
-
-
 
         ProvideAppEnvironment(
             backStack = backStack,
@@ -163,38 +166,42 @@ fun App(
             backgroundColors = backgroundColors,
             playerBackgroundColors = playerBackgroundColors,
             isNightMode = false,
-            changeNightMode = {}
+            changeNightMode = {},
         ) {
             Scaffold(
                 bottomBar = {
-                    if (state.isLoggedIn == true)
+                    if (state.isLoggedIn == true) {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
+                            modifier =
+                                Modifier
+                                    .fillMaxSize(),
                         ) {
                             PlayerScreen(
                                 modifier = Modifier,
-                                draggableState = draggableState
+                                draggableState = draggableState,
                             )
                             NavigationBar(
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .offset(
-                                        y = min(
-                                            draggableState.anchors.maxPosition() - draggableState.offset,
-                                            80f + windowBottomInset
-                                        ).dp
-                                    )
-                                    .fillMaxWidth()
-                                    .hazeEffect(
-                                        state = hazeState,
-                                        style = HazeStyle(
-                                            tint = HazeTint(
-                                                color = backgroundColors.last().copy(alpha = 0.5f)
-                                            )
-                                        )
-                                    ),
-                                containerColor = Color.Transparent
+                                modifier =
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .offset(
+                                            y =
+                                                min(
+                                                    draggableState.anchors.maxPosition() - draggableState.offset,
+                                                    80f + windowBottomInset,
+                                                ).dp,
+                                        ).fillMaxWidth()
+                                        .hazeEffect(
+                                            state = hazeState,
+                                            style =
+                                                HazeStyle(
+                                                    tint =
+                                                        HazeTint(
+                                                            color = backgroundColors.last().copy(alpha = 0.5f),
+                                                        ),
+                                                ),
+                                        ),
+                                containerColor = Color.Transparent,
                             ) {
                                 repeat(3) {
                                     val icon: ImageVector
@@ -203,17 +210,17 @@ fun App(
                                     when (it) {
                                         0 -> {
                                             icon = HomeIcon
-                                            name = Strings.home
+                                            name = Strings.HOME
                                         }
 
                                         1 -> {
                                             icon = CutIcon
-                                            name = Strings.snips
+                                            name = Strings.SNIPS
                                         }
 
                                         else -> {
                                             icon = PersonIcon
-                                            name = Strings.profile
+                                            name = Strings.PROFILE
                                         }
                                     }
 
@@ -222,57 +229,60 @@ fun App(
                                         icon = {
                                             Icon(
                                                 icon,
-                                                contentDescription = null
+                                                contentDescription = null,
                                             )
                                         },
                                         label = { Text(name.string()) },
                                         onClick = {
                                             selectedPage = it
-                                        }
+                                        },
                                     )
                                 }
                             }
                         }
-                }
+                    }
+                },
             ) { _ ->
                 val animationSpec = tween<IntOffset>(300)
                 NavDisplay(
-                    modifier = Modifier
-                        .hazeSource(state = hazeState),
-                    entryDecorators = listOf(
-                        rememberSaveableStateHolderNavEntryDecorator(),
-                        rememberViewModelStoreNavEntryDecorator()
-                    ),
+                    modifier =
+                        Modifier
+                            .hazeSource(state = hazeState),
+                    entryDecorators =
+                        listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
                     backStack = backStack,
                     onBack = { backStack.removeLastOrNull() },
                     entryProvider = entryProvider(),
                     transitionSpec = {
                         slideInHorizontally(
                             initialOffsetX = { it },
-                            animationSpec = animationSpec
+                            animationSpec = animationSpec,
                         ) togetherWith
-                                slideOutHorizontally(
-                                    targetOffsetX = { (-it * 0.2f).toInt() },
-                                    animationSpec = animationSpec
-                                )
+                            slideOutHorizontally(
+                                targetOffsetX = { (-it * 0.2f).toInt() },
+                                animationSpec = animationSpec,
+                            )
                     },
                     popTransitionSpec = {
                         slideInHorizontally(
                             initialOffsetX = { (-it * 0.2f).toInt() },
-                            animationSpec = animationSpec
+                            animationSpec = animationSpec,
                         ) togetherWith
-                                slideOutHorizontally(
-                                    targetOffsetX = { it },
-                                    animationSpec = animationSpec
-                                )
+                            slideOutHorizontally(
+                                targetOffsetX = { it },
+                                animationSpec = animationSpec,
+                            )
                     },
                     predictivePopTransitionSpec = {
                         slideInHorizontally(
                             initialOffsetX = { (-it * 0.2f).toInt() },
-                            animationSpec = animationSpec
+                            animationSpec = animationSpec,
                         ) togetherWith
-                                slideOutHorizontally(targetOffsetX = { it })
-                    }
+                            slideOutHorizontally(targetOffsetX = { it })
+                    },
                 )
             }
         }
@@ -289,15 +299,15 @@ fun AppTheme(content: @Composable () -> Unit) {
         baseUrl = "http://localhost:3000",
         telegramBotId = 8292515516L,
         telegramOrigin = "http://127.0.0.1:80",
-        googleClientId = ""
+        googleClientId = "",
     )
     val file =
         File("/Users/anas/AndroidStudioProjects/LearnCast/android/lib/src/main/assets/values/strings.xml")
     Resource.setStrings(
         "en",
         parseStringsXml(
-            file.bufferedReader().use(BufferedReader::readText)
-        )
+            file.bufferedReader().use(BufferedReader::readText),
+        ),
     )
 
     ProvideAppEnvironment(
@@ -306,15 +316,15 @@ fun AppTheme(content: @Composable () -> Unit) {
         backgroundColors = backgroundColors,
         playerBackgroundColors = playerBackgroundColors,
         isNightMode = false,
-        changeNightMode = {}
+        changeNightMode = {},
     ) {
         CompositionLocalProvider(
-            LocalContentColor provides Color.White
+            LocalContentColor provides Color.White,
         ) {
             MaterialExpressiveTheme(
                 colorScheme = darkScheme,
                 typography = MontserratTypography(),
-                content = content
+                content = content,
             )
         }
     }

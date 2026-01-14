@@ -10,8 +10,8 @@ import me.anasmusa.learncast.core.toDateTime
 import me.anasmusa.learncast.core.toUTCInstant
 import me.anasmusa.learncast.data.local.db.TableNames
 import me.anasmusa.learncast.data.local.db.outbox.OutboxDao
-import me.anasmusa.learncast.data.local.db.paging_state.PagingStateDao
-import me.anasmusa.learncast.data.local.db.paging_state.PagingStateEntity
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
 import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
 import me.anasmusa.learncast.data.mapper.toEntity
@@ -29,9 +29,8 @@ internal class SnipMediator(
     private val snipDao: SnipDao,
     private val outboxDao: OutboxDao,
     private val pagingStateDao: PagingStateDao,
-    private val request: PageRequestQuery
+    private val request: PageRequestQuery,
 ) : CommonMediator<Int, SnipEntity>() {
-
     private var lastItemId: Long? = null
     override val hasItemLoaded: Boolean
         get() = lastItemId != null
@@ -40,7 +39,7 @@ internal class SnipMediator(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, SnipEntity>
+        state: PagingState<Int, SnipEntity>,
     ): MediatorResult {
         val requestStringKey = request.toStringKey()
         var pagingState: PagingStateEntity? = null
@@ -80,9 +79,11 @@ internal class SnipMediator(
                 response.data.items.map {
                     uuids.add(it.clientSnipId)
                     it.toEntity()
-                }
+                },
             )
-            response.data.items.lastOrNull()?.let { lastItemId = it.id }
+            response.data.items
+                .lastOrNull()
+                ?.let { lastItemId = it.id }
             updatedTime = response.time
 
             coroutineScope {
@@ -93,18 +94,20 @@ internal class SnipMediator(
         } catch (e: Exception) {
             MediatorResult.Error(e)
         } finally {
-            if (updatedTime != null && pagingState?.lastDeletionSync == null || deletedTime != null)
+            if (updatedTime != null && pagingState?.lastDeletionSync == null || deletedTime != null) {
                 try {
                     pagingStateDao.upsert(
                         PagingStateEntity(
                             resourceType = TableNames.SNIP,
                             queryKey = requestStringKey,
-                            lastDeletionSync = deletedTime?.toDateTime()
-                                ?: pagingState?.lastDeletionSync ?: updatedTime!!.toDateTime()
-                        )
+                            lastDeletionSync =
+                                deletedTime?.toDateTime()
+                                    ?: pagingState?.lastDeletionSync ?: updatedTime!!.toDateTime(),
+                        ),
                     )
                 } catch (e: Exception) {
                 }
+            }
         }
     }
 }

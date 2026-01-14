@@ -18,9 +18,9 @@ import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
-import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
+import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -30,24 +30,37 @@ data class PlayerState(
     val playbackState: Int = STATE_LOADING,
     val currentPositionMs: Long = 0L,
     val queuedCount: Int = 0,
-    val snipCount: Int = -1
-): me.anasmusa.learncast.ui.BaseState
+    val snipCount: Int = -1,
+) : me.anasmusa.learncast.ui.BaseState
 
-sealed interface PlayerIntent: me.anasmusa.learncast.ui.BaseIntent {
-    object TogglePlaybackState: PlayerIntent
-    object Pause: PlayerIntent
-    data class SeekTo(val value: Long): PlayerIntent
-    data class Seek(val forward: Boolean): PlayerIntent
-    data object Download: PlayerIntent
-    data object ToggleCompletedState: PlayerIntent
-    data object ToggleFavourite: PlayerIntent
-    data object DeleteSnip: PlayerIntent
-    data object LoadSnipCount: PlayerIntent
-    data object Refresh: PlayerIntent
+sealed interface PlayerIntent : me.anasmusa.learncast.ui.BaseIntent {
+    object TogglePlaybackState : PlayerIntent
+
+    object Pause : PlayerIntent
+
+    data class SeekTo(
+        val value: Long,
+    ) : PlayerIntent
+
+    data class Seek(
+        val forward: Boolean,
+    ) : PlayerIntent
+
+    data object Download : PlayerIntent
+
+    data object ToggleCompletedState : PlayerIntent
+
+    data object ToggleFavourite : PlayerIntent
+
+    data object DeleteSnip : PlayerIntent
+
+    data object LoadSnipCount : PlayerIntent
+
+    data object Refresh : PlayerIntent
 }
 
-sealed interface PlayerEvent: me.anasmusa.learncast.ui.BaseEvent {
-    object ShowPlayer: PlayerEvent
+sealed interface PlayerEvent : me.anasmusa.learncast.ui.BaseEvent {
+    object ShowPlayer : PlayerEvent
 }
 
 class PlayerViewModel(
@@ -55,25 +68,29 @@ class PlayerViewModel(
     private val syncRepository: SyncRepository,
     private val playerRepository: PlayerRepository,
     private val downloadRepository: DownloadRepository,
-    private val snipRepository: SnipRepository
-): me.anasmusa.learncast.ui.BaseViewModel<PlayerState, PlayerIntent, PlayerEvent>(){
-
+    private val snipRepository: SnipRepository,
+) : me.anasmusa.learncast.ui.BaseViewModel<PlayerState, PlayerIntent, PlayerEvent>() {
     override val state: StateFlow<PlayerState>
         field = MutableStateFlow(PlayerState())
 
     private var snipCountLoadJob: Job? = null
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             launch {
                 playerRepository.currentQueueItem.collectLatest { queueItem ->
-                    if (state.value.currentPlaying?.id != queueItem?.id)
+                    if (state.value.currentPlaying?.id != queueItem?.id) {
                         snipCountLoadJob?.cancel()
+                    }
                     state.update {
                         it.copy(
                             currentPlaying = queueItem,
-                            snipCount = if (it.currentPlaying?.id != queueItem?.id) -1
-                            else it.snipCount
+                            snipCount =
+                                if (it.currentPlaying?.id != queueItem?.id) {
+                                    -1
+                                } else {
+                                    it.snipCount
+                                },
                         )
                     }
                 }
@@ -95,7 +112,7 @@ class PlayerViewModel(
             }
             launch {
                 playerRepository.events.receiveAsFlow().collect {
-                    when(it){
+                    when (it) {
                         EVENT_SHOW_PLAYER ->
                             send(PlayerEvent.ShowPlayer)
                     }
@@ -109,7 +126,7 @@ class PlayerViewModel(
     }
 
     override fun handle(intent: PlayerIntent) {
-        when(intent){
+        when (intent) {
             PlayerIntent.TogglePlaybackState -> playerRepository.togglePlayback()
             PlayerIntent.Pause -> playerRepository.pause()
             is PlayerIntent.SeekTo -> seekTo(intent.value)
@@ -123,15 +140,15 @@ class PlayerViewModel(
         }
     }
 
-    private fun seekTo(value: Long){
+    private fun seekTo(value: Long) {
         playerRepository.seekTo(value)
     }
 
-    private fun seek(forward: Boolean){
+    private fun seek(forward: Boolean) {
         playerRepository.seek(forward)
     }
 
-    private fun download(){
+    private fun download() {
         state.update { it.copy(isLoading = true) }
         state.value.currentPlaying?.let {
             viewModelScope.launch {
@@ -141,41 +158,45 @@ class PlayerViewModel(
                     it.referenceType,
                     it.audioPath,
                     it.startMs,
-                    it.endMs
+                    it.endMs,
                 )
                 state.update { it.copy(isLoading = false) }
             }
         }
     }
 
-    private fun toggleCompletedState(){
+    private fun toggleCompletedState() {
         viewModelScope.launch {
             state.value.currentPlaying?.let {
                 outboxRepository.updateLessonProgress(
                     lessonId = it.referenceId,
                     startedAt = nowLocalDateTime(),
                     lastPositionMs = state.value.currentPositionMs.toDuration(DurationUnit.MILLISECONDS),
-                    status = if (it.status == UserProgressStatus.COMPLETED)
-                        UserProgressStatus.NOT_STARTED
-                    else
-                        UserProgressStatus.COMPLETED,
-                    completedAt = if (it.status == UserProgressStatus.COMPLETED)
-                        null
-                    else
-                        nowLocalDateTime()
+                    status =
+                        if (it.status == UserProgressStatus.COMPLETED) {
+                            UserProgressStatus.NOT_STARTED
+                        } else {
+                            UserProgressStatus.COMPLETED
+                        },
+                    completedAt =
+                        if (it.status == UserProgressStatus.COMPLETED) {
+                            null
+                        } else {
+                            nowLocalDateTime()
+                        },
                 )
                 // User marked the lesson as completed → move to the next lesson
-                if (it.status != UserProgressStatus.COMPLETED){
+                if (it.status != UserProgressStatus.COMPLETED) {
                     playerRepository.removeFromQueue(
                         0,
-                        it.id
+                        it.id,
                     )
                 }
             }
         }
     }
 
-    private fun toggleFavourite(){
+    private fun toggleFavourite() {
         viewModelScope.launch {
             state.value.currentPlaying?.let {
                 outboxRepository.setFavourite(it.lessonId, !it.isFavourite)
@@ -183,44 +204,45 @@ class PlayerViewModel(
         }
     }
 
-    private fun loadSnipCount(){
+    private fun loadSnipCount() {
         if (snipCountLoadJob?.isActive == true) return
         state.value.currentPlaying?.let { queueItem ->
-            snipCountLoadJob = viewModelScope.launch {
-                val snipCount = snipRepository.getSnipCount(queueItem.referenceId)
-                withContext(Dispatchers.Main){
-                    if (state.value.currentPlaying?.referenceId == queueItem.referenceId){
-                        state.update {
-                            it.copy(snipCount = snipCount)
+            snipCountLoadJob =
+                viewModelScope.launch {
+                    val snipCount = snipRepository.getSnipCount(queueItem.referenceId)
+                    withContext(Dispatchers.Main) {
+                        if (state.value.currentPlaying?.referenceId == queueItem.referenceId) {
+                            state.update {
+                                it.copy(snipCount = snipCount)
+                            }
                         }
                     }
                 }
-            }
         }
     }
 
-    private fun deleteSnip(){
+    private fun deleteSnip() {
         state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             state.value.currentPlaying?.let {
                 snipRepository.delete(it.referenceUuid)
                 playerRepository.removeFromQueue(
                     0,
-                    it.id
+                    it.id,
                 )
             }
             state.update { it.copy(isLoading = false) }
         }
     }
 
-    private fun refresh(){
+    private fun refresh() {
         state.value.currentPlaying?.let {
-            if (it.referenceType == ReferenceType.LESSON){
+            if (it.referenceType == ReferenceType.LESSON) {
                 snipCountLoadJob?.cancel()
                 loadSnipCount()
-            } else
+            } else {
                 playerRepository.refreshCurrent()
+            }
         }
     }
-
 }

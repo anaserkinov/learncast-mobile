@@ -30,38 +30,42 @@ import me.anasmusa.learncast.data.model.Lesson
 @Composable
 fun LessonCell(
     lesson: Lesson,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxSize()
-            .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
-            .padding(4.dp)
+        modifier =
+            Modifier
+                .padding(top = 8.dp)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(4.dp))
+                .clickable(onClick = onClick)
+                .padding(4.dp),
     ) {
-
         AsyncImage(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            model = if (lesson.coverImagePath != null)
-                lesson.coverImagePath!!.normalizeUrl()
-            else
-                appConfig.mainLogo,
+            modifier =
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+            model =
+                if (lesson.coverImagePath != null) {
+                    lesson.coverImagePath!!.normalizeUrl()
+                } else {
+                    appConfig.mainLogo
+                },
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            contentDescription = null,
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            verticalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+            verticalArrangement = Arrangement.Center,
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
 //                Icon(
 //                    modifier = Modifier
@@ -72,28 +76,32 @@ fun LessonCell(
 //                    contentDescription = null
 //                )
                 Text(
-                    modifier = Modifier
-                        .alpha(0.7f),
+                    modifier =
+                        Modifier
+                            .alpha(0.7f),
                     text = lesson.authorName,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
             Text(
-                text = if (lesson.topicTitle != null)
-                    "${lesson.title} - ${lesson.topicTitle}"
-                else lesson.title,
+                text =
+                    if (lesson.topicTitle != null) {
+                        "${lesson.title} - ${lesson.topicTitle}"
+                    } else {
+                        lesson.title
+                    },
                 maxLines = 2,
                 style = MaterialTheme.typography.titleMedium,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 17.sp
+                lineHeight = 17.sp,
             )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
                 text = "${lesson.createdAt.dayMonth()} · ${lesson.audioDuration}",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
-
     }
 }

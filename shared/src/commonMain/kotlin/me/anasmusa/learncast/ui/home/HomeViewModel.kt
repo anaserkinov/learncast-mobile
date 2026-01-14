@@ -30,30 +30,37 @@ data class HomeState(
     val searchQuery: String? = null,
     val inSearchMode: Boolean = false,
     val selectedFilter: Filters = Filters.Latest,
-    val lessons: Flow<PagingData<Lesson>> = emptyFlow()
+    val lessons: Flow<PagingData<Lesson>> = emptyFlow(),
 ) : BaseState
 
 sealed interface HomeIntent : BaseIntent {
-    data class UpdateSearchQuery(val query: String?, val inSearchMode: Boolean) : HomeIntent
-    data class SelectFilter(val filter: Filters) : HomeIntent
-    data class AddToQueue(val lesson: Lesson) : HomeIntent
+    data class UpdateSearchQuery(
+        val query: String?,
+        val inSearchMode: Boolean,
+    ) : HomeIntent
+
+    data class SelectFilter(
+        val filter: Filters,
+    ) : HomeIntent
+
+    data class AddToQueue(
+        val lesson: Lesson,
+    ) : HomeIntent
 }
 
-sealed interface HomeEvent : BaseEvent {
-
-}
+sealed interface HomeEvent : BaseEvent
 
 @OptIn(FlowPreview::class)
 class HomeViewModel(
     private val lessonRepository: LessonRepository,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
 ) : BaseViewModel<HomeState, HomeIntent, HomeEvent>() {
-
     override val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
     init {
-        state.map { it.searchQuery to it.selectedFilter }
+        state
+            .map { it.searchQuery to it.selectedFilter }
             .distinctUntilChanged()
             .debounce(500)
             .onEach { (query, filter) ->
@@ -87,16 +94,17 @@ class HomeViewModel(
                 }
                 state.update {
                     it.copy(
-                        lessons = lessonRepository.page(
-                            search = query,
-                            authorId = null,
-                            topicId = null,
-                            isFavourite = isFavourite,
-                            status = status,
-                            isDownloaded = isDownloaded,
-                            sort = sort,
-                            order = order
-                        )
+                        lessons =
+                            lessonRepository.page(
+                                search = query,
+                                authorId = null,
+                                topicId = null,
+                                isFavourite = isFavourite,
+                                status = status,
+                                isDownloaded = isDownloaded,
+                                sort = sort,
+                                order = order,
+                            ),
                     )
                 }
             }.launchIn(viewModelScope)
@@ -110,7 +118,10 @@ class HomeViewModel(
         }
     }
 
-    private fun updateSearchQuery(value: String?, inSearchMode: Boolean){
+    private fun updateSearchQuery(
+        value: String?,
+        inSearchMode: Boolean,
+    ) {
         state.update { it.copy(searchQuery = value, inSearchMode = inSearchMode) }
     }
 
@@ -123,5 +134,4 @@ class HomeViewModel(
     private fun addToQueue(lesson: Lesson) {
         playerRepository.addToQueue(lesson.toQueueItem())
     }
-
 }

@@ -2,6 +2,7 @@ package me.anasmusa.learncast.data.repository.implementation
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -25,15 +26,16 @@ import me.anasmusa.learncast.player.createPlayer
 import kotlin.math.max
 
 internal class PlayerRepositoryImpl(
-    private val queueRepository: QueueRepository
+    private val queueRepository: QueueRepository,
 ) : PlayerRepository {
-
     private val player = createPlayer()
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private var queueLoadJob: Job? = null
 
-    override val currentQueueItem = player.currentQueueItemId
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val currentQueueItem =
+        player.currentQueueItemId
             .flatMapLatest { if (it == null) flowOf(null) else queueRepository.observe(it) }
             .stateIn(scope, SharingStarted.Companion.Eagerly, null)
     override val playbackPositionMs = MutableStateFlow(0L)
@@ -43,40 +45,46 @@ internal class PlayerRepositoryImpl(
 
     init {
         scope.launch {
-            currentQueueItem.combine(playbackState) { queueItem, state ->
-                Pair(queueItem, state)
-            }.collectLatest {
-                if (it.first != null && it.second == STATE_PLAYING) {
-                    while (true) {
-                        withContext(Dispatchers.Main) {
-                            playbackPositionMs.value = player.getCurrentPositonMs()
+            currentQueueItem
+                .combine(playbackState) { queueItem, state ->
+                    Pair(queueItem, state)
+                }.collectLatest {
+                    if (it.first != null && it.second == STATE_PLAYING) {
+                        while (true) {
+                            withContext(Dispatchers.Main) {
+                                playbackPositionMs.value = player.getCurrentPositonMs()
+                            }
+                            delay(1000)
                         }
-                        delay(1000)
                     }
                 }
-            }
         }
     }
 
     override fun addToQueue(item: QueueItem) {
         if (item.id == currentQueueItem.value?.id) return
         queueLoadJob?.cancel()
-        queueLoadJob = scope.launch {
-            val triple = queueRepository.addToQueue(item) ?: return@launch
-            playbackPositionMs.update { triple.first.lastPositionMs?.inWholeMilliseconds ?: 0L }
-            queuedCount.update { max(0, triple.third - 1) }
-            withContext(Dispatchers.Main) {
-                val previousOrder = triple.second
-                if (previousOrder == -1)
-                    player.addFirst(triple.first)
-                else
-                    player.moveToFirst(triple.first, previousOrder)
-                events.send(EVENT_SHOW_PLAYER)
+        queueLoadJob =
+            scope.launch {
+                val triple = queueRepository.addToQueue(item) ?: return@launch
+                playbackPositionMs.update { triple.first.lastPositionMs?.inWholeMilliseconds ?: 0L }
+                queuedCount.update { max(0, triple.third - 1) }
+                withContext(Dispatchers.Main) {
+                    val previousOrder = triple.second
+                    if (previousOrder == -1) {
+                        player.addFirst(triple.first)
+                    } else {
+                        player.moveToFirst(triple.first, previousOrder)
+                    }
+                    events.send(EVENT_SHOW_PLAYER)
+                }
             }
-        }
     }
 
-    override fun setToQueue(items: List<QueueItem>, playWhenReady: Boolean?) {
+    override fun setToQueue(
+        items: List<QueueItem>,
+        playWhenReady: Boolean?,
+    ) {
         queuedCount.value = max(0, items.size - 1)
         playbackPositionMs.update {
             items.firstOrNull()?.lastPositionMs?.inWholeMilliseconds ?: 0L
@@ -90,7 +98,7 @@ internal class PlayerRepositoryImpl(
                         items = items,
                         startIndex = 0,
                         startPositionMs = currentPlaying?.lastPositionMs?.inWholeMilliseconds ?: 0L,
-                        playWhenReady = playWhenReady
+                        playWhenReady = playWhenReady,
                     )
                 }
             }
@@ -119,7 +127,7 @@ internal class PlayerRepositoryImpl(
         currentQueueItem.value?.let { queueItem ->
             scope.launch {
                 queueRepository.refreshQueueItem(queueItem.id, queueItem.referenceUuid)?.let { newQueueItem ->
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         player.replaceFirst(newQueueItem)
                     }
                 }
@@ -127,12 +135,18 @@ internal class PlayerRepositoryImpl(
         }
     }
 
-    override fun move(from: Int, to: Int) {
+    override fun move(
+        from: Int,
+        to: Int,
+    ) {
         player.move(from, to)
         scope.launch { queueRepository.move(from, to) }
     }
 
-    override fun removeFromQueue(index: Int, id: Long) {
+    override fun removeFromQueue(
+        index: Int,
+        id: Long,
+    ) {
         player.remove(index)
         queuedCount.update { max(0, it - 1) }
         scope.launch { queueRepository.remove(id) }
@@ -155,5 +169,4 @@ internal class PlayerRepositoryImpl(
     override fun destroy() {
         player.destroy()
     }
-
 }

@@ -7,8 +7,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
-import androidx.media3.exoplayer.source.ProgressiveMediaExtractor
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.exoplayer.util.EventLogger
 import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.CommandButton
@@ -50,8 +48,9 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @UnstableApi
-class PlaybackService : MediaLibraryService(), KoinComponent {
-
+class PlaybackService :
+    MediaLibraryService(),
+    KoinComponent {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     private val queueRepository by inject<QueueRepository>()
@@ -66,29 +65,34 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     private var lastMediaItemsId: String? = null
     private var listenedS = 0
 
-    private val skipBackButton = CommandButton.Builder(CommandButton.ICON_SKIP_BACK_10)
-        .setPlayerCommand(Player.COMMAND_SEEK_BACK)
-        .setDisplayName("Skip")
-        .setSlots(CommandButton.SLOT_BACK)
-        .build()
-    private val playPause = CommandButton.Builder(CommandButton.ICON_PLAY)
-        .setPlayerCommand(Player.COMMAND_PLAY_PAUSE)
-        .setDisplayName("Play")
-        .setSlots(CommandButton.SLOT_CENTRAL)
-        .build()
-    private val skipForwardButton = CommandButton.Builder(CommandButton.ICON_SKIP_FORWARD_30)
-        .setPlayerCommand(Player.COMMAND_SEEK_FORWARD)
-        .setDisplayName("Skip")
-        .setSlots(CommandButton.SLOT_FORWARD)
-        .build()
+    private val skipBackButton =
+        CommandButton
+            .Builder(CommandButton.ICON_SKIP_BACK_10)
+            .setPlayerCommand(Player.COMMAND_SEEK_BACK)
+            .setDisplayName("Skip")
+            .setSlots(CommandButton.SLOT_BACK)
+            .build()
+    private val playPause =
+        CommandButton
+            .Builder(CommandButton.ICON_PLAY)
+            .setPlayerCommand(Player.COMMAND_PLAY_PAUSE)
+            .setDisplayName("Play")
+            .setSlots(CommandButton.SLOT_CENTRAL)
+            .build()
+    private val skipForwardButton =
+        CommandButton
+            .Builder(CommandButton.ICON_SKIP_FORWARD_30)
+            .setPlayerCommand(Player.COMMAND_SEEK_FORWARD)
+            .setDisplayName("Skip")
+            .setSlots(CommandButton.SLOT_FORWARD)
+            .build()
 
     private var callback: MediaLibrarySession.Callback =
         @UnstableApi object : MediaLibrarySession.Callback {
-
             override fun onPlaybackResumption(
                 mediaSession: MediaSession,
                 controller: MediaSession.ControllerInfo,
-                isForPlayback: Boolean
+                isForPlayback: Boolean,
             ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> {
                 val settable = SettableFuture.create<MediaSession.MediaItemsWithStartPosition>()
                 scope.launch {
@@ -98,8 +102,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                         MediaSession.MediaItemsWithStartPosition(
                             mediaItems,
                             0,
-                            queuedItems.getOrNull(0)?.lastPositionMs?.inWholeMilliseconds ?: 0L
-                        )
+                            queuedItems.getOrNull(0)?.lastPositionMs?.inWholeMilliseconds ?: 0L,
+                        ),
                     )
                 }
                 return settable
@@ -107,29 +111,30 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
 
             override fun onConnect(
                 session: MediaSession,
-                controller: MediaSession.ControllerInfo
-            ): MediaSession.ConnectionResult {
-                return MediaSession.ConnectionResult.AcceptedResultBuilder(session)
+                controller: MediaSession.ControllerInfo,
+            ): MediaSession.ConnectionResult =
+                MediaSession.ConnectionResult
+                    .AcceptedResultBuilder(session)
                     .setAvailableSessionCommands(
-                        MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
+                        MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS
+                            .buildUpon()
                             .add(SessionCommand("destroy_player", Bundle.EMPTY))
-                            .build()
+                            .build(),
                     ).build()
-            }
 
             override fun onCustomCommand(
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo,
                 customCommand: SessionCommand,
-                args: Bundle
+                args: Bundle,
             ): ListenableFuture<SessionResult> {
-                if (customCommand.customAction == "destroy_player" && controller.packageName == packageName){
+                if (customCommand.customAction == "destroy_player" && controller.packageName == packageName) {
                     player?.let { player ->
                         if (player.currentPosition > 0L) {
                             player.currentMediaItem?.let {
                                 updateListenProgress(
                                     queueItemId = it.mediaId.toLong(),
-                                    position = player.currentPosition
+                                    position = player.currentPosition,
                                 )
                             }
                         }
@@ -147,10 +152,8 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
             override fun onGetLibraryRoot(
                 session: MediaLibrarySession,
                 browser: MediaSession.ControllerInfo,
-                params: LibraryParams?
-            ): ListenableFuture<LibraryResult<MediaItem>> {
-                return super.onGetLibraryRoot(session, browser, params)
-            }
+                params: LibraryParams?,
+            ): ListenableFuture<LibraryResult<MediaItem>> = super.onGetLibraryRoot(session, browser, params)
 
             override fun onGetChildren(
                 session: MediaLibrarySession,
@@ -158,18 +161,14 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 parentId: String,
                 page: Int,
                 pageSize: Int,
-                params: LibraryParams?
-            ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-                return super.onGetChildren(session, browser, parentId, page, pageSize, params)
-            }
+                params: LibraryParams?,
+            ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> = super.onGetChildren(session, browser, parentId, page, pageSize, params)
 
             override fun onGetItem(
                 session: MediaLibrarySession,
                 browser: MediaSession.ControllerInfo,
-                mediaId: String
-            ): ListenableFuture<LibraryResult<MediaItem>> {
-                return super.onGetItem(session, browser, mediaId)
-            }
+                mediaId: String,
+            ): ListenableFuture<LibraryResult<MediaItem>> = super.onGetItem(session, browser, mediaId)
 
             override fun onGetSearchResult(
                 session: MediaLibrarySession,
@@ -177,28 +176,27 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                 query: String,
                 page: Int,
                 pageSize: Int,
-                params: LibraryParams?
-            ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
-                return super.onGetSearchResult(session, browser, query, page, pageSize, params)
-            }
-
+                params: LibraryParams?,
+            ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> = super.onGetSearchResult(session, browser, query, page, pageSize, params)
         }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession {
         if (mediaLibrarySession == null) {
-            val cacheDataSourceFactory = createCacheDataSourceFactory(
-                downloadCache = get(named(DownloadCacheScope.ID)),
-                playbackCache = get(named(PlaybackCacheScope.ID)),
-                httpDataSourceFactory = HttpDataSourceFactory(get())
-            )
+            val cacheDataSourceFactory =
+                createCacheDataSourceFactory(
+                    downloadCache = get(named(DownloadCacheScope.ID)),
+                    playbackCache = get(named(PlaybackCacheScope.ID)),
+                    httpDataSourceFactory = HttpDataSourceFactory(get()),
+                )
 
-            val player = ExoPlayer.Builder(
-                this,
-                DefaultMediaSourceFactory(cacheDataSourceFactory)
-            )
-                .setSeekForwardIncrementMs(30_000)
-                .setSeekBackIncrementMs(10_000)
-                .build()
+            val player =
+                ExoPlayer
+                    .Builder(
+                        this,
+                        DefaultMediaSourceFactory(cacheDataSourceFactory),
+                    ).setSeekForwardIncrementMs(30_000)
+                    .setSeekBackIncrementMs(10_000)
+                    .build()
 
             player.addAnalyticsListener(EventLogger())
 
@@ -211,18 +209,22 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                             this@PlaybackService.isPlaying.value &&
                             player.playbackState == Player.STATE_READY &&
                             mediaItemId.value == player.currentMediaItem?.mediaId &&
-                            player.currentPosition > 0L) {
+                            player.currentPosition > 0L
+                        ) {
                             player.currentMediaItem?.let {
                                 updateListenProgress(
                                     queueItemId = it.mediaId.toLong(),
-                                    position = player.currentPosition
+                                    position = player.currentPosition,
                                 )
                             }
                         }
                         this@PlaybackService.isPlaying.update { isPlaying }
                     }
 
-                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                    override fun onMediaItemTransition(
+                        mediaItem: MediaItem?,
+                        reason: Int,
+                    ) {
                         super.onMediaItemTransition(mediaItem, reason)
                         if (mediaItem != null && mediaItemId.value != mediaItem.mediaId) {
                             scope.launch {
@@ -237,53 +239,57 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                             }
                         }
                         mediaItemId.update { mediaItem?.mediaId }
-                        if (player.currentMediaItemIndex > 0)
+                        if (player.currentMediaItemIndex > 0) {
                             player.removeMediaItem(0)
+                        }
 
-                        if (mediaItem != null)
+                        if (mediaItem != null) {
                             scope.launch {
                                 queueRepository.ensureItemIsFirst(mediaItem.mediaId.toLong())
                             }
+                        }
                     }
 
                     override fun onPositionDiscontinuity(
                         oldPosition: Player.PositionInfo,
                         newPosition: Player.PositionInfo,
-                        reason: Int
+                        reason: Int,
                     ) {
                         super.onPositionDiscontinuity(oldPosition, newPosition, reason)
                         if (
                             oldPosition.mediaItem?.mediaId != null &&
                             oldPosition.mediaItem?.mediaId != newPosition.mediaItem?.mediaId
-                        )
-                            if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION)
+                        ) {
+                            if (reason == Player.DISCONTINUITY_REASON_AUTO_TRANSITION) {
                                 updateListenProgress(
                                     queueItemId = oldPosition.mediaItem!!.mediaId.toLong(),
                                     position = 0L,
                                     status = UserProgressStatus.COMPLETED,
-                                    completedAt = nowLocalDateTime()
+                                    completedAt = nowLocalDateTime(),
                                 )
-                            else if (oldPosition.positionMs > 0)
+                            } else if (oldPosition.positionMs > 0) {
                                 updateListenProgress(
                                     queueItemId = oldPosition.mediaItem!!.mediaId.toLong(),
-                                    position = oldPosition.positionMs
+                                    position = oldPosition.positionMs,
                                 )
+                            }
+                        }
                     }
-
-                }
+                },
             )
 
             this.player = player
-            mediaLibrarySession = MediaLibrarySession.Builder(this, player, callback)
-                .setBitmapLoader(CacheBitmapLoader(BitmapLoader(this, scope)))
-                .setMediaButtonPreferences(
-                    ImmutableList.of(
-                        skipBackButton,
-                        playPause,
-                        skipForwardButton
-                    )
-                )
-                .build()
+            mediaLibrarySession =
+                MediaLibrarySession
+                    .Builder(this, player, callback)
+                    .setBitmapLoader(CacheBitmapLoader(BitmapLoader(this, scope)))
+                    .setMediaButtonPreferences(
+                        ImmutableList.of(
+                            skipBackButton,
+                            playPause,
+                            skipForwardButton,
+                        ),
+                    ).build()
         }
         return mediaLibrarySession!!
     }
@@ -292,9 +298,10 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         scope.launch {
-            val flow = isPlaying.combine(mediaItemId) { isPlaying, mediaItemId ->
-                Pair(isPlaying, mediaItemId)
-            }
+            val flow =
+                isPlaying.combine(mediaItemId) { isPlaying, mediaItemId ->
+                    Pair(isPlaying, mediaItemId)
+                }
             launch {
                 flow.collectLatest {
                     if (lastMediaItemsId != it.second) {
@@ -306,10 +313,11 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                         delay(1000)
                         yield()
                         listenedS++
-                        if (listenedS == 60)
+                        if (listenedS == 60) {
                             queueRepository.getLessonId(it.second!!.toLong())?.let { lessonId ->
                                 outboxRepository.listen(lessonId)
                             }
+                        }
                     }
                 }
             }
@@ -319,11 +327,12 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
                         delay(30_000)
                         withContext(Dispatchers.Main) {
                             player?.let { player ->
-                                if (player.currentMediaItem?.mediaId == it.second)
+                                if (player.currentMediaItem?.mediaId == it.second) {
                                     updateListenProgress(
                                         queueItemId = it.second!!.toLong(),
-                                        position = player.currentPosition
+                                        position = player.currentPosition,
                                     )
+                                }
                             }
                         }
                     }
@@ -336,17 +345,17 @@ class PlaybackService : MediaLibraryService(), KoinComponent {
         queueItemId: Long,
         position: Long,
         status: UserProgressStatus? = null,
-        completedAt: LocalDateTime? = null
+        completedAt: LocalDateTime? = null,
     ) {
         scope.launch(start = CoroutineStart.UNDISPATCHED) {
-            withContext(NonCancellable){
+            withContext(NonCancellable) {
                 queueRepository.getLessonId(queueItemId)?.let { lessonId ->
                     outboxRepository.updateLessonProgress(
                         lessonId = lessonId,
                         startedAt = nowLocalDateTime(),
                         lastPositionMs = position.toDuration(DurationUnit.MILLISECONDS),
                         status = status,
-                        completedAt = completedAt
+                        completedAt = completedAt,
                     )
                 }
             }

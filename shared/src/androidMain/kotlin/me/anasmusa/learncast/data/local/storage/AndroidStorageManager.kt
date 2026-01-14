@@ -19,19 +19,26 @@ import java.io.File
 @OptIn(UnstableApi::class)
 class AndroidStorageManager(
     private val context: Context,
-    private val koin: Koin
-): StorageManager{
-
+    private val koin: Koin,
+) : StorageManager {
     private val databaseProvider = koin.get<DatabaseProvider>()
 
-    override suspend fun getCacheSize(): Float {
-        return (context.externalCacheDir?.walkTopDown()?.map { it.length() }?.sum() ?: 0) / (1024f * 1024f)
-    }
+    override suspend fun getCacheSize(): Float =
+        (
+            context.externalCacheDir
+                ?.walkTopDown()
+                ?.map { it.length() }
+                ?.sum() ?: 0
+        ) / (1024f * 1024f)
 
-    override suspend fun getDownloadSize(): Float {
-        return (context.getExternalFilesDir(Environment.DIRECTORY_PODCASTS)
-            ?.walkTopDown()?.map { it.length() }?.sum() ?: 0) / (1024f * 1024f)
-    }
+    override suspend fun getDownloadSize(): Float =
+        (
+            context
+                .getExternalFilesDir(Environment.DIRECTORY_PODCASTS)
+                ?.walkTopDown()
+                ?.map { it.length() }
+                ?.sum() ?: 0
+        ) / (1024f * 1024f)
 
     override suspend fun clearCaches() {
         val cacheFolder = context.externalCacheDir ?: return
@@ -55,9 +62,8 @@ class AndroidStorageManager(
     }
 }
 
-actual fun createStorageManager(): StorageManager {
-    return AndroidStorageManager(
+actual fun createStorageManager(): StorageManager =
+    AndroidStorageManager(
         ApplicationLoader.context,
-        KoinPlatform.getKoin()
+        KoinPlatform.getKoin(),
     )
-}

@@ -18,30 +18,36 @@ import kotlinx.coroutines.launch
 @UnstableApi
 class BitmapLoader(
     private val context: Context,
-    private val scope: CoroutineScope
-): BitmapLoader {
+    private val scope: CoroutineScope,
+) : BitmapLoader {
     val imageLoader = ImageLoader(context)
 
     override fun supportsMimeType(mimeType: String): Boolean = true
 
-    override fun decodeBitmap(data: ByteArray): ListenableFuture<Bitmap> {
-        return Futures.immediateFailedFuture(
-            UnsupportedOperationException("Bitmap decoding not supported")
+    override fun decodeBitmap(data: ByteArray): ListenableFuture<Bitmap> =
+        Futures.immediateFailedFuture(
+            UnsupportedOperationException("Bitmap decoding not supported"),
         )
-    }
 
     override fun loadBitmap(uri: Uri): ListenableFuture<Bitmap> {
         val settable = SettableFuture.create<Bitmap>()
         scope.launch {
-            val bitmap = imageLoader.execute(
-                ImageRequest.Builder(context)
-                    .data(uri)
-                    .allowHardware(false)
-                    .size(500)
-                    .build()
-            ).image?.toBitmap()
-            if (bitmap == null) settable.setException(Exception())
-            else settable.set(bitmap)
+            val bitmap =
+                imageLoader
+                    .execute(
+                        ImageRequest
+                            .Builder(context)
+                            .data(uri)
+                            .allowHardware(false)
+                            .size(500)
+                            .build(),
+                    ).image
+                    ?.toBitmap()
+            if (bitmap == null) {
+                settable.setException(Exception())
+            } else {
+                settable.set(bitmap)
+            }
         }
         return settable
     }

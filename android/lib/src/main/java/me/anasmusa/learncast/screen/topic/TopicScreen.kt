@@ -63,21 +63,24 @@ import org.koin.compose.viewmodel.koinViewModel
 private fun TopicScreenPreview() {
     AppTheme {
         _TopicScreen(
-            state = TopicState(
-                lessons = flowOf(PagingData.from(
-                    listOf(getSampleLesson())
-                ))
-            ),
+            state =
+                TopicState(
+                    lessons =
+                        flowOf(
+                            PagingData.from(
+                                listOf(getSampleLesson()),
+                            ),
+                        ),
+                ),
             topic = getSampleTopic(),
             playAll = {},
-            onLessonClicked = {}
+            onLessonClicked = {},
         )
     }
 }
 
 @Composable
 fun TopicScreen(topic: Topic) {
-
     val viewModel = koinViewModel<TopicViewModel>()
     val state by viewModel.state.collectAsState()
 
@@ -93,7 +96,7 @@ fun TopicScreen(topic: Topic) {
         },
         onLessonClicked = {
             viewModel.handle(TopicIntent.AddToQueue(it))
-        }
+        },
     )
 }
 
@@ -103,144 +106,154 @@ private fun _TopicScreen(
     state: TopicState,
     topic: Topic,
     playAll: () -> Unit,
-    onLessonClicked: (lesson: Lesson) -> Unit
+    onLessonClicked: (lesson: Lesson) -> Unit,
 ) {
     val env = LocalAppEnvironment.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pagingState = state.lessons.collectAsLazyPagingItems()
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .background(backgroundBrush()),
+        modifier =
+            Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .background(backgroundBrush()),
         topBar = {
             LargeFlexibleTopAppBar(
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() }
+                        onClick = { env.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 },
                 title = {
                     Text(
                         text = topic.title,
-                        maxLines = 1
+                        maxLines = 1,
                     )
                 },
                 subtitle = {
                     Text(
                         text = topic.authorName,
-                        maxLines = 1
+                        maxLines = 1,
                     )
-                }
+                },
             )
         },
-        containerColor = Color.Transparent
+        containerColor = Color.Transparent,
     ) {
         PullToRefreshBox(
-            modifier = Modifier
-                .padding(it),
+            modifier =
+                Modifier
+                    .padding(it),
             isRefreshing = pagingState.loadState.refresh is LoadState.Loading,
-            onRefresh = { pagingState.refresh() }
+            onRefresh = { pagingState.refresh() },
         ) {
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom = 8.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 8.dp,
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 PrimaryButton(
-                    modifier = Modifier
-                        .wrapContentSize(),
-                    title = Strings.play_all,
+                    modifier =
+                        Modifier
+                            .wrapContentSize(),
+                    title = Strings.PLAY_ALL,
                     icon = null,
                     padding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
                     onClick = {
                         playAll()
-                    }
+                    },
                 )
 
                 Spacer(
-                    modifier = Modifier
-                        .width(24.dp)
+                    modifier =
+                        Modifier
+                            .width(24.dp),
                 )
 
                 IconButton(
                     onClick = {
                         env.navigate(Screen.Search(topic.authorId, topic.topicId))
-                    }
+                    },
                 ) {
                     Icon(
                         imageVector = SearchIcon,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
 
             LazyColumn(
-                modifier = Modifier
-                    .hazeSource(env.hazeState)
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 50.dp
+                modifier =
+                    Modifier
+                        .hazeSource(env.hazeState)
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = 50.dp,
+                        ),
+                contentPadding =
+                    PaddingValues(
+                        bottom = BOTTOM_PADDING.dp,
                     ),
-                contentPadding = PaddingValues(
-                    bottom = BOTTOM_PADDING.dp
-                )
             ) {
-
-                if (topic.description != null)
+                if (topic.description != null) {
                     item {
                         Text(
                             modifier = Modifier,
-                            text = topic.description!!
+                            text = topic.description!!,
                         )
                     }
+                }
 
                 items(
                     pagingState.itemCount,
-                    key = pagingState.itemKey { it.id }
+                    key = pagingState.itemKey { it.id },
                 ) { index ->
                     val lesson = pagingState[index]
-                    if (lesson != null)
+                    if (lesson != null) {
                         LessonCell(
                             lesson = lesson,
                             onClick = {
                                 onLessonClicked(lesson)
-                            }
+                            },
                         )
+                    }
                 }
 
-                if (pagingState.loadState.append is LoadState.Loading)
+                if (pagingState.loadState.append is LoadState.Loading) {
                     item {
                         LoadingIndicator(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                                    .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
+                }
             }
         }
     }
 
-    if (state.isLoading)
+    if (state.isLoading) {
         Loader()
+    }
 }

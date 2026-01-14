@@ -31,56 +31,61 @@ import me.anasmusa.learncast.quantityString
 @Composable
 fun TopicCell(
     topic: Topic,
-    onClick: () -> Unit
-){
+    onClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxSize()
-            .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
-            .padding(4.dp)
+        modifier =
+            Modifier
+                .padding(top = 8.dp)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(4.dp))
+                .clickable(onClick = onClick)
+                .padding(4.dp),
     ) {
-
         AsyncImage(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(80.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            model = if (topic.coverImagePath != null)
-                topic.coverImagePath!!.normalizeUrl()
-            else
-                appConfig.mainLogo,
+            modifier =
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+            model =
+                if (topic.coverImagePath != null) {
+                    topic.coverImagePath!!.normalizeUrl()
+                } else {
+                    appConfig.mainLogo
+                },
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            contentDescription = null,
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp),
-            verticalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(80.dp),
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
                 text = topic.authorName,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Text(
                 text = topic.title,
                 maxLines = 2,
                 style = MaterialTheme.typography.titleMedium,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 17.sp
+                lineHeight = 17.sp,
             )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
-                text = "${topic.createdAt.monthYear()} · ${Strings.lesson.quantityString(topic.lessonCount)}",
-                style = MaterialTheme.typography.bodyMedium
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
+                text = "${topic.createdAt.monthYear()} · ${Strings.LESSON.quantityString(topic.lessonCount)}",
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
-
     }
 }

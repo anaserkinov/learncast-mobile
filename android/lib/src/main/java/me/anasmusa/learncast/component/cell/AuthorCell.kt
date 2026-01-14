@@ -32,51 +32,55 @@ import me.anasmusa.learncast.quantityString
 @Composable
 fun AuthorCell(
     author: Author,
-    onClick: () -> Unit
-){
+    onClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxSize()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
-            .padding(4.dp)
+        modifier =
+            Modifier
+                .padding(top = 8.dp)
+                .fillMaxSize()
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(4.dp))
+                .clickable(onClick = onClick)
+                .padding(4.dp),
     ) {
-
         AsyncImage(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(64.dp)
-                .clip(CircleShape),
-            model = if (author.avatarPath != null)
-                author.avatarPath!!.normalizeUrl()
-            else
-                appConfig.mainLogo,
+            modifier =
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(64.dp)
+                    .clip(CircleShape),
+            model =
+                if (author.avatarPath != null) {
+                    author.avatarPath!!.normalizeUrl()
+                } else {
+                    appConfig.mainLogo
+                },
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            contentDescription = null,
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp),
-            verticalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = author.name,
                 maxLines = 2,
                 style = MaterialTheme.typography.titleMedium,
                 overflow = TextOverflow.Ellipsis,
-                lineHeight = 17.sp
+                lineHeight = 17.sp,
             )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
-                text = Strings.lesson.quantityString(author.lessonCount),
-                style = MaterialTheme.typography.bodyMedium
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
+                text = Strings.LESSON.quantityString(author.lessonCount),
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
-
     }
 }

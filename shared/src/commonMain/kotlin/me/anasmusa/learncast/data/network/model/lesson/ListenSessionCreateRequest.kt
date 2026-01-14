@@ -7,5 +7,5 @@ import kotlin.time.Instant
 @Serializable
 class ListenSessionCreateRequest(
     @SerialName("session_id") val sessionId: String,
-    @SerialName("created_at") val createdAt: Instant
+    @SerialName("created_at") val createdAt: Instant,
 )

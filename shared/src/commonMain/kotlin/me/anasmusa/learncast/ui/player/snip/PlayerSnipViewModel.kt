@@ -24,26 +24,32 @@ data class PlayerSnipState(
     val currentPlaying: QueueItem? = null,
     val playbackState: Int = STATE_LOADING,
     val currentPositionMs: Long = 0L,
-    val snips: Flow<PagingData<Snip>> = emptyFlow()
-): BaseState
+    val snips: Flow<PagingData<Snip>> = emptyFlow(),
+) : BaseState
 
-sealed interface PlayerSnipIntent: BaseIntent{
-    data class Load(val lessonId: Long): PlayerSnipIntent
-    data class Play(val item: Snip) : PlayerSnipIntent
-    object TogglePlayback: PlayerSnipIntent
+sealed interface PlayerSnipIntent : BaseIntent {
+    data class Load(
+        val lessonId: Long,
+    ) : PlayerSnipIntent
+
+    data class Play(
+        val item: Snip,
+    ) : PlayerSnipIntent
+
+    object TogglePlayback : PlayerSnipIntent
 }
-sealed interface SnipEvent: BaseEvent
+
+sealed interface SnipEvent : BaseEvent
 
 class PlayerSnipViewModel(
     private val snipRepository: SnipRepository,
-    private val playerRepository: PlayerRepository
-): BaseViewModel<PlayerSnipState, PlayerSnipIntent, SnipEvent>() {
-
+    private val playerRepository: PlayerRepository,
+) : BaseViewModel<PlayerSnipState, PlayerSnipIntent, SnipEvent>() {
     override val state: StateFlow<PlayerSnipState>
         field = MutableStateFlow(PlayerSnipState())
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             launch {
                 playerRepository.currentQueueItem.collectLatest { queueItem ->
                     state.update { it.copy(currentPlaying = queueItem) }
@@ -64,18 +70,18 @@ class PlayerSnipViewModel(
 
     override fun handle(intent: PlayerSnipIntent) {
         super.handle(intent)
-        when(intent){
+        when (intent) {
             is PlayerSnipIntent.Load -> load(intent.lessonId)
             is PlayerSnipIntent.Play -> play(intent.item)
             PlayerSnipIntent.TogglePlayback -> togglePlayback()
         }
     }
 
-    private fun load(lessonId: Long){
+    private fun load(lessonId: Long) {
         viewModelScope.launch {
             state.update {
                 it.copy(
-                    snips = snipRepository.page(lessonId = lessonId)
+                    snips = snipRepository.page(lessonId = lessonId),
                 )
             }
         }
@@ -85,8 +91,7 @@ class PlayerSnipViewModel(
         playerRepository.addToQueue(item.toQueueItem())
     }
 
-    private fun togglePlayback(){
+    private fun togglePlayback() {
         playerRepository.togglePlayback()
     }
-
 }

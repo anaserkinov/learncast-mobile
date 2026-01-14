@@ -1,6 +1,5 @@
 package me.anasmusa.learncast.screen.snip
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,28 +53,29 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-private fun SnipListScreenPreview(){
+private fun SnipListScreenPreview() {
     AppTheme {
-        _SnipListScreen (
-            state = SnipListState(
-                searchQuery = "fdg",
-                inSearchMode = true,
-                snips = flowOf(
-                    PagingData.from(
-                        listOf(getSampleSnip())
-                    )
-                )
-            ),
+        _SnipListScreen(
+            state =
+                SnipListState(
+                    searchQuery = "fdg",
+                    inSearchMode = true,
+                    snips =
+                        flowOf(
+                            PagingData.from(
+                                listOf(getSampleSnip()),
+                            ),
+                        ),
+                ),
             hazeState = rememberHazeState(),
             onQueryChanged = {},
-            onSnipClicked = {}
+            onSnipClicked = {},
         )
     }
 }
 
 @Composable
 fun SnipListScreen() {
-
     val env = LocalAppEnvironment.current
     val viewModel = koinViewModel<SnipListViewModel>()
     val state by viewModel.state.collectAsState()
@@ -87,37 +87,37 @@ fun SnipListScreen() {
             viewModel.handle(
                 SnipListIntent.UpdateSearchQuery(
                     query = if (it == "") null else it,
-                    inSearchMode = it != null
-                )
+                    inSearchMode = it != null,
+                ),
             )
         },
         onSnipClicked = {
             viewModel.handle(SnipListIntent.AddToQueue(it))
-        }
+        },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun  _SnipListScreen(
+private fun _SnipListScreen(
     state: SnipListState,
     hazeState: HazeState,
     onQueryChanged: (value: String?) -> Unit,
-    onSnipClicked: (snip: Snip) -> Unit
-){
+    onSnipClicked: (snip: Snip) -> Unit,
+) {
     val pagingState = state.snips.collectAsLazyPagingItems()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .background(
-                Brush.verticalGradient(
-                    colors = LocalAppEnvironment.current.backgroundColors,
-                    endY = with(LocalDensity.current) { 100.dp.toPx() }
-                )
-            ),
+        modifier =
+            Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .background(
+                    Brush.verticalGradient(
+                        colors = LocalAppEnvironment.current.backgroundColors,
+                        endY = with(LocalDensity.current) { 100.dp.toPx() },
+                    ),
+                ),
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
@@ -125,70 +125,77 @@ private fun  _SnipListScreen(
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(
-                        modifier = Modifier
-                            .padding(top = 16.dp)
+                        modifier =
+                            Modifier
+                                .padding(top = 16.dp),
                     ) {
                         Text(
-                            text = Strings.snips.string(),
+                            text = Strings.SNIPS.string(),
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Row(
-                            modifier = Modifier
-                                .padding(top = 12.dp, end = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier =
+                                Modifier
+                                    .padding(top = 12.dp, end = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             SearchButton(
-                                searchQuery = if (state.inSearchMode) state.searchQuery?:"" else null,
-                                onQueryChanged = onQueryChanged
+                                searchQuery = if (state.inSearchMode) state.searchQuery ?: "" else null,
+                                onQueryChanged = onQueryChanged,
                             )
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) {
         PullToRefreshBox(
-            modifier = Modifier
-                .padding(it),
+            modifier =
+                Modifier
+                    .padding(it),
             isRefreshing = pagingState.loadState.refresh is LoadState.Loading,
-            onRefresh = { pagingState.refresh() }
+            onRefresh = { pagingState.refresh() },
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .hazeSource(hazeState)
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
+                modifier =
+                    Modifier
+                        .hazeSource(hazeState)
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                        ),
+                contentPadding =
+                    PaddingValues(
+                        bottom = BOTTOM_PADDING.dp,
                     ),
-                contentPadding = PaddingValues(
-                    bottom = BOTTOM_PADDING.dp
-                )
             ) {
                 items(
                     pagingState.itemCount,
 //                    key = pagingState.itemKey { it.id }
                 ) { index ->
                     val snip = pagingState.get(index)
-                    if (snip != null)
-                        SnipCell (
+                    if (snip != null) {
+                        SnipCell(
                             snip = snip,
                             onClick = {
                                 onSnipClicked(snip)
-                            }
+                            },
                         )
+                    }
                 }
 
-                if (pagingState.loadState.append is LoadState.Loading)
+                if (pagingState.loadState.append is LoadState.Loading) {
                     item {
                         LoadingIndicator(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                                    .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
+                }
             }
         }
     }

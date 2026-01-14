@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,35 +21,38 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import me.anasmusa.learncast.core.appConfig
-import me.anasmusa.learncast.core.dayMonth
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.QueueItem
 
 @Composable
 fun RowScope.QueueItemCell(
-    queueItem: QueueItem
+    queueItem: QueueItem,
 ) {
     AsyncImage(
-        modifier = Modifier
-            .padding(end = 8.dp)
-            .size(80.dp)
-            .clip(RoundedCornerShape(8.dp)),
-        model = if (queueItem.coverImagePath != null)
-            queueItem.coverImagePath!!.normalizeUrl()
-        else
-            appConfig.mainLogo,
+        modifier =
+            Modifier
+                .padding(end = 8.dp)
+                .size(80.dp)
+                .clip(RoundedCornerShape(8.dp)),
+        model =
+            if (queueItem.coverImagePath != null) {
+                queueItem.coverImagePath!!.normalizeUrl()
+            } else {
+                appConfig.mainLogo
+            },
         contentScale = ContentScale.Crop,
-        contentDescription = null
+        contentDescription = null,
     )
 
     Column(
-        modifier = Modifier
-            .weight(1f)
-            .height(80.dp),
-        verticalArrangement = Arrangement.Center
+        modifier =
+            Modifier
+                .weight(1f)
+                .height(80.dp),
+        verticalArrangement = Arrangement.Center,
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
 //                Icon(
 //                    modifier = Modifier
@@ -61,10 +63,11 @@ fun RowScope.QueueItemCell(
 //                    contentDescription = null
 //                )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
                 text = queueItem.subTitle,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         Text(
@@ -72,7 +75,7 @@ fun RowScope.QueueItemCell(
             maxLines = 2,
             style = MaterialTheme.typography.titleMedium,
             overflow = TextOverflow.Ellipsis,
-            lineHeight = 17.sp
+            lineHeight = 17.sp,
         )
 //        Text(
 //            modifier = Modifier

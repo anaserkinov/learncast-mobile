@@ -18,7 +18,7 @@ class LessonStateEntity(
     val startedAt: LocalDateTime?,
     val lastPositionMs: Duration?,
     val status: UserProgressStatus,
-    val completedAt: LocalDateTime?
+    val completedAt: LocalDateTime?,
 )
 
 class LessonStateInput(
@@ -29,7 +29,7 @@ class LessonStateInput(
     val startedAt: LocalDateTime?,
     val lastPositionMs: Duration?,
     val status: UserProgressStatus,
-    val completedAt: LocalDateTime?
+    val completedAt: LocalDateTime?,
 )
 
 class LessonProgressInput(
@@ -37,5 +37,5 @@ class LessonProgressInput(
     val startedAt: LocalDateTime?,
     val lastPositionMs: Duration?,
     val status: UserProgressStatus,
-    val completedAt: LocalDateTime?
+    val completedAt: LocalDateTime?,
 )

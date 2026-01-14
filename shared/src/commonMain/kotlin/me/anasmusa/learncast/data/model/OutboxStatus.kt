@@ -1,6 +1,6 @@
 package me.anasmusa.learncast.data.model
 
-enum class OutboxStatus{
+enum class OutboxStatus {
     PENDING,
-    IN_PROGRESS
+    IN_PROGRESS,
 }

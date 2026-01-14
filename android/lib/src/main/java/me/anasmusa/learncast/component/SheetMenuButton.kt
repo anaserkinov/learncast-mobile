@@ -18,18 +18,19 @@ fun SheetMenuButton(
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
     paddingBetween: Dp = 8.dp,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     PrimaryButton(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(56.dp),
         icon = icon,
         title = title,
         clip = clip,
         padding = padding,
         paddingBetween = paddingBetween,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        onClick = onClick
+        onClick = onClick,
     )
 }

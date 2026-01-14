@@ -40,7 +40,7 @@ googleid = "1.1.1"
 workRuntime = "2.11.0"
 material = "1.13.0"
 sqliteFramework = "2.6.2"
-
+ktlint = "14.0.1"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
@@ -140,3 +140,4 @@ squareupWire = { id = "com.squareup.wire", version.ref = "squarup-wire" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

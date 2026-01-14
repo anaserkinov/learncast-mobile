@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.data.model.QueueItem
-import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
+import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
@@ -21,28 +21,39 @@ data class QueueState(
     val currentPlaying: QueueItem? = null,
     val playbackState: Int = STATE_LOADING,
     val currentPositionMs: Long = 0L,
-    val queuedItems: MutableList<QueueItem> = mutableListOf()
-): BaseState
+    val queuedItems: MutableList<QueueItem> = mutableListOf(),
+) : BaseState
 
-sealed interface QueueIntent: BaseIntent{
-    data class Move(val from: Int, val to: Int): QueueIntent
-    data class Remove(val id: Long): QueueIntent
-    object Clear: QueueIntent
-    data class Play(val item: QueueItem) : QueueIntent
-    object TogglePlayback: QueueIntent
+sealed interface QueueIntent : BaseIntent {
+    data class Move(
+        val from: Int,
+        val to: Int,
+    ) : QueueIntent
+
+    data class Remove(
+        val id: Long,
+    ) : QueueIntent
+
+    object Clear : QueueIntent
+
+    data class Play(
+        val item: QueueItem,
+    ) : QueueIntent
+
+    object TogglePlayback : QueueIntent
 }
-sealed interface QueueEvent: BaseEvent
+
+sealed interface QueueEvent : BaseEvent
 
 class QueueViewModel(
     private val queueRepository: QueueRepository,
-    private val playerRepository: PlayerRepository
-): BaseViewModel<QueueState, QueueIntent, QueueEvent>() {
-
+    private val playerRepository: PlayerRepository,
+) : BaseViewModel<QueueState, QueueIntent, QueueEvent>() {
     override val state: StateFlow<QueueState>
         field = MutableStateFlow(QueueState())
 
     init {
-        viewModelScope.launch{
+        viewModelScope.launch {
             launch {
                 playerRepository.currentQueueItem.collectLatest { queueItem ->
                     state.update { it.copy(currentPlaying = queueItem) }
@@ -65,7 +76,7 @@ class QueueViewModel(
 
     override fun handle(intent: QueueIntent) {
         super.handle(intent)
-        when(intent){
+        when (intent) {
             is QueueIntent.Move -> {
                 move(intent.from, intent.to)
             }
@@ -84,43 +95,48 @@ class QueueViewModel(
         }
     }
 
-    private fun load(){
+    private fun load() {
         state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             state.update {
                 it.copy(
                     isLoading = false,
-                    queuedItems = ArrayList(queueRepository.getQueuedItems()).apply {
-                        if (isNotEmpty()) removeFirst()
-                    }
+                    queuedItems =
+                        ArrayList(queueRepository.getQueuedItems()).apply {
+                            if (isNotEmpty()) removeFirst()
+                        },
                 )
             }
         }
     }
 
-    private fun move(from: Int, to: Int){
+    private fun move(
+        from: Int,
+        to: Int,
+    ) {
         state.update {
             it.copy(
-                queuedItems = it.queuedItems.toMutableList().apply{
-                    add(to, removeAt(from))
-                }
+                queuedItems =
+                    it.queuedItems.toMutableList().apply {
+                        add(to, removeAt(from))
+                    },
             )
         }
         playerRepository.move(from + 1, to + 1)
     }
 
-    private fun remove(id: Long){
-        if (id == state.value.currentPlaying?.id){
-            if (!state.value.queuedItems.isEmpty()){
+    private fun remove(id: Long) {
+        if (id == state.value.currentPlaying?.id) {
+            if (!state.value.queuedItems.isEmpty()) {
                 state.update {
                     it.copy(
-                        queuedItems = it.queuedItems.toMutableList().apply { removeFirst() }
+                        queuedItems = it.queuedItems.toMutableList().apply { removeFirst() },
                     )
                 }
             }
             playerRepository.removeFromQueue(
                 0,
-                id
+                id,
             )
         } else {
             val list = state.value.queuedItems.toMutableList()
@@ -128,21 +144,22 @@ class QueueViewModel(
             list.removeAt(index)
             state.update {
                 it.copy(
-                    queuedItems = list
+                    queuedItems = list,
                 )
             }
-            if (index != -1)
+            if (index != -1) {
                 playerRepository.removeFromQueue(
                     index + 1,
-                    id
+                    id,
                 )
+            }
         }
     }
 
-    private fun clear(){
+    private fun clear() {
         state.update {
             it.copy(
-                queuedItems = mutableListOf()
+                queuedItems = mutableListOf(),
             )
         }
         playerRepository.clearQueue(false)
@@ -151,17 +168,17 @@ class QueueViewModel(
     private fun play(item: QueueItem) {
         state.update {
             it.copy(
-                queuedItems = it.queuedItems.toMutableList().apply{
-                    add(0, it.currentPlaying!!)
-                    remove(item)
-                }
+                queuedItems =
+                    it.queuedItems.toMutableList().apply {
+                        add(0, it.currentPlaying!!)
+                        remove(item)
+                    },
             )
         }
         playerRepository.addToQueue(item)
     }
 
-    private fun playPause(){
+    private fun playPause() {
         playerRepository.togglePlayback()
     }
-
 }

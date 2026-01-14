@@ -27,11 +27,10 @@ import java.util.Locale
  * @param delegate The delegate to receive all calls.
  * @constructor Creates a wrapper around [SQLiteDatabase].
  */
-internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
-    SupportSQLiteDatabase {
-    override fun compileStatement(sql: String): SupportSQLiteStatement {
-        return FrameworkSQLiteStatement(delegate.compileStatement(sql))
-    }
+internal class FrameworkSQLiteDatabase(
+    private val delegate: SQLiteDatabase,
+) : SupportSQLiteDatabase {
+    override fun compileStatement(sql: String): SupportSQLiteStatement = FrameworkSQLiteStatement(delegate.compileStatement(sql))
 
     override fun beginTransaction() {
         delegate.beginTransaction()
@@ -50,13 +49,13 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     }
 
     override fun beginTransactionWithListenerNonExclusive(
-        transactionListener: SQLiteTransactionListener
+        transactionListener: SQLiteTransactionListener,
     ) {
         delegate.beginTransactionWithListenerNonExclusive(transactionListener)
     }
 
     override fun beginTransactionWithListenerReadOnly(
-        transactionListener: SQLiteTransactionListener
+        transactionListener: SQLiteTransactionListener,
     ) {
         internalBeginTransactionWithListenerReadOnly(transactionListener)
     }
@@ -64,15 +63,15 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     // TODO(b/288918056): Use Android V API once it is available and SDK check the reflection call.
     @SuppressLint("BanUncheckedReflection")
     private fun internalBeginTransactionWithListenerReadOnly(
-        transactionListener: SQLiteTransactionListener?
+        transactionListener: SQLiteTransactionListener?,
     ) {
         if (beginTransactionMethod != null && getThreadSessionMethod != null) {
             beginTransactionMethod!!.invoke(
                 checkNotNull(getThreadSessionMethod!!.invoke(delegate)),
-                0 /* SQLiteSession.TRANSACTION_MODE_DEFERRED */,
+                0,
                 transactionListener,
-                0 /* connectionFlags */,
-                null, /* cancellationSignal */
+                0,
+                null,
             )
         } else if (transactionListener != null) {
             beginTransactionWithListener(transactionListener)
@@ -89,20 +88,14 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
         delegate.setTransactionSuccessful()
     }
 
-    override fun inTransaction(): Boolean {
-        return delegate.inTransaction()
-    }
+    override fun inTransaction(): Boolean = delegate.inTransaction()
 
     override val isDbLockedByCurrentThread: Boolean
         get() = delegate.isDbLockedByCurrentThread
 
-    override fun yieldIfContendedSafely(): Boolean {
-        return delegate.yieldIfContendedSafely()
-    }
+    override fun yieldIfContendedSafely(): Boolean = delegate.yieldIfContendedSafely()
 
-    override fun yieldIfContendedSafely(sleepAfterYieldDelayMillis: Long): Boolean {
-        return delegate.yieldIfContendedSafely(sleepAfterYieldDelayMillis)
-    }
+    override fun yieldIfContendedSafely(sleepAfterYieldDelayMillis: Long): Boolean = delegate.yieldIfContendedSafely(sleepAfterYieldDelayMillis)
 
     override var version: Int
         get() = delegate.version
@@ -124,14 +117,17 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     override val isExecPerConnectionSQLSupported: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
-    override fun execPerConnectionSQL(sql: String, bindArgs: Array<out Any?>?) {
+    override fun execPerConnectionSQL(
+        sql: String,
+        bindArgs: Array<out Any?>?,
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Api30Impl.execPerConnectionSQL(delegate, sql, bindArgs)
         } else {
             throw UnsupportedOperationException(
                 "execPerConnectionSQL is not supported on a " +
-                        "SDK version lower than 30, current version is: " +
-                        Build.VERSION.SDK_INT
+                    "SDK version lower than 30, current version is: " +
+                    Build.VERSION.SDK_INT,
             )
         }
     }
@@ -142,21 +138,21 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
             delegate.pageSize = numBytes
         }
 
-    override fun query(query: String): Cursor {
-        return query(SimpleSQLiteQuery(query))
-    }
+    override fun query(query: String): Cursor = query(SimpleSQLiteQuery(query))
 
-    override fun query(query: String, bindArgs: Array<out Any?>): Cursor {
-        return query(SimpleSQLiteQuery(query, bindArgs))
-    }
+    override fun query(
+        query: String,
+        bindArgs: Array<out Any?>,
+    ): Cursor = query(SimpleSQLiteQuery(query, bindArgs))
 
     override fun query(query: SupportSQLiteQuery): Cursor {
         val cursorFactory =
             {
-                    _: SQLiteDatabase?,
-                    masterQuery: SQLiteCursorDriver?,
-                    editTable: String?,
-                    sqLiteQuery: SQLiteQuery? ->
+                _: SQLiteDatabase?,
+                masterQuery: SQLiteCursorDriver?,
+                editTable: String?,
+                sqLiteQuery: SQLiteQuery?,
+                ->
                 query.bindTo(FrameworkSQLiteProgram(sqLiteQuery!!))
                 SQLiteCursor(masterQuery, editTable, sqLiteQuery)
             }
@@ -164,13 +160,17 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
         return delegate.rawQueryWithFactory(cursorFactory, query.sql, EMPTY_STRING_ARRAY, "")
     }
 
-    override fun query(query: SupportSQLiteQuery, cancellationSignal: CancellationSignal?): Cursor {
-        return delegate.rawQueryWithFactory(
+    override fun query(
+        query: SupportSQLiteQuery,
+        cancellationSignal: CancellationSignal?,
+    ): Cursor =
+        delegate.rawQueryWithFactory(
             {
-                    _: SQLiteDatabase?,
-                    masterQuery: SQLiteCursorDriver?,
-                    editTable: String?,
-                    sqLiteQuery: SQLiteQuery? ->
+                _: SQLiteDatabase?,
+                masterQuery: SQLiteCursorDriver?,
+                editTable: String?,
+                sqLiteQuery: SQLiteQuery?,
+                ->
                 query.bindTo(FrameworkSQLiteProgram(sqLiteQuery!!))
                 SQLiteCursor(masterQuery, editTable, sqLiteQuery)
             },
@@ -179,22 +179,28 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
             "",
             cancellationSignal!!,
         )
-    }
 
     @Throws(SQLException::class)
-    override fun insert(table: String, conflictAlgorithm: Int, values: ContentValues): Long {
-        return delegate.insertWithOnConflict(table, null, values, conflictAlgorithm)
-    }
+    override fun insert(
+        table: String,
+        conflictAlgorithm: Int,
+        values: ContentValues,
+    ): Long = delegate.insertWithOnConflict(table, null, values, conflictAlgorithm)
 
-    override fun delete(table: String, whereClause: String?, whereArgs: Array<out Any?>?): Int {
-        val query = buildString {
-            append("DELETE FROM ")
-            append(table)
-            if (!whereClause.isNullOrEmpty()) {
-                append(" WHERE ")
-                append(whereClause)
+    override fun delete(
+        table: String,
+        whereClause: String?,
+        whereArgs: Array<out Any?>?,
+    ): Int {
+        val query =
+            buildString {
+                append("DELETE FROM ")
+                append(table)
+                if (!whereClause.isNullOrEmpty()) {
+                    append(" WHERE ")
+                    append(whereClause)
+                }
             }
-        }
         val statement = compileStatement(query)
         SimpleSQLiteQuery.bind(statement, whereArgs)
         return statement.executeUpdateDelete()
@@ -214,31 +220,32 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
         val setValuesSize = values.size()
         val bindArgsSize = if (whereArgs == null) setValuesSize else setValuesSize + whereArgs.size
         val bindArgs = arrayOfNulls<Any>(bindArgsSize)
-        val sql = buildString {
-            append("UPDATE ")
-            append(CONFLICT_VALUES[conflictAlgorithm])
-            append(table)
-            append(" SET ")
+        val sql =
+            buildString {
+                append("UPDATE ")
+                append(CONFLICT_VALUES[conflictAlgorithm])
+                append(table)
+                append(" SET ")
 
-            var i = 0
-            for (colName in values.keySet()) {
-                append(if (i > 0) "," else "")
-                append(colName)
-                bindArgs[i++] = values[colName]
-                append("=?")
-            }
-            if (whereArgs != null) {
-                i = setValuesSize
-                while (i < bindArgsSize) {
-                    bindArgs[i] = whereArgs[i - setValuesSize]
-                    i++
+                var i = 0
+                for (colName in values.keySet()) {
+                    append(if (i > 0) "," else "")
+                    append(colName)
+                    bindArgs[i++] = values[colName]
+                    append("=?")
+                }
+                if (whereArgs != null) {
+                    i = setValuesSize
+                    while (i < bindArgsSize) {
+                        bindArgs[i] = whereArgs[i - setValuesSize]
+                        i++
+                    }
+                }
+                if (!TextUtils.isEmpty(whereClause)) {
+                    append(" WHERE ")
+                    append(whereClause)
                 }
             }
-            if (!TextUtils.isEmpty(whereClause)) {
-                append(" WHERE ")
-                append(whereClause)
-            }
-        }
         val stmt = compileStatement(sql)
         SimpleSQLiteQuery.bind(stmt, bindArgs)
         return stmt.executeUpdateDelete()
@@ -250,7 +257,10 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     }
 
     @Throws(SQLException::class)
-    override fun execSQL(sql: String, bindArgs: Array<out Any?>) {
+    override fun execSQL(
+        sql: String,
+        bindArgs: Array<out Any?>,
+    ) {
         delegate.execSQL(sql, bindArgs)
     }
 
@@ -260,9 +270,7 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     override val isOpen: Boolean
         get() = delegate.isOpen
 
-    override fun needUpgrade(newVersion: Int): Boolean {
-        return delegate.needUpgrade(newVersion)
-    }
+    override fun needUpgrade(newVersion: Int): Boolean = delegate.needUpgrade(newVersion)
 
     override val path: String?
         get() = delegate.path
@@ -279,9 +287,7 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
         delegate.setForeignKeyConstraintsEnabled(enabled)
     }
 
-    override fun enableWriteAheadLogging(): Boolean {
-        return delegate.enableWriteAheadLogging()
-    }
+    override fun enableWriteAheadLogging(): Boolean = delegate.enableWriteAheadLogging()
 
     override fun disableWriteAheadLogging() {
         delegate.disableWriteAheadLogging()
@@ -302,9 +308,7 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
     }
 
     /** Checks if this object delegates to the same given database reference. */
-    internal fun isDelegate(sqLiteDatabase: SQLiteDatabase): Boolean {
-        return delegate == sqLiteDatabase
-    }
+    internal fun isDelegate(sqLiteDatabase: SQLiteDatabase): Boolean = delegate == sqLiteDatabase
 
     @RequiresApi(30)
     internal object Api30Impl {
@@ -323,31 +327,31 @@ internal class FrameworkSQLiteDatabase(private val delegate: SQLiteDatabase) :
         private val EMPTY_STRING_ARRAY = arrayOfNulls<String>(0)
 
         private val getThreadSessionMethod by
-        lazy(LazyThreadSafetyMode.PUBLICATION) {
-            try {
-                SQLiteDatabase::class.java.getDeclaredMethod("getThreadSession").apply {
-                    isAccessible = true
+            lazy(LazyThreadSafetyMode.PUBLICATION) {
+                try {
+                    SQLiteDatabase::class.java.getDeclaredMethod("getThreadSession").apply {
+                        isAccessible = true
+                    }
+                } catch (t: Throwable) {
+                    null
                 }
-            } catch (t: Throwable) {
-                null
             }
-        }
 
         private val beginTransactionMethod by
-        lazy(LazyThreadSafetyMode.PUBLICATION) {
-            try {
-                getThreadSessionMethod
-                    ?.returnType
-                    ?.getDeclaredMethod(
-                        "beginTransaction",
-                        Int::class.java,
-                        SQLiteTransactionListener::class.java,
-                        Int::class.java,
-                        CancellationSignal::class.java,
-                    )
-            } catch (t: Throwable) {
-                null
+            lazy(LazyThreadSafetyMode.PUBLICATION) {
+                try {
+                    getThreadSessionMethod
+                        ?.returnType
+                        ?.getDeclaredMethod(
+                            "beginTransaction",
+                            Int::class.java,
+                            SQLiteTransactionListener::class.java,
+                            Int::class.java,
+                            CancellationSignal::class.java,
+                        )
+                } catch (t: Throwable) {
+                    null
+                }
             }
-        }
     }
 }

@@ -3,8 +3,8 @@ package me.anasmusa.learncast.data.repository.implementation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.anasmusa.learncast.data.local.db.lesson.LessonDao
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemDao
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemEntity
+import me.anasmusa.learncast.data.local.db.queue.QueueItemDao
+import me.anasmusa.learncast.data.local.db.queue.QueueItemEntity
 import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.mapper.toEntity
 import me.anasmusa.learncast.data.mapper.toUI
@@ -15,56 +15,58 @@ import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 internal class QueueRepositoryImpl(
     private val queueItemDao: QueueItemDao,
     private val lessonDao: LessonDao,
-    private val snipDao: SnipDao
+    private val snipDao: SnipDao,
 ) : QueueRepository {
-
-    override suspend fun getById(id: Long): QueueItem? {
-        return try {
+    override suspend fun getById(id: Long): QueueItem? =
+        try {
             queueItemDao.getWithStateById(id)?.toUI()
         } catch (e: Exception) {
             null
         }
-    }
 
-    override fun observe(id: Long): Flow<QueueItem?> {
-        return queueItemDao.observeWithStateById(id)
+    override fun observe(id: Long): Flow<QueueItem?> =
+        queueItemDao
+            .observeWithStateById(id)
             .map { it?.toUI() }
-    }
 
-    override suspend fun getLessonId(queueItemId: Long): Long? {
-        return try {
+    override suspend fun getLessonId(queueItemId: Long): Long? =
+        try {
             queueItemDao.getLessonId(queueItemId)
         } catch (e: Exception) {
             null
         }
-    }
 
-    override suspend fun addToQueue(queueItem: QueueItem): Triple<QueueItem, Int, Int>? {
-        return try {
-            var entity = if (queueItem.referenceId != 0L)
-                queueItemDao.getByLessonReferenceId(queueItem.referenceId)
-            else
-                queueItemDao.getBySnipReferenceUuid(queueItem.referenceUuid)
+    override suspend fun addToQueue(queueItem: QueueItem): Triple<QueueItem, Int, Int>? =
+        try {
+            var entity =
+                if (queueItem.referenceId != 0L) {
+                    queueItemDao.getByLessonReferenceId(queueItem.referenceId)
+                } else {
+                    queueItemDao.getBySnipReferenceUuid(queueItem.referenceUuid)
+                }
             var order = entity?.item?.order ?: 0
             if (entity == null) {
                 order = -1
                 val entityId = queueItemDao.addFirst(queueItem.toEntity())
                 entity = queueItemDao.getWithStateById(entityId)!!
-            } else
+            } else {
                 queueItemDao.move(entity.item.order, 0)
+            }
             Triple(
                 entity.toUI(),
                 order,
-                queueItemDao.count()
+                queueItemDao.count(),
             )
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
-    }
 
-    override suspend fun addToQueue(topicId: Long, authorId: Long): List<QueueItem> {
-        return try {
+    override suspend fun addToQueue(
+        topicId: Long,
+        authorId: Long,
+    ): List<QueueItem> =
+        try {
             queueItemDao.replace(
                 lessonDao.getLessons(topicId, authorId).mapIndexed { index, lesson ->
                     QueueItemEntity(
@@ -85,9 +87,9 @@ internal class QueueRepositoryImpl(
                         topicTitle = lesson.topicTitle,
                         audioPath = lesson.audioPath,
                         audioSize = lesson.audioSize,
-                        audioDuration = lesson.audioDuration
+                        audioDuration = lesson.audioDuration,
                     )
-                }
+                },
             )
             queueItemDao.getAll().map {
                 it.toUI()
@@ -95,17 +97,18 @@ internal class QueueRepositoryImpl(
         } catch (e: Exception) {
             emptyList()
         }
-    }
 
-    override suspend fun getQueuedItems(): List<QueueItem> {
-        return try {
+    override suspend fun getQueuedItems(): List<QueueItem> =
+        try {
             queueItemDao.getAll().map { it.toUI() }
         } catch (e: Exception) {
             emptyList()
         }
-    }
 
-    override suspend fun move(from: Int, to: Int) {
+    override suspend fun move(
+        from: Int,
+        to: Int,
+    ) {
         try {
             queueItemDao.move(from, to)
         } catch (e: Exception) {
@@ -114,10 +117,11 @@ internal class QueueRepositoryImpl(
 
     override suspend fun clear(completely: Boolean) {
         try {
-            if (completely)
+            if (completely) {
                 queueItemDao.clear()
-            else
+            } else {
                 queueItemDao.clearExceptFirst()
+            }
         } catch (e: Exception) {
         }
     }
@@ -136,34 +140,34 @@ internal class QueueRepositoryImpl(
         }
     }
 
-    override suspend fun getQueueItem(id: Long): QueueItem? {
-        return try {
+    override suspend fun getQueueItem(id: Long): QueueItem? =
+        try {
             queueItemDao.getWithStateById(id)?.toUI()
         } catch (e: Exception) {
             null
         }
-    }
 
     override suspend fun refreshQueueItem(
         id: Long,
-        referenceUuid: String
+        referenceUuid: String,
     ): QueueItem? {
         return try {
-            val snip = snipDao.getByClientSnipId(referenceUuid)
-                ?: return null
+            val snip =
+                snipDao.getByClientSnipId(referenceUuid)
+                    ?: return null
             queueItemDao.updateSnipQueueItem(
                 id,
                 snip.startMs,
                 snip.endMs,
-                if (!snip.note.isNullOrBlank())
+                if (!snip.note.isNullOrBlank()) {
                     "${snip.note} - ${snip.title}"
-                else
+                } else {
                     snip.title
+                },
             )
             queueItemDao.getWithStateById(id)?.toUI()
         } catch (e: Exception) {
             null
         }
     }
-
 }

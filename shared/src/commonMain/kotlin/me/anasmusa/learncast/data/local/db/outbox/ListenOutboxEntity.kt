@@ -12,12 +12,12 @@ import me.anasmusa.learncast.data.local.db.TableNames
             entity = OutboxEntity::class,
             parentColumns = ["id"],
             childColumns = ["outboxId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 class ListenOutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val outboxId: Long,
-    val sessionId: String
+    val sessionId: String,
 )

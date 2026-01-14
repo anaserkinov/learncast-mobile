@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class LoginResponse(
     val user: UserResponse,
-    val credentials: Credentials
+    val credentials: Credentials,
 )
 
 @Serializable
@@ -16,7 +16,7 @@ class UserResponse(
     @SerialName("last_name") val lastName: String?,
     @SerialName("avatar_path") val avatarPath: String?,
     val email: String?,
-    @SerialName("telegram_username") val telegramUsername: String?
+    @SerialName("telegram_username") val telegramUsername: String?,
 )
 
 @Serializable

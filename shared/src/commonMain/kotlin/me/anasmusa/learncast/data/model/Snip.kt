@@ -15,7 +15,7 @@ class Snip(
     val endMs: Long,
     val note: String?,
     val createdAt: LocalDateTime,
-    //lesson
+    // lesson
     val lessonId: Long,
     val title: String,
     val coverImagePath: String?,
@@ -25,37 +25,40 @@ class Snip(
     val topicTitle: String?,
     val audioPath: String,
     val audioSize: Long,
-    val audioDuration: Duration
-){
+    val audioDuration: Duration,
+) {
     val snipTitle by lazy {
         buildString {
-            if (!note.isNullOrBlank())
+            if (!note.isNullOrBlank()) {
                 append(note)
                     .append(" - ")
+            }
             append(title)
-            if (topicTitle != null)
+            if (topicTitle != null) {
                 append(" - ")
                     .append(topicTitle)
+            }
         }
     }
     val duration = (endMs - startMs).toDuration(DurationUnit.MILLISECONDS)
 }
 
-fun getSampleSnip(id: Long = 1) = Snip(
-    id = id,
-    clientSnipId = "fdgf",
-    startMs = 0L,
-    endMs = 124321L,
-    note = "afdgfg",
-    createdAt = nowLocalDateTime(),
-    lessonId = 2,
-    title = "Lesson",
-    coverImagePath = null,
-    authorId = 2,
-    authorName = "Author",
-    topicId = 3,
-    topicTitle = "Topic",
-    audioPath = "audio",
-    audioSize = 2434L,
-    audioDuration = 4.toDuration(DurationUnit.MINUTES)
-)
+fun getSampleSnip(id: Long = 1) =
+    Snip(
+        id = id,
+        clientSnipId = "fdgf",
+        startMs = 0L,
+        endMs = 124321L,
+        note = "afdgfg",
+        createdAt = nowLocalDateTime(),
+        lessonId = 2,
+        title = "Lesson",
+        coverImagePath = null,
+        authorId = 2,
+        authorName = "Author",
+        topicId = 3,
+        topicTitle = "Topic",
+        audioPath = "audio",
+        audioSize = 2434L,
+        audioDuration = 4.toDuration(DurationUnit.MINUTES),
+    )

@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import me.anasmusa.learncast.lib.R
 import me.anasmusa.learncast.AppTheme
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.component.Loader
@@ -49,14 +48,14 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-private fun LoginScreenPreview(){
+private fun LoginScreenPreview() {
     AppTheme {
         _LoginScreen()
     }
 }
 
 @Composable
-fun LoginScreen(){
+fun LoginScreen() {
     val viewModel = koinViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsState()
 
@@ -64,7 +63,7 @@ fun LoginScreen(){
 
     LaunchedEffect(viewModel) {
         viewModel.subscribe {
-            when(it){
+            when (it) {
                 is LoginEvent.ShowError -> snackBarState.showSnackbar(it.message)
             }
         }
@@ -75,7 +74,7 @@ fun LoginScreen(){
         login = {
             viewModel.handle(it)
         },
-        snackBarState = snackBarState
+        snackBarState = snackBarState,
     )
 }
 
@@ -84,48 +83,48 @@ fun LoginScreen(){
 private fun _LoginScreen(
     isLoading: Boolean = false,
     login: (intent: LoginIntent) -> Unit = {},
-    snackBarState: SnackbarHostState = remember { SnackbarHostState() }
+    snackBarState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-
     var shoTelegramLogin by remember { mutableStateOf(false) }
     val gradientStartY = LocalWindowInfo.current.containerSize.height * (-0.5f)
     val gradientEndY = LocalWindowInfo.current.containerSize.height * 0.5f
 
     Scaffold(
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    colors = LocalAppEnvironment.current.backgroundColors,
-                    startY = gradientStartY,
-                    endY = gradientEndY
-                )
-            ),
+        modifier =
+            Modifier
+                .background(
+                    Brush.verticalGradient(
+                        colors = LocalAppEnvironment.current.backgroundColors,
+                        startY = gradientStartY,
+                        endY = gradientEndY,
+                    ),
+                ),
         containerColor = Color.Transparent,
         snackbarHost = {
             SnackBarHost(snackBarState)
-        }
+        },
     ) {
-
         Column(
-            modifier = Modifier
-                .padding(it),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-
+            modifier =
+                Modifier
+                    .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .weight(0.3f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .weight(0.3f),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
-
                 Image(
-                    modifier = Modifier
-                        .size(200.dp),
+                    modifier =
+                        Modifier
+                            .size(200.dp),
                     painter = painterResource(appConfig.loginLogo),
-                    contentDescription = null
+                    contentDescription = null,
                 )
 
                 Text(
@@ -133,95 +132,99 @@ private fun _LoginScreen(
                     text = appConfig.appName,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
 
-            Column (
-                modifier = Modifier
-                    .padding(top = 72.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .weight(0.5f),
-            ){
-
+            Column(
+                modifier =
+                    Modifier
+                        .padding(top = 72.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .weight(0.5f),
+            ) {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = Strings.sign_in_continue.string(),
-                    textAlign = TextAlign.Center
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    text = Strings.SIGN_IN_CONTINUE.string(),
+                    textAlign = TextAlign.Center,
                 )
 
-                Column (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp)
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
                 ) {
-
                     Button(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
                         onClick = {
                             shoTelegramLogin = true
-                        }
+                        },
                     ) {
                         Image(
-                            modifier = Modifier
-                                .padding(end = 12.dp)
-                                .size(28.dp),
+                            modifier =
+                                Modifier
+                                    .padding(end = 12.dp)
+                                    .size(28.dp),
                             imageVector = Telegram,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                         Text(
-                            text = Strings.continue_telegram.string()
+                            text = Strings.CONTINUE_TELEGRAM.string(),
                         )
                     }
 
                     Button(
-                        modifier = Modifier
-                            .padding(top = 12.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(top = 12.dp)
+                                .fillMaxWidth(),
                         onClick = {
                             login(LoginIntent.LoginWithGoogle)
-                        }
+                        },
                     ) {
                         Image(
-                            modifier = Modifier
-                                .padding(end = 12.dp)
-                                .size(28.dp),
+                            modifier =
+                                Modifier
+                                    .padding(end = 12.dp)
+                                    .size(28.dp),
                             imageVector = Google,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                         Text(
-                            text = Strings.continue_google.string()
+                            text = Strings.CONTINUE_GOOGLE.string(),
                         )
                     }
                 }
             }
-
         }
 
-        if (shoTelegramLogin){
-            val sheetState = rememberModalBottomSheetState(
-                skipPartiallyExpanded = true
-            )
+        if (shoTelegramLogin) {
+            val sheetState =
+                rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true,
+                )
             ModalBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = { shoTelegramLogin = false },
-                containerColor = Color.White
+                containerColor = Color.White,
             ) {
                 TelegramLoginScreen(
                     onGetResult = {
                         shoTelegramLogin = false
                         login(LoginIntent.LoginWithTelegram(it))
-                    }
+                    },
                 )
             }
         }
 
-        if (isLoading)
+        if (isLoading) {
             Loader()
-
+        }
     }
-
 }

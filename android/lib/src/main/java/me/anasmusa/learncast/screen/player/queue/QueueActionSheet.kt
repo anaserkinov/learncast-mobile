@@ -35,12 +35,12 @@ import me.anasmusa.learncast.theme.icon.PlayArrowIcon
 
 @Preview
 @Composable
-private fun QueueActionSheetPreview(){
+private fun QueueActionSheetPreview() {
     AppTheme {
         QueueActionSheet(
             item = getSampleQueueItem(),
             onDismissRequest = {},
-            onPlay = {}
+            onPlay = {},
         )
     }
 }
@@ -50,60 +50,65 @@ private fun QueueActionSheetPreview(){
 fun QueueActionSheet(
     item: QueueItem,
     onDismissRequest: () -> Unit,
-    onPlay: () -> Unit
+    onPlay: () -> Unit,
 ) {
     ModalBottomSheet(
-        modifier = Modifier
-            .fillMaxWidth(),
-        sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true
-        ),
-        onDismissRequest = onDismissRequest
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        sheetState =
+            rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+            ),
+        onDismissRequest = onDismissRequest,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 12.dp
-                )
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 12.dp,
+                    ),
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 AsyncImage(
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(8)),
-                    model = if (item.coverImagePath != null)
-                        item.coverImagePath!!.normalizeUrl()
-                    else
-                        appConfig.mainLogo,
+                    modifier =
+                        Modifier
+                            .padding(end = 8.dp)
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(8)),
+                    model =
+                        if (item.coverImagePath != null) {
+                            item.coverImagePath!!.normalizeUrl()
+                        } else {
+                            appConfig.mainLogo
+                        },
                     contentScale = ContentScale.Crop,
-
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 Text(
                     text = item.title,
                     maxLines = 2,
                     style = MaterialTheme.typography.titleMedium,
                     overflow = TextOverflow.Ellipsis,
-                    lineHeight = 17.sp
+                    lineHeight = 17.sp,
                 )
             }
             Spacer(
-                modifier = Modifier.height(12.dp)
+                modifier = Modifier.height(12.dp),
             )
 
             SheetMenuButton(
                 icon = PlayArrowIcon,
-                title = Strings.play_now.string(),
+                title = Strings.PLAY_NOW.string(),
                 paddingBetween = 28.dp,
-                onClick = onPlay
+                onClick = onPlay,
             )
 
             Spacer(
-                modifier = Modifier.height(12.dp)
+                modifier = Modifier.height(12.dp),
             )
         }
     }

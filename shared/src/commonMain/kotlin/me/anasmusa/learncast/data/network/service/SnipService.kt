@@ -18,34 +18,45 @@ import me.anasmusa.learncast.data.network.model.snip.SnipCURequest
 import me.anasmusa.learncast.data.network.model.snip.SnipCountResponse
 import me.anasmusa.learncast.data.network.model.snip.SnipResponse
 
-internal class SnipService(private val client: HttpClient) {
+internal class SnipService(
+    private val client: HttpClient,
+) {
+    suspend fun page(requestQuery: PageRequestQuery) =
+        client
+            .get("v1/user/lesson/snip") {
+                headers.append(HttpHeaders.CacheControl, "no-cache")
+                requestQuery.load(url)
+            }.body<BaseResponse<PageResponse<SnipResponse>>>()
 
-    suspend fun page(requestQuery: PageRequestQuery) = client.get("v1/user/lesson/snip"){
-        headers.append(HttpHeaders.CacheControl, "no-cache")
-        requestQuery.load(url)
-    }.body<BaseResponse<PageResponse<SnipResponse>>>()
-
-    suspend fun count(lessonId: Long) = client.get("v1/user/lesson/$lessonId/snip/count")
-        .bodyIfNotCache<BaseResponse<SnipCountResponse>>()
+    suspend fun count(lessonId: Long) =
+        client
+            .get("v1/user/lesson/$lessonId/snip/count")
+            .bodyIfNotCache<BaseResponse<SnipCountResponse>>()
 
     suspend fun create(
         lessonId: Long,
-        request: SnipCURequest
-    ) = client.post("v1/user/lesson/$lessonId/snip"){
-        setBody(request)
-    }.body<BaseResponse<SnipResponse>>()
+        request: SnipCURequest,
+    ) = client
+        .post("v1/user/lesson/$lessonId/snip") {
+            setBody(request)
+        }.body<BaseResponse<SnipResponse>>()
 
     suspend fun update(
         clientSnipId: String,
-        request: SnipCURequest
-    ) = client.put("v1/user/lesson/snip/$clientSnipId"){
-        setBody(request)
-    }.body<BaseResponse<SnipResponse>>()
+        request: SnipCURequest,
+    ) = client
+        .put("v1/user/lesson/snip/$clientSnipId") {
+            setBody(request)
+        }.body<BaseResponse<SnipResponse>>()
 
-    suspend fun delete(clientSnipId: String) = client.delete("v1/user/lesson/snip/$clientSnipId")
-        .body<BaseResponse<SnipCountResponse?>>()
+    suspend fun delete(clientSnipId: String) =
+        client
+            .delete("v1/user/lesson/snip/$clientSnipId")
+            .body<BaseResponse<SnipCountResponse?>>()
 
-    suspend fun deleted(requestQuery: DeletedRequestQuery) =  client.get("v1/user/lesson/snip/deleted"){
-        requestQuery.load(url)
-    }.body<BaseResponse<List<DeletedResponse>>>()
+    suspend fun deleted(requestQuery: DeletedRequestQuery) =
+        client
+            .get("v1/user/lesson/snip/deleted") {
+                requestQuery.load(url)
+            }.body<BaseResponse<List<DeletedResponse>>>()
 }

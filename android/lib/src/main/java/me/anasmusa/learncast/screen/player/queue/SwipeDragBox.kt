@@ -35,17 +35,19 @@ fun SwipeDragBox(
     swipingId: Long,
     onSwiping: (Long) -> Unit,
     onRemove: () -> Unit,
-    content: @Composable RowScope.() -> Unit
+    content: @Composable RowScope.() -> Unit,
 ) {
-    val draggableState = remember {
-        AnchoredDraggableState(
-            initialValue = 0,
-            anchors = DraggableAnchors {
-                0 at 0f
-                1 at swipeWidth
-            }
-        )
-    }
+    val draggableState =
+        remember {
+            AnchoredDraggableState(
+                initialValue = 0,
+                anchors =
+                    DraggableAnchors {
+                        0 at 0f
+                        1 at swipeWidth
+                    },
+            )
+        }
 
     val isOpen by remember {
         derivedStateOf { draggableState.progress(0, 1) > 0.1f }
@@ -54,51 +56,52 @@ fun SwipeDragBox(
         if (isOpen) onSwiping(id)
     }
     LaunchedEffect(swipingId) {
-        if (swipingId != id && draggableState.currentValue == 1)
+        if (swipingId != id && draggableState.currentValue == 1) {
             draggableState.animateTo(0)
+        }
     }
 
-
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
-        if (isOpen)
+        if (isOpen) {
             Row(
-                modifier = Modifier
-                    .matchParentSize()
-                    .padding(end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .matchParentSize()
+                        .padding(end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
-                    modifier = Modifier
-                        .size(56.dp),
-                    onClick = onRemove
+                    modifier =
+                        Modifier
+                            .size(56.dp),
+                    onClick = onRemove,
                 ) {
                     Icon(
                         imageVector = PlaylistRemove,
                         contentDescription = null,
-                        tint = Color.Red
+                        tint = Color.Red,
                     )
                 }
             }
+        }
 
         Row(
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        draggableState.offset.roundToInt(),
-                        0
-                    )
-                }
-                .anchoredDraggable(
-                    state = draggableState,
-                    orientation = Orientation.Horizontal
-                )
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .offset {
+                        IntOffset(
+                            draggableState.offset.roundToInt(),
+                            0,
+                        )
+                    }.anchoredDraggable(
+                        state = draggableState,
+                        orientation = Orientation.Horizontal,
+                    ).fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             content()
         }
     }
-
 }

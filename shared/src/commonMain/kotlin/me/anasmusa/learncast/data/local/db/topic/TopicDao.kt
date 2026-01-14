@@ -12,7 +12,6 @@ import me.anasmusa.learncast.data.local.db.bind
 
 @Dao
 internal interface TopicDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<TopicEntity>)
 
@@ -21,35 +20,36 @@ internal interface TopicDao {
 
     fun getTopics(
         search: String?,
-        authorId: Long?
-    ): PagingSource<Int, TopicEntity>{
-
+        authorId: Long?,
+    ): PagingSource<Int, TopicEntity> {
         val query = StringBuilder("SElECT * FROM ${TableNames.TOPIC} WHERE ")
         val args = ArrayList<Any?>()
         var filtered = false
 
-        if (authorId != null){
+        if (authorId != null) {
             query.append(" authorId = ? AND")
             args.add(authorId)
             filtered = true
         }
 
         if (search.isNullOrBlank()) {
-            if (filtered) query.deleteRange(query.length - 4, query.length)
-            else query.deleteRange(query.length - 6, query.length)
+            if (filtered) {
+                query.deleteRange(query.length - 4, query.length)
+            } else {
+                query.deleteRange(query.length - 6, query.length)
+            }
         } else {
             query.append(" title LIKE ?")
-            args.add("%${search}%")
+            args.add("%$search%")
         }
 
         query.append(" ORDER BY id DESC")
 
         return getTopics(
-            RoomRawQuery(query.toString()){ it.bind(args) }
+            RoomRawQuery(query.toString()) { it.bind(args) },
         )
     }
 
     @RawQuery(observedEntities = [TopicEntity::class])
     fun getTopics(query: RoomRawQuery): PagingSource<Int, TopicEntity>
-
 }

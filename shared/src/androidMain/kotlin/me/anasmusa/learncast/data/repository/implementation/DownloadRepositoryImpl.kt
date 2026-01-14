@@ -6,7 +6,6 @@ import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
-import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.AndroidDownloadService
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.local.db.DBConnection
@@ -14,42 +13,43 @@ import me.anasmusa.learncast.data.local.db.download.DownloadDao
 import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.model.DownloadState
 import me.anasmusa.learncast.data.model.ReferenceType
+import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 
 @OptIn(UnstableApi::class)
 internal class DownloadRepositoryImpl(
     private val context: Context,
     private val downloadDao: DownloadDao,
-    private val dbConnection: DBConnection
+    private val dbConnection: DBConnection,
 ) : DownloadRepository {
-
     override suspend fun download(
         referenceId: Long,
         referenceUuid: String,
         referenceType: ReferenceType,
         audioPath: String,
         startMs: Long?,
-        endMs: Long?
+        endMs: Long?,
     ) {
         try {
             val downloadState = downloadDao.get(referenceId, referenceUuid, referenceType)
-            when(downloadState?.state){
+            when (downloadState?.state) {
                 DownloadState.DOWNLOADING, DownloadState.COMPLETED -> return
                 DownloadState.STOPPED -> {
-                    if (downloadState.parentId != 0L){
+                    if (downloadState.parentId != 0L) {
                         val lessonDownloadState = downloadDao.getById(downloadState.parentId)
-                        if (lessonDownloadState != null){
+                        if (lessonDownloadState != null) {
                             downloadDao.update(
                                 downloadState.id,
                                 lessonDownloadState.state,
-                                lessonDownloadState.percentDownloaded
+                                lessonDownloadState.percentDownloaded,
                             )
-                            if (lessonDownloadState.state == DownloadState.STOPPED)
+                            if (lessonDownloadState.state == DownloadState.STOPPED) {
                                 DownloadService.sendRemoveDownload(
                                     context,
                                     AndroidDownloadService::class.java,
                                     lessonDownloadState.id.toString(),
-                                    false
+                                    false,
                                 )
+                            }
                         }
                         return
                     }
@@ -57,7 +57,7 @@ internal class DownloadRepositoryImpl(
                         context,
                         AndroidDownloadService::class.java,
                         downloadState.id.toString(),
-                        false
+                        false,
                     )
                     return
                 }
@@ -65,14 +65,15 @@ internal class DownloadRepositoryImpl(
             }
             val lessonDownloadState = downloadDao.getLessonState(referenceId)
             if (lessonDownloadState == null ||
-                lessonDownloadState.state == DownloadState.REMOVING) {
+                lessonDownloadState.state == DownloadState.REMOVING
+            ) {
                 createDownloadRequest(
                     referenceId = referenceId,
                     referenceUuid = referenceUuid,
                     referenceType = referenceType,
                     audioPath = audioPath,
                     startMs = startMs,
-                    endMs = endMs
+                    endMs = endMs,
                 )
             } else {
                 downloadDao.insert(
@@ -86,18 +87,20 @@ internal class DownloadRepositoryImpl(
                         startMs = startMs,
                         endMs = endMs,
                         state = lessonDownloadState.state,
-                        percentDownloaded = lessonDownloadState.percentDownloaded
-                    )
+                        percentDownloaded = lessonDownloadState.percentDownloaded,
+                    ),
                 )
-                if (lessonDownloadState.state == DownloadState.STOPPED)
+                if (lessonDownloadState.state == DownloadState.STOPPED) {
                     DownloadService.sendRemoveDownload(
                         context,
                         AndroidDownloadService::class.java,
                         lessonDownloadState.id.toString(),
-                        false
+                        false,
                     )
+                }
             }
-        } catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     private suspend fun createDownloadRequest(
@@ -106,32 +109,34 @@ internal class DownloadRepositoryImpl(
         referenceType: ReferenceType,
         audioPath: String,
         startMs: Long?,
-        endMs: Long?
-    ){
-        val id = downloadDao.insert(
-            DownloadStateEntity(
-                id = 0L,
-                parentId = 0L,
-                referenceId = referenceId,
-                referenceUuid = referenceUuid,
-                referenceType = referenceType,
-                audioPath = audioPath,
-                startMs = startMs,
-                endMs = endMs,
-                state = DownloadState.DOWNLOADING,
-                percentDownloaded = 0f
+        endMs: Long?,
+    ) {
+        val id =
+            downloadDao.insert(
+                DownloadStateEntity(
+                    id = 0L,
+                    parentId = 0L,
+                    referenceId = referenceId,
+                    referenceUuid = referenceUuid,
+                    referenceType = referenceType,
+                    audioPath = audioPath,
+                    startMs = startMs,
+                    endMs = endMs,
+                    state = DownloadState.DOWNLOADING,
+                    percentDownloaded = 0f,
+                ),
             )
-        )
         DownloadService.sendAddDownload(
             context,
             AndroidDownloadService::class.java,
-            DownloadRequest.Builder(id.toString(), audioPath.normalizeUrl().toUri())
+            DownloadRequest
+                .Builder(id.toString(), audioPath.normalizeUrl().toUri())
                 .apply {
-                    if (startMs != null && endMs != null)
+                    if (startMs != null && endMs != null) {
                         setTimeRange(startMs * 1000, endMs * 1000)
-                }
-                .build(),
-            false
+                    }
+                }.build(),
+            false,
         )
     }
 
@@ -140,13 +145,14 @@ internal class DownloadRepositoryImpl(
             downloadDao.getById(id)?.let {
                 cancel(id, it.referenceType)
             }
-        } catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     override suspend fun cancel(
         referenceId: Long,
         referenceUuid: String,
-        referenceType: ReferenceType
+        referenceType: ReferenceType,
     ) {
         try {
             downloadDao.get(referenceId, referenceUuid, referenceType)?.let {
@@ -155,18 +161,19 @@ internal class DownloadRepositoryImpl(
                     context,
                     AndroidDownloadService::class.java,
                     it.id.toString(),
-                    false
+                    false,
                 )
             }
-        } catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     private suspend fun cancel(
         id: Long,
-        referenceType: ReferenceType
-    ){
+        referenceType: ReferenceType,
+    ) {
         dbConnection.inWriteTransaction {
-            if (referenceType == ReferenceType.LESSON)
+            if (referenceType == ReferenceType.LESSON) {
                 downloadDao.getChildren(id).forEach {
                     createDownloadRequest(
                         it.referenceId,
@@ -174,28 +181,34 @@ internal class DownloadRepositoryImpl(
                         it.referenceType,
                         it.audioPath,
                         it.startMs,
-                        it.endMs
+                        it.endMs,
                     )
                 }
+            }
             downloadDao.delete(id)
         }
     }
 
-    override suspend fun update(id: Long, state: DownloadState, percentDownloaded: Float) {
+    override suspend fun update(
+        id: Long,
+        state: DownloadState,
+        percentDownloaded: Float,
+    ) {
         try {
             downloadDao.update(
                 id,
                 state,
-                percentDownloaded
+                percentDownloaded,
             )
-        } catch (e: Exception){}
+        } catch (e: Exception) {
+        }
     }
 
     override suspend fun removeAllDownloads() {
         DownloadService.sendRemoveAllDownloads(
             context,
             AndroidDownloadService::class.java,
-            false
+            false,
         )
         downloadDao.clear()
     }

@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class ListenSessionResponse(
-    @SerialName("listen_count") val listenCount: Long
+    @SerialName("listen_count") val listenCount: Long,
 )

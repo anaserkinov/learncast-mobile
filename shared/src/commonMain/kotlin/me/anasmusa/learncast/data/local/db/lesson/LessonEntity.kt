@@ -21,7 +21,7 @@ class LessonEntity(
     val audioPath: String,
     val audioSize: Long,
     val audioDuration: Duration,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
 )
 
 class LessonWithState(
@@ -30,5 +30,5 @@ class LessonWithState(
     @Embedded(prefix = "state_")
     val state: LessonStateEntity,
     val downloadState: DownloadState?,
-    val percentDownloaded: Float?
+    val percentDownloaded: Float?,
 )

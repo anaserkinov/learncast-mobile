@@ -2,6 +2,7 @@ package me.anasmusa.learncast.core
 
 var appConfig = AppConfig()
     private set
+
 data class AppConfig(
     val appName: String = "",
     val mainLogo: Int = 0,
@@ -11,8 +12,8 @@ data class AppConfig(
     val telegramOrigin: String = "",
     val googleClientId: String = "",
     val downloadNotificationTitle: Int = 0,
-    val downloadNotificationMessage: Int = 0
-){
+    val downloadNotificationMessage: Int = 0,
+) {
     companion object {
         fun update(
             appName: String,
@@ -21,26 +22,29 @@ data class AppConfig(
             baseUrl: String,
             telegramBotId: Long,
             telegramOrigin: String,
-            googleClientId: String
-        ){
-            appConfig = appConfig.copy(
-                appName = appName,
-                mainLogo = mainLogo,
-                loginLogo = loginLogo,
-                baseUrl = baseUrl,
-                telegramBotId = telegramBotId,
-                telegramOrigin = telegramOrigin,
-                googleClientId = googleClientId
-            )
+            googleClientId: String,
+        ) {
+            appConfig =
+                appConfig.copy(
+                    appName = appName,
+                    mainLogo = mainLogo,
+                    loginLogo = loginLogo,
+                    baseUrl = baseUrl,
+                    telegramBotId = telegramBotId,
+                    telegramOrigin = telegramOrigin,
+                    googleClientId = googleClientId,
+                )
         }
+
         fun update(
             downloadNotificationTitle: Int = 0,
-            downloadNotificationMessage: Int = 0
+            downloadNotificationMessage: Int = 0,
         ) {
-            appConfig = appConfig.copy(
-                downloadNotificationTitle = downloadNotificationTitle,
-                downloadNotificationMessage = downloadNotificationMessage
-            )
+            appConfig =
+                appConfig.copy(
+                    downloadNotificationTitle = downloadNotificationTitle,
+                    downloadNotificationMessage = downloadNotificationMessage,
+                )
         }
     }
 }

@@ -11,22 +11,20 @@ import me.anasmusa.learncast.app.ui.theme.backgroundColors
 import me.anasmusa.learncast.app.ui.theme.darkScheme
 import me.anasmusa.learncast.app.ui.theme.playerBackgroundColors
 
-class MainActivity: Activity(){
-
+class MainActivity : Activity() {
     @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialExpressiveTheme(
                 colorScheme = darkScheme,
-                typography = MontserratTypography()
+                typography = MontserratTypography(),
             ) {
                 App(
                     backgroundColors = backgroundColors,
-                    playerBackgroundColors = playerBackgroundColors
+                    playerBackgroundColors = playerBackgroundColors,
                 )
             }
         }
     }
-
 }

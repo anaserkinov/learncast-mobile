@@ -60,7 +60,7 @@ fun SearchScreenPreview() {
             onQueryChanged = {},
             onTabSelected = {},
             openTopic = {},
-            addToQueue = {}
+            addToQueue = {},
         )
     }
 }
@@ -69,12 +69,13 @@ fun SearchScreenPreview() {
 fun SearchScreen(
     authorId: Long,
     topicId: Long?,
-    selectedTab: Int
+    selectedTab: Int,
 ) {
     val viewModel = koinViewModel<SearchViewModel>()
     LaunchedEffect(viewModel) {
-        if (selectedTab != 0)
+        if (selectedTab != 0) {
             viewModel.handle(SearchIntent.SelectTab(selectedTab))
+        }
         viewModel.handle(SearchIntent.Load(authorId, topicId))
     }
 
@@ -88,11 +89,9 @@ fun SearchScreen(
             viewModel.handle(SearchIntent.SelectTab(it))
         },
         openTopic = {
-
         },
         addToQueue = {
-
-        }
+        },
     )
 }
 
@@ -104,15 +103,19 @@ private fun _SearchScreen(
     onQueryChanged: (value: String) -> Unit,
     onTabSelected: (index: Int) -> Unit,
     openTopic: (Topic) -> Unit,
-    addToQueue: (Lesson) -> Unit
+    addToQueue: (Lesson) -> Unit,
 ) {
     val env = LocalAppEnvironment.current
 
     val lessons = state.lessons.collectAsLazyPagingItems()
     val topics = state.topics.collectAsLazyPagingItems()
 
-    val currentPagingItems = if (state.selectedTab == 0)
-        lessons else topics
+    val currentPagingItems =
+        if (state.selectedTab == 0) {
+            lessons
+        } else {
+            topics
+        }
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -120,8 +123,9 @@ private fun _SearchScreen(
     }
 
     Scaffold(
-        modifier = Modifier
-            .background(backgroundBrush()),
+        modifier =
+            Modifier
+                .background(backgroundBrush()),
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
@@ -130,71 +134,74 @@ private fun _SearchScreen(
                         modifier = Modifier,
                         text = state.searchQuery,
                         focusRequester = focusRequester,
-                        onTextChange = onQueryChanged
+                        onTextChange = onQueryChanged,
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() }
+                        onClick = { env.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
             )
-        }
+        },
     ) {
         PullToRefreshBox(
-            modifier = Modifier
-                .padding(it),
+            modifier =
+                Modifier
+                    .padding(it),
             isRefreshing = currentPagingItems.loadState.refresh is LoadState.Loading,
-            onRefresh = { currentPagingItems.refresh() }
+            onRefresh = { currentPagingItems.refresh() },
         ) {
-
-            if (withTab)
+            if (withTab) {
                 SecondaryTabRow(
                     selectedTabIndex = state.selectedTab,
-                    containerColor = Color.Transparent
+                    containerColor = Color.Transparent,
                 ) {
                     Tab(
                         selected = state.selectedTab == 0,
                         onClick = { onTabSelected(0) },
                         text = {
                             Text(
-                                text = Strings.lessons.string(),
+                                text = Strings.LESSONS.string(),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
-                        }
+                        },
                     )
                     Tab(
                         selected = state.selectedTab == 1,
                         onClick = { onTabSelected(1) },
                         text = {
                             Text(
-                                text = Strings.topics.string(),
+                                text = Strings.TOPICS.string(),
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                overflow = TextOverflow.Ellipsis,
                             )
-                        }
+                        },
                     )
                 }
+            }
 
             LazyColumn(
-                modifier = Modifier
-                    .hazeSource(LocalAppEnvironment.current.hazeState)
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = if (withTab) 50.dp else 0.dp
+                modifier =
+                    Modifier
+                        .hazeSource(LocalAppEnvironment.current.hazeState)
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            top = if (withTab) 50.dp else 0.dp,
+                        ),
+                contentPadding =
+                    PaddingValues(
+                        bottom = BOTTOM_PADDING.dp,
                     ),
-                contentPadding = PaddingValues(
-                    bottom = BOTTOM_PADDING.dp
-                )
             ) {
                 items(
                     currentPagingItems.itemCount,
@@ -202,34 +209,35 @@ private fun _SearchScreen(
                 ) { index ->
                     val any = currentPagingItems[index]
                     if (any != null) {
-                        if (state.selectedTab == 0)
+                        if (state.selectedTab == 0) {
                             LessonCell(
                                 lesson = any as Lesson,
                                 onClick = {
                                     addToQueue(any)
-                                }
+                                },
                             )
-                        else
+                        } else {
                             TopicCell(
                                 topic = any as Topic,
                                 onClick = {
                                     openTopic(any)
-                                }
+                                },
                             )
+                        }
                     }
                 }
 
-                if (currentPagingItems.loadState.append is LoadState.Loading)
+                if (currentPagingItems.loadState.append is LoadState.Loading) {
                     item {
                         LoadingIndicator(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                                    .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
+                }
             }
         }
     }
-
 }

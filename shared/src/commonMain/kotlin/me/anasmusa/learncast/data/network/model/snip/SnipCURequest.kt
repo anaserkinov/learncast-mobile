@@ -10,5 +10,5 @@ class SnipCURequest(
     @SerialName("start_ms") val startMs: Long,
     @SerialName("end_ms") val endMs: Long,
     @SerialName("note_text") val note: String?,
-    @SerialName("created_at") val createdAt: Instant
+    @SerialName("created_at") val createdAt: Instant,
 )

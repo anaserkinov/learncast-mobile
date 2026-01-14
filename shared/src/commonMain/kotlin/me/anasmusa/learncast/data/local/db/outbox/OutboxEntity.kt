@@ -18,5 +18,5 @@ class OutboxEntity(
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val lastTriedAt: LocalDateTime?,
-    val status: OutboxStatus
+    val status: OutboxStatus,
 )

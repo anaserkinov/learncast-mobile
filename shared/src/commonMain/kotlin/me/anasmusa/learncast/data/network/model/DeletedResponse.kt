@@ -7,5 +7,5 @@ import kotlin.time.Instant
 @Serializable
 class DeletedResponse(
     val id: Long,
-    @SerialName("deleted_at") val deletedAt: Instant
+    @SerialName("deleted_at") val deletedAt: Instant,
 )

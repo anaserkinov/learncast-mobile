@@ -68,13 +68,14 @@ import kotlin.time.ExperimentalTime
 private fun QueueScreenPreview() {
     AppTheme {
         _QueueScreen(
-            state = QueueState(
-                currentPlaying = getSampleQueueItem(),
-                queuedItems = MutableList(2){ getSampleQueueItem(it.toLong()) }
-            ),
+            state =
+                QueueState(
+                    currentPlaying = getSampleQueueItem(),
+                    queuedItems = MutableList(2) { getSampleQueueItem(it.toLong()) },
+                ),
             backgroundColors = LocalAppEnvironment.current.backgroundColors,
             onCloseRequested = {},
-            sendIntent = {}
+            sendIntent = {},
         )
     }
 }
@@ -82,9 +83,14 @@ private fun QueueScreenPreview() {
 @Composable
 fun QueueScreen(
     backgroundColors: List<Color>,
-    onCloseRequested: () -> Unit
+    onCloseRequested: () -> Unit,
 ) {
-    val owner = remember { object : ViewModelStoreOwner { override val viewModelStore = ViewModelStore() } }
+    val owner =
+        remember {
+            object : ViewModelStoreOwner {
+                override val viewModelStore = ViewModelStore()
+            }
+        }
     val viewModel = koinViewModel<QueueViewModel>(viewModelStoreOwner = owner)
     val state by viewModel.state.collectAsState()
 
@@ -96,7 +102,7 @@ fun QueueScreen(
         state = state,
         backgroundColors = backgroundColors,
         onCloseRequested = onCloseRequested,
-        sendIntent = { viewModel.handle(it) }
+        sendIntent = { viewModel.handle(it) },
     )
 }
 
@@ -106,23 +112,25 @@ private fun _QueueScreen(
     state: QueueState,
     backgroundColors: List<Color>,
     onCloseRequested: () -> Unit,
-    sendIntent: (QueueIntent) -> Unit
+    sendIntent: (QueueIntent) -> Unit,
 ) {
     val gradientStartY = LocalWindowInfo.current.containerSize.height * (-0.5f)
     val gradientEndY = LocalWindowInfo.current.containerSize.height * 0.4f
 
-    val swipeWidth = with(LocalDensity.current) {
-        96.dp.toPx()
-    }
+    val swipeWidth =
+        with(LocalDensity.current) {
+            96.dp.toPx()
+        }
     var swipingId by remember { mutableLongStateOf(-1L) }
     val onSwiping = { id: Long -> swipingId = id }
 
     val listState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(
-        lazyListState = listState,
-        indexOffset = 2,
-        onMove = { from, to -> sendIntent(QueueIntent.Move(from, to)) }
-    )
+    val dragDropState =
+        rememberDragDropState(
+            lazyListState = listState,
+            indexOffset = 2,
+            onMove = { from, to -> sendIntent(QueueIntent.Move(from, to)) },
+        )
 
     var showActionSheet by remember { mutableStateOf<QueueItem?>(null) }
 
@@ -130,75 +138,80 @@ private fun _QueueScreen(
 
     Scaffold {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        backgroundColors,
-                        startY = gradientStartY,
-                        endY = gradientEndY
-                    )
-                )
-                .padding(it)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            backgroundColors,
+                            startY = gradientStartY,
+                            endY = gradientEndY,
+                        ),
+                    ).padding(it),
         ) {
             Box(
-                modifier = Modifier
-                    .padding(
-                        start = 12.dp,
-                        end = 12.dp
-                    )
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .padding(
+                            start = 12.dp,
+                            end = 12.dp,
+                        ).fillMaxWidth(),
             ) {
                 FilledIconButton(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterStart),
                     onClick = onCloseRequested,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = Color.Black.copy(alpha = 0.2f)
-                    )
+                    colors =
+                        IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.Black.copy(alpha = 0.2f),
+                        ),
                 ) {
                     Icon(
                         imageVector = Close,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = Color.White,
                     )
                 }
 
                 Text(
-                    modifier = Modifier
-                        .align(Alignment.Center),
-                    text = Strings.queue.string(),
-                    style = MaterialTheme.typography.headlineSmall
+                    modifier =
+                        Modifier
+                            .align(Alignment.Center),
+                    text = Strings.QUEUE.string(),
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
 
             LazyColumn(
-                modifier = Modifier
-                    .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress (
-                            onDrag = { change, offset ->
-                                change.consume()
-                                dragDropState.onDrag(offset = offset)
-                            },
-                            onDragStart = { offset -> dragDropState.onDragStart(offset) },
-                            onDragEnd = { dragDropState.onDragInterrupted() },
-                            onDragCancel = { dragDropState.onDragInterrupted() },
-                        )
-                    }
-                    .padding(top = 8.dp)
-                    .fillMaxWidth()
-                    .weight(1f),
-                state = listState
+                modifier =
+                    Modifier
+                        .pointerInput(Unit) {
+                            detectDragGesturesAfterLongPress(
+                                onDrag = { change, offset ->
+                                    change.consume()
+                                    dragDropState.onDrag(offset = offset)
+                                },
+                                onDragStart = { offset -> dragDropState.onDragStart(offset) },
+                                onDragEnd = { dragDropState.onDragInterrupted() },
+                                onDragCancel = { dragDropState.onDragInterrupted() },
+                            )
+                        }.padding(top = 8.dp)
+                        .fillMaxWidth()
+                        .weight(1f),
+                state = listState,
             ) {
-                if (currentPlaying != null)
+                if (currentPlaying != null) {
                     item {
                         SwipeDragBox(
                             id = currentPlaying.id,
-                            modifier = Modifier
-                                .padding(
-                                    top = 8.dp,
-                                    start = 12.dp, end = 12.dp
-                                ),
+                            modifier =
+                                Modifier
+                                    .padding(
+                                        top = 8.dp,
+                                        start = 12.dp,
+                                        end = 12.dp,
+                                    ),
                             swipeWidth = swipeWidth,
                             swipingId = swipingId,
                             onSwiping = onSwiping,
@@ -208,52 +221,56 @@ private fun _QueueScreen(
                             },
                             {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .drawWithContent {
-                                            drawRect(backgroundColors.last().copy(alpha = 0.5f))
-                                            drawRect(
-                                                color = Color.White.copy(alpha = 0.15f),
-                                                size = Size(
-                                                    size.width * (state.currentPositionMs.toFloat() / currentPlaying.duration.inWholeMilliseconds),
-                                                    size.height
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .drawWithContent {
+                                                drawRect(backgroundColors.last().copy(alpha = 0.5f))
+                                                drawRect(
+                                                    color = Color.White.copy(alpha = 0.15f),
+                                                    size =
+                                                        Size(
+                                                            size.width * (state.currentPositionMs.toFloat() / currentPlaying.duration.inWholeMilliseconds),
+                                                            size.height,
+                                                        ),
                                                 )
-                                            )
-                                            drawContent()
-                                        }
-                                        .clickable(onClick = {})
-                                        .padding(8.dp)
+                                                drawContent()
+                                            }.clickable(onClick = {})
+                                            .padding(8.dp),
                                 ) {
                                     QueueItemCell(
-                                        queueItem = currentPlaying
+                                        queueItem = currentPlaying,
                                     )
                                 }
-                            }
+                            },
                         )
                     }
+                }
 
                 item {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = 8.dp,
-                                start = 12.dp, end = 12.dp
-                            ),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = 8.dp,
+                                    start = 12.dp,
+                                    end = 12.dp,
+                                ),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                            text = Strings.playing_next.string(),
-                            style = MaterialTheme.typography.headlineSmall
+                            text = Strings.PLAYING_NEXT.string(),
+                            style = MaterialTheme.typography.headlineSmall,
                         )
                         TextButton(
-                            onClick = { sendIntent(QueueIntent.Clear) }
+                            onClick = { sendIntent(QueueIntent.Clear) },
                         ) {
                             Text(
-                                text = Strings.clear.string(),
-                                style = MaterialTheme.typography.headlineSmall
+                                text = Strings.CLEAR.string(),
+                                style = MaterialTheme.typography.headlineSmall,
                             )
                         }
                     }
@@ -261,49 +278,51 @@ private fun _QueueScreen(
 
                 itemsIndexed(
                     state.queuedItems,
-                    key = { _, item -> item.id }
+                    key = { _, item -> item.id },
                 ) { index, item ->
                     val isDragging = index == dragDropState.draggingItemIndex
 
                     SwipeDragBox(
                         id = item.id,
-                        modifier = Modifier
-                            .let{
-                                if (isDragging) {
-                                    it.zIndex(1f)
-                                        .graphicsLayer { translationY = dragDropState.draggingItemOffset }
-                                } else if (index == dragDropState.previousIndexOfDraggedItem) {
-                                    it.zIndex(1f)
-                                        .graphicsLayer { translationY = dragDropState.previousItemOffset.value }
-                                } else {
-                                    it.animateItem(fadeInSpec = null, fadeOutSpec = null)
-                                }
-                            }
-                            .padding(
-                                top = 8.dp,
-                                start = 12.dp, end = 12.dp
-                            )
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(4.dp))
-                            .clickable(onClick = {
-                                showActionSheet = item
-                            })
-                            .padding(4.dp),
+                        modifier =
+                            Modifier
+                                .let {
+                                    if (isDragging) {
+                                        it
+                                            .zIndex(1f)
+                                            .graphicsLayer { translationY = dragDropState.draggingItemOffset }
+                                    } else if (index == dragDropState.previousIndexOfDraggedItem) {
+                                        it
+                                            .zIndex(1f)
+                                            .graphicsLayer { translationY = dragDropState.previousItemOffset.value }
+                                    } else {
+                                        it.animateItem(fadeInSpec = null, fadeOutSpec = null)
+                                    }
+                                }.padding(
+                                    top = 8.dp,
+                                    start = 12.dp,
+                                    end = 12.dp,
+                                ).fillMaxSize()
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable(onClick = {
+                                    showActionSheet = item
+                                })
+                                .padding(4.dp),
                         swipeWidth = swipeWidth,
                         swipingId = swipingId,
                         onSwiping = onSwiping,
                         onRemove = {
                             sendIntent(QueueIntent.Remove(item.id))
                         },
-                    ){
+                    ) {
                         QueueItemCell(
-                            queueItem = item
+                            queueItem = item,
                         )
                     }
                 }
             }
 
-            if (currentPlaying != null)
+            if (currentPlaying != null) {
                 BottomPlayer(
                     currentPlaying = currentPlaying,
                     currentPositionMs = state.currentPositionMs,
@@ -312,18 +331,20 @@ private fun _QueueScreen(
                     onClicked = onCloseRequested,
                     togglePlaybackState = {
                         sendIntent(QueueIntent.TogglePlayback)
-                    }
+                    },
                 )
+            }
         }
 
-        if (showActionSheet != null)
+        if (showActionSheet != null) {
             QueueActionSheet(
                 item = showActionSheet!!,
                 onDismissRequest = { showActionSheet = null },
                 onPlay = {
                     sendIntent(QueueIntent.Play(showActionSheet!!))
                     showActionSheet = null
-                }
+                },
             )
+        }
     }
 }

@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeCap.Companion
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -53,42 +52,46 @@ fun BottomPlayer(
     playbackState: Int,
     backgroundColors: List<Color>,
     onClicked: () -> Unit,
-    togglePlaybackState: () -> Unit
-){
+    togglePlaybackState: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .height(64.dp)
-            .fillMaxWidth()
-            .clickable(onClick = onClicked)
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color.Transparent, backgroundColors.last()),
-                    endY = with(LocalDensity.current) { 10.dp.toPx() }
-                )
-            )
-            .clip(RoundedCornerShape(6.dp)),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .clickable(onClick = onClicked)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color.Transparent, backgroundColors.last()),
+                        endY = with(LocalDensity.current) { 10.dp.toPx() },
+                    ),
+                ).clip(RoundedCornerShape(6.dp)),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
-                .width(55.dp)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(6)),
-            model = if (currentPlaying.coverImagePath != null)
-                currentPlaying.coverImagePath!!.normalizeUrl()
-            else
-                appConfig.mainLogo,
+            modifier =
+                Modifier
+                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
+                    .width(55.dp)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(6)),
+            model =
+                if (currentPlaying.coverImagePath != null) {
+                    currentPlaying.coverImagePath!!.normalizeUrl()
+                } else {
+                    appConfig.mainLogo
+                },
             contentScale = ContentScale.Crop,
-            contentDescription = null
+            contentDescription = null,
         )
 
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .padding(start = 16.dp, top = 4.dp, end = 12.dp, bottom = 4.dp),
-            verticalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(start = 16.dp, top = 4.dp, end = 12.dp, bottom = 4.dp),
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = currentPlaying.title,
@@ -96,60 +99,70 @@ fun BottomPlayer(
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 lineHeight = 16.sp,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
                 text = currentPlaying.subTitle,
                 color = Color.White,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 lineHeight = 16.sp,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             LinearProgressIndicator(
-                modifier = Modifier
-                    .padding(top = 6.dp)
-                    .fillMaxWidth()
-                    .height(3.dp),
+                modifier =
+                    Modifier
+                        .padding(top = 6.dp)
+                        .fillMaxWidth()
+                        .height(3.dp),
                 progress = { currentPositionMs.toFloat() / currentPlaying.duration.inWholeMilliseconds },
                 color = Color.White,
-                trackColor = Color.White.copy(alpha = 0.5f)
+                trackColor = Color.White.copy(alpha = 0.5f),
             )
         }
 
         Box(
-            modifier = Modifier
-                .padding(end = 12.dp)
-                .size(56.dp),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .padding(end = 12.dp)
+                    .size(56.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            if (playbackState == STATE_LOADING)
+            if (playbackState == STATE_LOADING) {
                 CircularWavyProgressIndicator(
-                    modifier = Modifier
-                        .size(28.dp),
-                    stroke = Stroke(
-                        width = with(LocalDensity.current) { 3.dp.toPx() },
-                        cap = StrokeCap.Round,
-                    )
+                    modifier =
+                        Modifier
+                            .size(28.dp),
+                    stroke =
+                        Stroke(
+                            width = with(LocalDensity.current) { 3.dp.toPx() },
+                            cap = StrokeCap.Round,
+                        ),
                 )
-            else
+            } else {
                 IconButton(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    onClick = togglePlaybackState
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                    onClick = togglePlaybackState,
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(28.dp),
-                        imageVector = if (playbackState == STATE_PAUSED)
-                            PlayArrowIcon
-                        else
-                            Pause,
-                        contentDescription = null
+                        modifier =
+                            Modifier
+                                .size(28.dp),
+                        imageVector =
+                            if (playbackState == STATE_PAUSED) {
+                                PlayArrowIcon
+                            } else {
+                                Pause
+                            },
+                        contentDescription = null,
                     )
                 }
+            }
         }
     }
 }

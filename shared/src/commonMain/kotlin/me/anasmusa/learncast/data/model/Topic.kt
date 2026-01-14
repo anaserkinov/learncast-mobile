@@ -19,19 +19,20 @@ data class Topic(
     val createdAt: LocalDateTime,
     val lessonCount: Long,
     val totalDuration: Duration,
-    val completedLessonCount: Long
+    val completedLessonCount: Long,
 )
 
-fun getSampleTopic() = Topic(
-    0L,
-    0L,
-    "Topic",
-    "Description dgfebgeqb tbtrb wryt bnwyt bywt bwytn bybwytb trwrtwyb yw5 hnyjnynbrtbrtwnyn",
-    null,
-    0L,
-    "Author",
-    nowLocalDateTime(),
-    10L,
-    10.toDuration(DurationUnit.MINUTES),
-    5L
-)
+fun getSampleTopic() =
+    Topic(
+        0L,
+        0L,
+        "Topic",
+        "Description dgfebgeqb tbtrb wryt bnwyt bywt bwytn bybwytb trwrtwyb yw5 hnyjnynbrtbrtwnyn",
+        null,
+        0L,
+        "Author",
+        nowLocalDateTime(),
+        10L,
+        10.toDuration(DurationUnit.MINUTES),
+        5L,
+    )

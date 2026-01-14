@@ -12,7 +12,6 @@ import me.anasmusa.learncast.data.local.db.bind
 
 @Dao
 internal interface AuthorDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<AuthorEntity>)
 
@@ -20,26 +19,25 @@ internal interface AuthorDao {
     suspend fun delete(ids: List<Long>)
 
     fun getAuthors(
-        search: String?
-    ): PagingSource<Int, AuthorEntity>{
+        search: String?,
+    ): PagingSource<Int, AuthorEntity> {
         val query = StringBuilder("SElECT * FROM ${TableNames.AUTHOR} WHERE ")
         val args = ArrayList<Any?>()
 
-        if (search.isNullOrBlank())
+        if (search.isNullOrBlank()) {
             query.deleteRange(query.length - 6, query.length)
-        else {
+        } else {
             query.append("name LIKE ?")
-            args.add("%${search}%")
+            args.add("%$search%")
         }
 
         query.append(" ORDER BY lessonCount DESC, id DESC")
 
         return getAuthors(
-            RoomRawQuery(query.toString()){ it.bind(args) }
+            RoomRawQuery(query.toString()) { it.bind(args) },
         )
     }
 
     @RawQuery(observedEntities = [AuthorEntity::class])
     fun getAuthors(query: RoomRawQuery): PagingSource<Int, AuthorEntity>
-
 }

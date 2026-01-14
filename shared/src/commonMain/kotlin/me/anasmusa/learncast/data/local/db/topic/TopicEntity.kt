@@ -18,5 +18,5 @@ class TopicEntity(
     val createdAt: LocalDateTime,
     val lessonCount: Long,
     val totalDuration: Duration,
-    val completedLessonCount: Long
+    val completedLessonCount: Long,
 )

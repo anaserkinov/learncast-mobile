@@ -30,7 +30,7 @@ fun PrimaryButton(
     paddingBetween: Dp = 8.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     PrimaryButton(
         modifier,
@@ -41,7 +41,7 @@ fun PrimaryButton(
         paddingBetween,
         backgroundColor,
         horizontalArrangement,
-        onClick
+        onClick,
     )
 }
 
@@ -55,34 +55,37 @@ fun PrimaryButton(
     paddingBetween: Dp = 8.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .let {
-                if (clip) it.clip(RoundedCornerShape(8.dp))
-                else it
-            }
-            .clickable(onClick = onClick)
-            .background(backgroundColor)
-            .padding(padding),
+        modifier =
+            modifier
+                .let {
+                    if (clip) {
+                        it.clip(RoundedCornerShape(8.dp))
+                    } else {
+                        it
+                    }
+                }.clickable(onClick = onClick)
+                .background(backgroundColor)
+                .padding(padding),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = horizontalArrangement
+        horizontalArrangement = horizontalArrangement,
     ) {
-
-        if (icon != null)
+        if (icon != null) {
             Icon(
-                modifier = Modifier
-                    .padding(end = paddingBetween),
+                modifier =
+                    Modifier
+                        .padding(end = paddingBetween),
                 imageVector = icon,
-                contentDescription = null
+                contentDescription = null,
             )
+        }
 
         Text(
             text = title,
             maxLines = 1,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
         )
-
     }
 }

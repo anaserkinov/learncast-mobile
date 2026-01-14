@@ -6,5 +6,5 @@ enum class ActionType {
     DELETE,
     LISTEN,
     FAVOURITE,
-    REMOVE_FAVOURITE
+    REMOVE_FAVOURITE,
 }

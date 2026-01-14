@@ -6,5 +6,5 @@ data class User(
     val lastName: String?,
     val avatarPath: String?,
     val email: String?,
-    val telegramUsername: String?
+    val telegramUsername: String?,
 )

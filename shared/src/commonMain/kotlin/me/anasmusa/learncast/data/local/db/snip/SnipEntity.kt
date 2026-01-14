@@ -14,7 +14,7 @@ internal data class SnipEntity(
     val endMs: Long,
     val note: String?,
     val createdAt: LocalDateTime,
-    //lesson
+    // lesson
     val lessonId: Long,
     val title: String,
     val description: String?,
@@ -25,5 +25,5 @@ internal data class SnipEntity(
     val topicTitle: String?,
     val audioPath: String,
     val audioSize: Long,
-    val audioDuration: Duration
+    val audioDuration: Duration,
 )

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.StateFlow
 import me.anasmusa.learncast.data.model.QueueItem
 
 interface PlayerRepository {
-
     val currentQueueItem: StateFlow<QueueItem?>
     val playbackPositionMs: StateFlow<Long>
     val playbackState: StateFlow<Int>
@@ -14,7 +13,10 @@ interface PlayerRepository {
 
     fun addToQueue(item: QueueItem)
 
-    fun setToQueue(items: List<QueueItem>, playWhenReady: Boolean? = null)
+    fun setToQueue(
+        items: List<QueueItem>,
+        playWhenReady: Boolean? = null,
+    )
 
     fun togglePlayback()
 
@@ -26,9 +28,15 @@ interface PlayerRepository {
 
     fun refreshCurrent()
 
-    fun move(from: Int, to: Int)
+    fun move(
+        from: Int,
+        to: Int,
+    )
 
-    fun removeFromQueue(index: Int, id: Long)
+    fun removeFromQueue(
+        index: Int,
+        id: Long,
+    )
 
     fun clearQueue(completely: Boolean)
 
@@ -37,5 +45,4 @@ interface PlayerRepository {
     fun restoreService()
 
     fun destroy()
-
 }

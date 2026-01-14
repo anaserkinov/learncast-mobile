@@ -48,7 +48,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Preview
 @Composable
-private fun TopicListScreenPreview(){
+private fun TopicListScreenPreview() {
     AppTheme {
         _AuthorListScreen(
             onBackClicked = {},
@@ -63,18 +63,17 @@ private fun TopicListScreenPreview(){
                     1,
                     "Author",
                     null,
-                    20
+                    20,
                 )
             },
             appendLoading = true,
-            onAuthorClicked = {}
+            onAuthorClicked = {},
         )
     }
 }
 
 @Composable
 fun AuthorListScreen() {
-
     val env = LocalAppEnvironment.current
     val viewModel = koinViewModel<AuthorListViewModel>()
     val state by viewModel.state.collectAsState()
@@ -88,13 +87,13 @@ fun AuthorListScreen() {
         onRefresh = {
             pagingState.refresh()
         },
-        searchQuery = if (state.inSearchMode) state.searchQuery?:"" else null,
+        searchQuery = if (state.inSearchMode) state.searchQuery ?: "" else null,
         onQueryChanged = {
             viewModel.handle(
                 AuthorListIntent.UpdateSearchQuery(
                     query = if (it == "") null else it,
-                    inSearchMode = it != null
-                )
+                    inSearchMode = it != null,
+                ),
             )
         },
         authorCount = pagingState.itemCount,
@@ -103,14 +102,13 @@ fun AuthorListScreen() {
         appendLoading = pagingState.loadState.append is LoadState.Loading,
         onAuthorClicked = {
             env.navigate(Screen.Author(it))
-        }
+        },
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun  _AuthorListScreen(
+private fun _AuthorListScreen(
     onBackClicked: () -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
@@ -120,11 +118,12 @@ private fun  _AuthorListScreen(
     authorKey: (index: Int) -> Any,
     getAuthor: (index: Int) -> Author?,
     appendLoading: Boolean,
-    onAuthorClicked: (author: Author) -> Unit
-){
+    onAuthorClicked: (author: Author) -> Unit,
+) {
     Scaffold(
-        modifier = Modifier
-            .background(backgroundBrush()),
+        modifier =
+            Modifier
+                .background(backgroundBrush()),
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
@@ -132,47 +131,50 @@ private fun  _AuthorListScreen(
                 title = {
                     Text(
                         modifier = Modifier,
-                        text = Strings.authors.string(),
+                        text = Strings.AUTHORS.string(),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = onBackClicked
+                        onClick = onBackClicked,
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 },
             )
-        }
+        },
     ) {
-        PullToRefreshBox (
-            modifier = Modifier
-                .padding(it),
+        PullToRefreshBox(
+            modifier =
+                Modifier
+                    .padding(it),
             isRefreshing = isRefreshing,
-            onRefresh = onRefresh
+            onRefresh = onRefresh,
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                        ),
             ) {
                 stickyHeader {
                     Row(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .padding(bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         SearchButton(
                             searchQuery = searchQuery,
-                            onQueryChanged = onQueryChanged
+                            onQueryChanged = onQueryChanged,
                         )
                     }
                 }
@@ -182,26 +184,27 @@ private fun  _AuthorListScreen(
 //                    key = authorKey
                 ) { index ->
                     val author = getAuthor(index)
-                    if (author != null)
+                    if (author != null) {
                         AuthorCell(
                             author = author,
                             onClick = {
                                 onAuthorClicked(author)
-                            }
+                            },
                         )
+                    }
                 }
 
-                if (appendLoading)
+                if (appendLoading) {
                     item {
                         LoadingIndicator(
                             modifier =
                                 Modifier
                                     .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                                    .wrapContentWidth(Alignment.CenterHorizontally),
                         )
                     }
+                }
             }
         }
     }
-
 }

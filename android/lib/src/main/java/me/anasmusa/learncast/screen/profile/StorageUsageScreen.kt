@@ -42,16 +42,17 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-private fun StorageUsageScreenPreview(){
+private fun StorageUsageScreenPreview() {
     AppTheme {
         _StorageUsageScreen(
-            state = StorageState(
-                isLoading = false,
-                cacheSize = null,
-                downloadSize = "256 MB"
-            ),
+            state =
+                StorageState(
+                    isLoading = false,
+                    cacheSize = null,
+                    downloadSize = "256 MB",
+                ),
             clearCache = {},
-            clearDownload = {}
+            clearDownload = {},
         )
     }
 }
@@ -68,7 +69,7 @@ fun StorageUsageScreen() {
         },
         clearDownload = {
             viewModel.handle(StorageIntent.ClearDownloads)
-        }
+        },
     )
 }
 
@@ -77,8 +78,8 @@ private fun Button(
     modifier: Modifier = Modifier,
     title: Int,
     clip: Boolean = true,
-    onClick: () -> Unit
-){
+    onClick: () -> Unit,
+) {
     PrimaryButton(
         modifier = modifier.fillMaxWidth(),
         icon = null,
@@ -87,7 +88,7 @@ private fun Button(
         padding = PaddingValues(8.dp),
         paddingBetween = 24.dp,
         horizontalArrangement = Arrangement.Center,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -96,36 +97,37 @@ private fun Button(
 private fun _StorageUsageScreen(
     state: StorageState,
     clearCache: () -> Unit,
-    clearDownload: () -> Unit
-){
+    clearDownload: () -> Unit,
+) {
     val env = LocalAppEnvironment.current
 
     Scaffold(
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    colors = LocalAppEnvironment.current.backgroundColors,
-                    endY = with(LocalDensity.current) { 100.dp.toPx() }
-                )
-            ),
+        modifier =
+            Modifier
+                .background(
+                    Brush.verticalGradient(
+                        colors = LocalAppEnvironment.current.backgroundColors,
+                        endY = with(LocalDensity.current) { 100.dp.toPx() },
+                    ),
+                ),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
                 title = {
                     Text(
                         modifier = Modifier,
-                        text = Strings.storage_usage.string(),
+                        text = Strings.STORAGE_USAGE.string(),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() }
+                        onClick = { env.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 },
@@ -134,55 +136,61 @@ private fun _StorageUsageScreen(
         containerColor = Color.Transparent,
     ) {
         Column(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp
-                )
+            modifier =
+                Modifier
+                    .padding(it)
+                    .fillMaxSize()
+                    .padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 8.dp,
+                    ),
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = Strings.cache.string())
-                if (state.cacheSize != null)
+                Text(text = Strings.CACHE.string())
+                if (state.cacheSize != null) {
                     Text(text = state.cacheSize!!)
-                else
+                } else {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
+                }
             }
             Button(
-                title = Strings.clear_cache,
-                onClick = clearCache
+                title = Strings.CLEAR_CACHE,
+                onClick = clearCache,
             )
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(text = Strings.downloads.string())
-                if (state.downloadSize != null)
+                Text(text = Strings.DOWNLOADS.string())
+                if (state.downloadSize != null) {
                     Text(text = state.downloadSize!!)
-                else
+                } else {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(24.dp),
                     )
+                }
             }
             Button(
-                title = Strings.clear_download,
-                onClick = clearDownload
+                title = Strings.CLEAR_DOWNLOAD,
+                onClick = clearDownload,
             )
         }
     }
 
-    if (state.isLoading)
+    if (state.isLoading) {
         Loader()
+    }
 }

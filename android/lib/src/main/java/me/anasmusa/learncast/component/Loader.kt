@@ -10,17 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun Loader(){
-
+fun Loader() {
     Box(
-        modifier = Modifier.fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.2f))
-    ){
-
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.2f)),
+    ) {
         CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
         )
-
     }
-
 }

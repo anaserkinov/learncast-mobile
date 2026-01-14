@@ -5,15 +5,19 @@ import org.xmlpull.v1.XmlPullParserFactory
 import java.io.BufferedReader
 import java.io.StringReader
 
-actual fun readStringFile(locale: String, onLoad: (List<String>) -> Unit){
+actual fun readStringFile(
+    locale: String,
+    onLoad: (List<String>) -> Unit,
+) {
     var path = "values"
-    if (locale != "en")
+    if (locale != "en") {
         path += "-$locale"
+    }
     path = "$path/strings.xml"
     val inputStream = ApplicationLoader.context.assets.open(path)
     val xmlContent = inputStream.bufferedReader().use(BufferedReader::readText)
     onLoad(
-        parseStringsXml(xmlContent)
+        parseStringsXml(xmlContent),
     )
 }
 
@@ -33,12 +37,13 @@ fun parseStringsXml(xmlContent: String): List<String> {
         while (eventType != XmlPullParser.END_DOCUMENT) {
             when (eventType) {
                 XmlPullParser.START_TAG -> {
-                    if (parser.name == "string")
+                    if (parser.name == "string") {
                         key = parser.getAttributeValue(null, "name")
-                    else if (parser.name == "item")
+                    } else if (parser.name == "item") {
                         key = parser.getAttributeValue(null, "quantity")
-                    else if (parser.name == "plurals")
+                    } else if (parser.name == "plurals") {
                         repeat(7) { result.add("") }
+                    }
                 }
                 XmlPullParser.TEXT -> {
                     value = parser.text
@@ -46,7 +51,7 @@ fun parseStringsXml(xmlContent: String): List<String> {
                 XmlPullParser.END_TAG -> {
                     if (parser.name == "string" && key != null && value != null) {
                         result.add(value.trim())
-                    } else if (parser.name == "item" && key != null && value != null){
+                    } else if (parser.name == "item" && key != null && value != null) {
                         val index = quantities.indexOf(key)
                         result[result.size - 6 + index] = value.trim()
                     }

@@ -9,7 +9,6 @@ import me.anasmusa.learncast.data.model.ReferenceType
 
 @Dao
 interface DownloadDao {
-
     @Insert
     suspend fun insert(item: DownloadStateEntity): Long
 
@@ -17,7 +16,11 @@ interface DownloadDao {
     suspend fun getLessonState(referenceId: Long): DownloadStateEntity?
 
     @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE referenceId = :referenceId AND referenceUuid = :referenceUuid AND referenceType = :referenceType")
-    suspend fun get(referenceId: Long, referenceUuid: String, referenceType: ReferenceType): DownloadStateEntity?
+    suspend fun get(
+        referenceId: Long,
+        referenceUuid: String,
+        referenceType: ReferenceType,
+    ): DownloadStateEntity?
 
     @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id")
     suspend fun getById(id: Long): DownloadStateEntity?
@@ -29,7 +32,7 @@ interface DownloadDao {
     suspend fun update(
         id: Long,
         state: DownloadState,
-        percentDownloaded: Float
+        percentDownloaded: Float,
     )
 
     @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id OR parentId = :id")
@@ -37,5 +40,4 @@ interface DownloadDao {
 
     @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE}")
     suspend fun clear()
-
 }

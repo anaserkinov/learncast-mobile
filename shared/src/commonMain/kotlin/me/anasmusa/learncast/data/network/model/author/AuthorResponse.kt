@@ -10,5 +10,5 @@ class AuthorResponse(
     val name: String,
     @SerialName("avatar_path") val avatarPath: String?,
     @SerialName("created_at") val createdAt: Instant,
-    @SerialName("lesson_count") val lessonCount: Long
+    @SerialName("lesson_count") val lessonCount: Long,
 )

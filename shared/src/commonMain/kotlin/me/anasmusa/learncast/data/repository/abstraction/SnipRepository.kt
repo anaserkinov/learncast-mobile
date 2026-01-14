@@ -8,13 +8,12 @@ import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.model.Snip
 
 interface SnipRepository {
-
     suspend fun save(
         clientSnipId: String,
         queueItemId: Long,
         startMs: Long,
         endMs: Long,
-        note: String?
+        note: String?,
     ): Result<Unit>
 
     suspend fun get(clientSnipId: String): Result<Snip>
@@ -25,10 +24,8 @@ interface SnipRepository {
         search: String? = null,
         lessonId: Long? = null,
         sort: QuerySort? = null,
-        order: QueryOrder? = null
+        order: QueryOrder? = null,
     ): Flow<PagingData<Snip>>
 
     suspend fun getSnipCount(lessonId: Long): Int
-
-
 }

@@ -7,5 +7,5 @@ import kotlin.time.Instant
 class BaseResponse<out T>(
     val data: T,
     val message: String?,
-    val time: Instant
+    val time: Instant,
 )

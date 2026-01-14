@@ -47,14 +47,15 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
 @Composable
-private fun ProfileScreenPreview(){
+private fun ProfileScreenPreview() {
     AppTheme {
         _ProfileScreen(
-            state = ProfileState(
-                isLoading = false,
-                user = User(1L, "Name", "Last", null, null,"ggtgg")
-            ),
-            signout = {}
+            state =
+                ProfileState(
+                    isLoading = false,
+                    user = User(1L, "Name", "Last", null, null, "ggtgg"),
+                ),
+            signout = {},
         )
     }
 }
@@ -68,7 +69,7 @@ fun ProfileScreen() {
         state,
         signout = {
             viewModel.handle(ProfileIntent.Logout)
-        }
+        },
     )
 }
 
@@ -78,8 +79,8 @@ private fun Button(
     icon: ImageVector?,
     title: Int,
     clip: Boolean = true,
-    onClick: () -> Unit
-){
+    onClick: () -> Unit,
+) {
     PrimaryButton(
         modifier = modifier,
         icon = icon,
@@ -87,111 +88,116 @@ private fun Button(
         clip = clip,
         padding = PaddingValues(16.dp),
         paddingBetween = 24.dp,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
 @Composable
 private fun _ProfileScreen(
     state: ProfileState,
-    signout: () -> Unit
-){
+    signout: () -> Unit,
+) {
     val env = LocalAppEnvironment.current
 
     Scaffold(
-        modifier = Modifier
-            .background(
-                Brush.verticalGradient(
-                    colors = LocalAppEnvironment.current.backgroundColors,
-                    endY = with(LocalDensity.current) { 100.dp.toPx() }
-                )
-            ),
+        modifier =
+            Modifier
+                .background(
+                    Brush.verticalGradient(
+                        colors = LocalAppEnvironment.current.backgroundColors,
+                        endY = with(LocalDensity.current) { 100.dp.toPx() },
+                    ),
+                ),
         containerColor = Color.Transparent,
-    ){
-        if (state.user != null){
+    ) {
+        if (state.user != null) {
             Column(
-                modifier = Modifier
-                    .padding(it)
-                    .fillMaxSize()
-                    .padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        bottom = 88.dp + if (state.isQueueEmpty) 0.dp else 64.dp
-                    )
+                modifier =
+                    Modifier
+                        .padding(it)
+                        .fillMaxSize()
+                        .padding(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 88.dp + if (state.isQueueEmpty) 0.dp else 64.dp,
+                        ),
             ) {
-
                 Spacer(
-                    modifier = Modifier
-                        .height(56.dp)
+                    modifier =
+                        Modifier
+                            .height(56.dp),
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     AsyncImage(
-                        modifier = Modifier
-                            .padding(end = 12.dp)
-                            .size(96.dp)
-                            .clip(CircleShape),
-                        model = if (state.user!!.avatarPath != null)
-                            state.user!!.avatarPath!!
-                        else
-                            appConfig.mainLogo,
+                        modifier =
+                            Modifier
+                                .padding(end = 12.dp)
+                                .size(96.dp)
+                                .clip(CircleShape),
+                        model =
+                            if (state.user!!.avatarPath != null) {
+                                state.user!!.avatarPath!!
+                            } else {
+                                appConfig.mainLogo
+                            },
                         contentScale = ContentScale.Crop,
                         contentDescription = null,
                         onError = {
                             Log.e("error", it.result.throwable.message ?: "fdfd")
-                        }
+                        },
                     )
 
-                    Column() {
-
+                    Column {
                         Text(
                             text = state.user!!.firstName,
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
                         )
 
                         Text(
-                            text = state.user!!.email ?:
-                            state.user!!.telegramUsername?.let { "@$it" } ?: "",
-                            fontWeight = FontWeight.Medium
+                            text =
+                                state.user!!.email
+                                    ?: state.user!!.telegramUsername?.let { "@$it" } ?: "",
+                            fontWeight = FontWeight.Medium,
                         )
-
                     }
-
                 }
 
-                Button (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
+                Button(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
                     icon = Storage,
-                    title = Strings.storage_usage
+                    title = Strings.STORAGE_USAGE,
                 ) {
                     env.navigate(Screen.StorageUsageScreen)
                 }
 
                 Spacer(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
-                Button (
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                Button(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
                     icon = Logout,
-                    title = Strings.signout
+                    title = Strings.SIGNOUT,
                 ) {
                     signout()
                 }
             }
         }
 
-        if (state.isLoading)
+        if (state.isLoading) {
             Loader()
+        }
     }
-
 }

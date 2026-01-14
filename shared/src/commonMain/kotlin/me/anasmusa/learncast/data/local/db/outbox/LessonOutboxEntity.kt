@@ -16,9 +16,9 @@ import kotlin.time.Duration
             entity = OutboxEntity::class,
             parentColumns = ["id"],
             childColumns = ["outboxId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 class LessonOutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
@@ -27,12 +27,12 @@ class LessonOutboxEntity(
     val startedAt: LocalDateTime,
     val lastPositionMs: Duration,
     val status: UserProgressStatus?,
-    val completedAt: LocalDateTime?
+    val completedAt: LocalDateTime?,
 )
 
 class LessonWithOutbox(
     @Embedded
     val lesson: LessonOutboxEntity,
     @Embedded(prefix = "outbox_")
-    val outbox: OutboxEntity
+    val outbox: OutboxEntity,
 )

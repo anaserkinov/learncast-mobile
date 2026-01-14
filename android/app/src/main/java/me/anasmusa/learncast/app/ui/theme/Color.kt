@@ -1,15 +1,17 @@
 package me.anasmusa.learncast.app.ui.theme
 import androidx.compose.ui.graphics.Color
 
-internal val backgroundColors = listOf(
-    Color(0.094f, 0.122f, 0.2f, 1.0f),
-    Color(0.055f, 0.071f, 0.122f, 1.0f)
-)
+internal val backgroundColors =
+    listOf(
+        Color(0.094f, 0.122f, 0.2f, 1.0f),
+        Color(0.055f, 0.071f, 0.122f, 1.0f),
+    )
 
-internal val playerBackgroundColors = listOf(
-    Color(0.224f, 0.282f, 0.42f, 1.0f),
-    Color(0.075f, 0.094f, 0.157f, 1.0f)
-)
+internal val playerBackgroundColors =
+    listOf(
+        Color(0.224f, 0.282f, 0.42f, 1.0f),
+        Color(0.075f, 0.094f, 0.157f, 1.0f),
+    )
 
 val primaryDark = Color(0xFFFFFFFF)
 val onPrimaryDark = Color(0xFF00391B)

@@ -10,8 +10,8 @@ class TopicResponse(
     val id: Long,
     val topic: Topic,
     val author: AuthorResponse,
-    @SerialName("completed_lesson_count") val completedLessonCount: Long
-){
+    @SerialName("completed_lesson_count") val completedLessonCount: Long,
+) {
     @Serializable
     class Topic(
         val id: Long,

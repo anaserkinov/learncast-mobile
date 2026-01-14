@@ -1,7 +1,6 @@
 package me.anasmusa.learncast.data.local.db
 
 object TableNames {
-
     const val AUTHOR = "author"
     const val TOPIC = "topic"
     const val LESSON = "lesson"

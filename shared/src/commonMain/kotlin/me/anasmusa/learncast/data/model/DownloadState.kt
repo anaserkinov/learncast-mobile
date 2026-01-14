@@ -1,8 +1,8 @@
 package me.anasmusa.learncast.data.model
 
-enum class DownloadState{
+enum class DownloadState {
     DOWNLOADING,
     STOPPED,
     COMPLETED,
-    REMOVING
+    REMOVING,
 }

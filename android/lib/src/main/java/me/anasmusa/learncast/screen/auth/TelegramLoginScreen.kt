@@ -1,8 +1,6 @@
 package me.anasmusa.learncast.screen.auth
 
 import android.graphics.Bitmap
-import android.util.Log
-import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,21 +22,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import me.anasmusa.learncast.core.ApplicationLoader
 import me.anasmusa.learncast.core.appConfig
-
 
 @Composable
 fun TelegramLoginScreen(
-    onGetResult: (result: String) -> Unit
+    onGetResult: (result: String) -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val urlToLoad = "https://oauth.telegram.org/auth?bot_id=${appConfig.telegramBotId}&origin=${appConfig.telegramOrigin}&lang=uz"
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 600.dp)
-            .background(Color.White)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = 600.dp)
+                .background(Color.White),
     ) {
         AndroidView(
             factory = { context ->
@@ -49,49 +46,57 @@ fun TelegramLoginScreen(
 //                    cookieManager.removeAllCookies(null)
 //                    cookieManager.flush()
 
-                    webViewClient = object : WebViewClient() {
+                    webViewClient =
+                        object : WebViewClient() {
+                            override fun onPageStarted(
+                                view: WebView?,
+                                url: String?,
+                                favicon: Bitmap?,
+                            ) {
+                                super.onPageStarted(view, url, favicon)
+                                isLoading = true
+                            }
 
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                            super.onPageStarted(view, url, favicon)
-                            isLoading = true
+                            override fun onPageFinished(
+                                view: WebView?,
+                                url: String?,
+                            ) {
+                                super.onPageFinished(view, url)
+                                isLoading = false
+                            }
+
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView?,
+                                request: WebResourceRequest?,
+                            ): Boolean {
+                                val url = request?.url.toString()
+
+                                val uri = url.toUri()
+                                val hash = uri.fragment // gives "tgAuthResult=eyJpZCI6..."
+                                val jsonPart = hash?.removePrefix("tgAuthResult=")
+
+                                if (jsonPart != null) onGetResult(jsonPart)
+                                return false
+                            }
                         }
-
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            isLoading = false
-                        }
-
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView?,
-                            request: WebResourceRequest?
-                        ): Boolean {
-                            val url = request?.url.toString()
-
-                            val uri = url.toUri()
-                            val hash = uri.fragment // gives "tgAuthResult=eyJpZCI6..."
-                            val jsonPart = hash?.removePrefix("tgAuthResult=")
-
-                            if (jsonPart != null) onGetResult(jsonPart)
-                            return false
-                        }
-                    }
-
 
                     loadUrl(urlToLoad)
                 }
             },
             update = {
                 it.loadUrl(urlToLoad)
-            }
+            },
         )
 
-        if (isLoading)
+        if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(top = 64.dp)
-                    .align(Alignment.TopCenter),
+                modifier =
+                    Modifier
+                        .padding(top = 64.dp)
+                        .align(Alignment.TopCenter),
                 color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 3.dp
+                strokeWidth = 3.dp,
             )
+        }
     }
 }

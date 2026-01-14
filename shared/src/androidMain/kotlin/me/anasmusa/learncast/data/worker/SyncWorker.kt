@@ -21,25 +21,29 @@ import java.util.concurrent.TimeUnit
 
 class SyncWorker(
     private val context: Context,
-    workerParams: WorkerParameters
-) : CoroutineWorker(context, workerParams), KoinComponent {
-
+    workerParams: WorkerParameters,
+) : CoroutineWorker(context, workerParams),
+    KoinComponent {
     companion object {
-        fun enqueue(context: Context){
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .setRequiresBatteryNotLow(true)
-                .build()
+        fun enqueue(context: Context) {
+            val constraints =
+                Constraints
+                    .Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .setRequiresBatteryNotLow(true)
+                    .build()
 
-            val request = PeriodicWorkRequestBuilder<SyncWorker>(4, TimeUnit.HOURS)
-                .setConstraints(constraints)
-                .build()
+            val request =
+                PeriodicWorkRequestBuilder<SyncWorker>(4, TimeUnit.HOURS)
+                    .setConstraints(constraints)
+                    .build()
 
-            WorkManager.getInstance(context)
+            WorkManager
+                .getInstance(context)
                 .enqueueUniquePeriodicWork(
                     "sync_worker",
                     ExistingPeriodicWorkPolicy.KEEP,
-                    request
+                    request,
                 )
         }
     }
@@ -51,23 +55,26 @@ class SyncWorker(
         return Result.success()
     }
 
-    override suspend fun getForegroundInfo(): ForegroundInfo {
-        return ForegroundInfo(
+    override suspend fun getForegroundInfo(): ForegroundInfo =
+        ForegroundInfo(
             1,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                Notification.Builder(context, "sync-worker")
-                    .setContentTitle(Strings.sync_notification_title.string())
-                    .setContentText(Strings.sync_notification_message.string())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Notification
+                    .Builder(context, "sync-worker")
+                    .setContentTitle(Strings.SYNC_NOTIFICATION_TITLE.string())
+                    .setContentText(Strings.SYNC_NOTIFICATION_MESSAGE.string())
                     .build()
-            else Notification.Builder(context)
-                .setContentTitle(Strings.sync_notification_title.string())
-                .setContentText(Strings.sync_notification_message.string())
-                .build(),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            } else {
+                Notification
+                    .Builder(context)
+                    .setContentTitle(Strings.SYNC_NOTIFICATION_TITLE.string())
+                    .setContentText(Strings.SYNC_NOTIFICATION_MESSAGE.string())
+                    .build()
+            },
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-            else 0
+            } else {
+                0
+            },
         )
-
-    }
-
 }

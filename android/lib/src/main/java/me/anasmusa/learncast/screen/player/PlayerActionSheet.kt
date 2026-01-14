@@ -41,7 +41,7 @@ private fun LessonPlayerActionSheetPreview() {
             onDownloadClicked = {},
             onCompletedClicked = {},
             onFavouriteClicked = {},
-            onDeleteClicked = {}
+            onDeleteClicked = {},
         )
     }
 }
@@ -60,11 +60,10 @@ private fun SnipPlayerActionSheetPreview() {
             onDownloadClicked = {},
             onCompletedClicked = {},
             onFavouriteClicked = {},
-            onDeleteClicked = {}
+            onDeleteClicked = {},
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,84 +77,88 @@ fun PlayerActionSheet(
     onDownloadClicked: () -> Unit,
     onCompletedClicked: () -> Unit,
     onFavouriteClicked: () -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteClicked: () -> Unit,
 ) {
     ModalBottomSheet(
-        modifier = Modifier
-            .fillMaxWidth(),
-        sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true
-        ),
-        onDismissRequest = onDismissRequest
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        sheetState =
+            rememberModalBottomSheetState(
+                skipPartiallyExpanded = true,
+            ),
+        onDismissRequest = onDismissRequest,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 12.dp
-                )
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 12.dp,
+                    ),
         ) {
-
             Column(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp)),
             ) {
-
                 SheetMenuButton(
-                    icon = when(downloadState){
-                        null, DownloadState.STOPPED, DownloadState.REMOVING -> Download
-                        DownloadState.DOWNLOADING -> Download
-                        DownloadState.COMPLETED -> RemoveDownload
-                    },
-                    title = when(downloadState){
-                        null, DownloadState.REMOVING -> Strings.download.string()
-                        DownloadState.STOPPED -> Strings.resume_download.string()
-                        DownloadState.DOWNLOADING -> Strings.downloading.string(percentDownloaded.toInt())
-                        DownloadState.COMPLETED -> Strings.remove_download.string()
-                    },
+                    icon =
+                        when (downloadState) {
+                            null, DownloadState.STOPPED, DownloadState.REMOVING -> Download
+                            DownloadState.DOWNLOADING -> Download
+                            DownloadState.COMPLETED -> RemoveDownload
+                        },
+                    title =
+                        when (downloadState) {
+                            null, DownloadState.REMOVING -> Strings.DOWNLOAD.string()
+                            DownloadState.STOPPED -> Strings.RESUME_DOWNLOAD.string()
+                            DownloadState.DOWNLOADING -> Strings.DOWNLOADING.string(percentDownloaded.toInt())
+                            DownloadState.COMPLETED -> Strings.REMOVE_DOWNLOAD.string()
+                        },
                     clip = false,
                     paddingBetween = 28.dp,
                     onClick = {
                         onDismissRequest()
                         onDownloadClicked()
-                    }
+                    },
                 )
 
-                if (!isSnip){
+                if (!isSnip) {
                     SheetMenuButton(
                         icon = if (isCompleted) RemoveDone else DoneAll,
-                        title = if (isCompleted) Strings.mark_not_played.string() else Strings.mark_completed.string(),
+                        title = if (isCompleted) Strings.MARK_NOT_PLAYED.string() else Strings.MARK_COMPLETED.string(),
                         clip = false,
                         paddingBetween = 28.dp,
                         onClick = {
                             onDismissRequest()
                             onCompletedClicked()
-                        }
+                        },
                     )
                     SheetMenuButton(
                         icon = if (isFavourite) StarFilled else Star,
-                        title = if (isFavourite) Strings.lesson_is_favourite.string() else Strings.add_favourite.string(),
+                        title = if (isFavourite) Strings.LESSON_IS_FAVOURITE.string() else Strings.ADD_FAVOURITE.string(),
                         clip = false,
                         paddingBetween = 28.dp,
                         onClick = {
                             onDismissRequest()
                             onFavouriteClicked()
-                        }
+                        },
                     )
                 }
             }
 
-            if (isSnip){
+            if (isSnip) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 SheetMenuButton(
                     icon = Delete,
-                    title = Strings.delete.string(),
+                    title = Strings.DELETE.string(),
                     paddingBetween = 28.dp,
                     onClick = {
                         onDismissRequest()
                         onDeleteClicked()
-                    }
+                    },
                 )
             }
 

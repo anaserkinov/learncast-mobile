@@ -147,23 +147,30 @@ import kotlin.time.toDuration
 private fun PlayerScreenPreview() {
     val density = LocalDensity.current
     val collapsedPx = with(density) { (80 + 64).dp.toPx() }
-    val expandedPx = with(density) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+    val expandedPx =
+        with(density) {
+            LocalConfiguration.current.screenHeightDp.dp
+                .toPx()
+        }
     val windowBottomInset = NavigationBarDefaults.windowInsets.getBottom(density)
     AppTheme {
         _PlayerScreen(
             modifier = Modifier,
-            state = PlayerState(
-                currentPlaying = getSampleQueueItem(),
-                snipCount = 100
-            ),
-            draggableState = AnchoredDraggableState(
-                initialValue = "expanded",
-                anchors = DraggableAnchors {
-                    "expanded" at 0f
-                    "collapsed" at (expandedPx - collapsedPx - windowBottomInset)
-                }
-            ),
-            sendIntent = {}
+            state =
+                PlayerState(
+                    currentPlaying = getSampleQueueItem(),
+                    snipCount = 100,
+                ),
+            draggableState =
+                AnchoredDraggableState(
+                    initialValue = "expanded",
+                    anchors =
+                        DraggableAnchors {
+                            "expanded" at 0f
+                            "collapsed" at (expandedPx - collapsedPx - windowBottomInset)
+                        },
+                ),
+            sendIntent = {},
         )
     }
 }
@@ -176,17 +183,18 @@ private fun CollapsedPlayerPreview() {
             offset = 1f,
             scope = rememberCoroutineScope(),
             draggableState = AnchoredDraggableState(initialValue = "expanded"),
-            color = lerp(
-                LocalAppEnvironment.current.playerBackgroundColors.first(),
-                LocalAppEnvironment.current.playerBackgroundColors.last(),
-                0.7f
-            ),
+            color =
+                lerp(
+                    LocalAppEnvironment.current.playerBackgroundColors.first(),
+                    LocalAppEnvironment.current.playerBackgroundColors.last(),
+                    0.7f,
+                ),
             currentPlaying = getSampleQueueItem(),
             playbackState = STATE_LOADING,
             currentPositionMs = 35.toDuration(DurationUnit.MINUTES).inWholeMilliseconds,
             queuedCount = 24,
             changePlayPause = {},
-            openQueueScreen = {}
+            openQueueScreen = {},
         )
     }
 }
@@ -203,106 +211,120 @@ private fun CollapsedPlayer(
     currentPositionMs: Long,
     queuedCount: Int,
     changePlayPause: () -> Unit,
-    openQueueScreen: () -> Unit
+    openQueueScreen: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .height(64.dp)
-            .fillMaxWidth()
-            .alpha(1 - (1 - offset) / 0.2f)
-            .clickable(onClick = {
-                scope.launch {
-                    draggableState.animateTo("expanded")
-                }
-            })
-            .background(color, RoundedCornerShape(6.dp))
+        modifier =
+            Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .alpha(1 - (1 - offset) / 0.2f)
+                .clickable(onClick = {
+                    scope.launch {
+                        draggableState.animateTo("expanded")
+                    }
+                })
+                .background(color, RoundedCornerShape(6.dp)),
     ) {
         LinearProgressIndicator(
             progress = { currentPositionMs.toFloat() / currentPlaying.duration.inWholeMilliseconds },
             color = Color.White,
             trackColor = Color.White.copy(alpha = 0.5f),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .align(Alignment.BottomCenter)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .align(Alignment.BottomCenter),
         )
         Box(
-            modifier = Modifier
-                .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
-                .size(55.dp),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .padding(start = 8.dp, top = 4.dp, bottom = 4.dp)
+                    .size(55.dp),
+            contentAlignment = Alignment.Center,
         ) {
             AsyncImage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(6)),
-                model = if (currentPlaying.coverImagePath != null)
-                    currentPlaying.coverImagePath!!.normalizeUrl()
-                else
-                    appConfig.mainLogo,
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(6)),
+                model =
+                    if (currentPlaying.coverImagePath != null) {
+                        currentPlaying.coverImagePath!!.normalizeUrl()
+                    } else {
+                        appConfig.mainLogo
+                    },
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.SrcAtop),
-                contentDescription = null
+                contentDescription = null,
             )
 
-            if (playbackState == STATE_LOADING)
+            if (playbackState == STATE_LOADING) {
                 CircularWavyProgressIndicator(
-                    modifier = Modifier
-                        .size(28.dp)
+                    modifier =
+                        Modifier
+                            .size(28.dp),
                 )
-            else
+            } else {
                 IconButton(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
                     onClick = changePlayPause,
-                    shape = RectangleShape
+                    shape = RectangleShape,
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .size(28.dp),
-                        imageVector = if (playbackState == STATE_PAUSED) {
-                            PlayArrowIcon
-                        } else
-                            Pause,
-                        contentDescription = null
+                        modifier =
+                            Modifier
+                                .size(28.dp),
+                        imageVector =
+                            if (playbackState == STATE_PAUSED) {
+                                PlayArrowIcon
+                            } else {
+                                Pause
+                            },
+                        contentDescription = null,
                     )
                 }
+            }
         }
         Column(
-            modifier = Modifier
-                .padding(start = 80.dp, end = 60.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center
+            modifier =
+                Modifier
+                    .padding(start = 80.dp, end = 60.dp)
+                    .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = currentPlaying.title,
                 color = Color.White,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
-                modifier = Modifier
-                    .alpha(0.7f),
+                modifier =
+                    Modifier
+                        .alpha(0.7f),
                 text = currentPlaying.subTitle,
                 color = Color.White,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
         }
 
         QueueButton(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(56.dp)
-                .align(Alignment.CenterEnd),
+            modifier =
+                Modifier
+                    .padding(end = 8.dp)
+                    .size(56.dp)
+                    .align(Alignment.CenterEnd),
             count = queuedCount,
-            onClick = openQueueScreen
+            onClick = openQueueScreen,
         )
     }
 }
-
 
 private fun Int.darken(amount: Float): Color {
     val hsv = FloatArray(3)
@@ -317,7 +339,6 @@ private fun Int.darken(amount: Float): Color {
     return Color(android.graphics.Color.HSVToColor(hsv))
 }
 
-
 private fun Int.lighten(amount: Float): Color {
     val hsv = FloatArray(3)
     android.graphics.Color.colorToHSV(this, hsv)
@@ -330,7 +351,7 @@ private fun Int.lighten(amount: Float): Color {
 @Composable
 fun PlayerScreen(
     modifier: Modifier,
-    draggableState: AnchoredDraggableState<String>
+    draggableState: AnchoredDraggableState<String>,
 ) {
     val viewModel = koinViewModel<PlayerViewModel>()
     val state by viewModel.state.collectAsState()
@@ -351,7 +372,7 @@ fun PlayerScreen(
         draggableState = draggableState,
         sendIntent = {
             viewModel.handle(it)
-        }
+        },
     )
 }
 
@@ -361,7 +382,7 @@ private fun _PlayerScreen(
     modifier: Modifier,
     state: PlayerState,
     draggableState: AnchoredDraggableState<String>,
-    sendIntent: (intent: PlayerIntent) -> Unit
+    sendIntent: (intent: PlayerIntent) -> Unit,
 ) {
     val env = LocalAppEnvironment.current
     val scope = rememberCoroutineScope()
@@ -384,15 +405,14 @@ private fun _PlayerScreen(
     var showSnipEditScreen by rememberSaveable { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
 
-
     var colors by remember { mutableStateOf(env.playerBackgroundColors) }
     var collapsedColor by remember {
         mutableStateOf(
             lerp(
                 env.playerBackgroundColors.first(),
                 env.playerBackgroundColors.last(),
-                0.7f
-            )
+                0.7f,
+            ),
         )
     }
     val gradientStartY = windowInfo.containerSize.height * (-0.5f)
@@ -406,8 +426,9 @@ private fun _PlayerScreen(
                     showScreen = 0
                     draggableState.snapTo("collapsed")
                 }
-                if (state.snipCount == -1 && state.currentPlaying?.referenceType == ReferenceType.LESSON && settledValue == "expanded")
+                if (state.snipCount == -1 && state.currentPlaying?.referenceType == ReferenceType.LESSON && settledValue == "expanded") {
                     sendIntent(PlayerIntent.LoadSnipCount)
+                }
             }.collect()
     }
 
@@ -432,68 +453,75 @@ private fun _PlayerScreen(
             if (currentPlaying.coverImagePath != null) {
                 val loader = ImageLoader(context)
 
-                val req = ImageRequest.Builder(context)
-                    .data(currentPlaying.coverImagePath!!.normalizeUrl())
-                    .size(112)
-                    .allowHardware(false)
-                    .build()
+                val req =
+                    ImageRequest
+                        .Builder(context)
+                        .data(currentPlaying.coverImagePath!!.normalizeUrl())
+                        .size(112)
+                        .allowHardware(false)
+                        .build()
 
-                loader.execute(req)
-                    .image?.toBitmap()?.let {
+                loader
+                    .execute(req)
+                    .image
+                    ?.toBitmap()
+                    ?.let {
                         val palette = Palette.from(it).generate()
                         yield()
-                        val vibrant = palette.getVibrantColor(
-                            palette.getDarkVibrantColor(
-                                palette.getDominantColor(0)
+                        val vibrant =
+                            palette.getVibrantColor(
+                                palette.getDarkVibrantColor(
+                                    palette.getDominantColor(0),
+                                ),
                             )
-                        )
-                        colors = if (vibrant != 0)
-                            listOf(
-                                vibrant.lighten(0.3f),
-                                vibrant.darken(0.8f)
+                        colors =
+                            if (vibrant != 0) {
+                                listOf(
+                                    vibrant.lighten(0.3f),
+                                    vibrant.darken(0.8f),
+                                )
+                            } else {
+                                env.playerBackgroundColors
+                            }
+                        collapsedColor =
+                            lerp(
+                                colors.first(),
+                                colors.last(),
+                                0.7f,
                             )
-                        else
-                            env.playerBackgroundColors
-                        collapsedColor = lerp(
-                            colors.first(),
-                            colors.last(),
-                            0.7f
-                        )
                     }
             } else {
                 colors = env.playerBackgroundColors
-                collapsedColor = lerp(
-                    colors.first(),
-                    colors.last(),
-                    0.7f
-                )
+                collapsedColor =
+                    lerp(
+                        colors.first(),
+                        colors.last(),
+                        0.7f,
+                    )
             }
         }
 
         Box(
-            modifier = modifier
-                .padding(
-                    start = (4 * offset).dp,
-                    end = (4 * offset).dp
-                )
-                .fillMaxWidth()
-                .offset { IntOffset(0, draggableState.offset.roundToInt()) }
-                .anchoredDraggable(
-                    state = draggableState,
-                    orientation = Orientation.Vertical,
-                    enabled = showScreen == 0
-                )
-                .height(
-                    (totalHeight - (totalHeight - 64) * offset).dp
-                )
-                .background(
-                    Brush.verticalGradient(colors, startY = gradientStartY, endY = gradientEndY),
-                    shape = RoundedCornerShape((6 * offset).dp)
-                ),
-            contentAlignment = Alignment.TopCenter
+            modifier =
+                modifier
+                    .padding(
+                        start = (4 * offset).dp,
+                        end = (4 * offset).dp,
+                    ).fillMaxWidth()
+                    .offset { IntOffset(0, draggableState.offset.roundToInt()) }
+                    .anchoredDraggable(
+                        state = draggableState,
+                        orientation = Orientation.Vertical,
+                        enabled = showScreen == 0,
+                    ).height(
+                        (totalHeight - (totalHeight - 64) * offset).dp,
+                    ).background(
+                        Brush.verticalGradient(colors, startY = gradientStartY, endY = gradientEndY),
+                        shape = RoundedCornerShape((6 * offset).dp),
+                    ),
+            contentAlignment = Alignment.TopCenter,
         ) {
-
-            if (offset >= 0.8f)
+            if (offset >= 0.8f) {
                 CollapsedPlayer(
                     offset = offset,
                     scope = scope,
@@ -512,26 +540,27 @@ private fun _PlayerScreen(
                             showScreen = 1
                             draggableState.animateTo("expanded")
                         }
-                    }
+                    },
                 )
+            }
 
             Column(
-                modifier = Modifier
-                    .wrapContentHeight(align = Alignment.Top, unbounded = true)
-                    .padding(
-                        start = 12.dp,
-                        top = statusBarOffset,
-                        end = 12.dp,
-                        bottom = bottomNavigationBarOffset
-                    )
-                    .alpha(1 - offset / 0.8f),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .wrapContentHeight(align = Alignment.Top, unbounded = true)
+                        .padding(
+                            start = 12.dp,
+                            top = statusBarOffset,
+                            end = 12.dp,
+                            bottom = bottomNavigationBarOffset,
+                        ).alpha(1 - offset / 0.8f),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     FilledIconButton(
                         modifier = Modifier,
@@ -540,69 +569,75 @@ private fun _PlayerScreen(
                                 draggableState.animateTo("collapsed")
                             }
                         },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.Black.copy(alpha = 0.2f)
-                        )
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                containerColor = Color.Black.copy(alpha = 0.2f),
+                            ),
                     ) {
                         Icon(
                             imageVector = ArrowDown,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = Color.White,
                         )
                     }
 
                     IconButton(
                         onClick = {
                             showActionSheet = true
-                        }
+                        },
                     ) {
                         Icon(
                             imageVector = MoreVert,
                             contentDescription = null,
-                            tint = Color.White
+                            tint = Color.White,
                         )
                     }
                 }
 
-
                 AsyncImage(
-                    modifier = Modifier
-                        .padding(top = 12.dp)
-                        .fillMaxWidth(0.8f)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(16.dp)),
-                    model = if (currentPlaying.coverImagePath != null)
-                        currentPlaying.coverImagePath!!.normalizeUrl()
-                    else
-                        appConfig.mainLogo,
+                    modifier =
+                        Modifier
+                            .padding(top = 12.dp)
+                            .fillMaxWidth(0.8f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(16.dp)),
+                    model =
+                        if (currentPlaying.coverImagePath != null) {
+                            currentPlaying.coverImagePath!!.normalizeUrl()
+                        } else {
+                            appConfig.mainLogo
+                        },
                     contentScale = ContentScale.Crop,
-                    contentDescription = null
+                    contentDescription = null,
                 )
 
                 Column(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                        .drawWithContent {
-                            drawContent()
-                            drawFadedEdge(leftEdge = true)
-                            drawFadedEdge(leftEdge = false)
-                        },
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(top = 16.dp)
+                            .fillMaxWidth()
+                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                            .drawWithContent {
+                                drawContent()
+                                drawFadedEdge(leftEdge = true)
+                                drawFadedEdge(leftEdge = false)
+                            },
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        modifier = Modifier
-                            .basicMarquee(spacing = MarqueeSpacing(36.dp)),
+                        modifier =
+                            Modifier
+                                .basicMarquee(spacing = MarqueeSpacing(36.dp)),
                         text = currentPlaying.title,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
                     )
                     Text(
-                        modifier = Modifier
-                            .alpha(0.7f)
-                            .basicMarquee(spacing = MarqueeSpacing(36.dp)),
+                        modifier =
+                            Modifier
+                                .alpha(0.7f)
+                                .basicMarquee(spacing = MarqueeSpacing(36.dp)),
                         text = currentPlaying.subTitle,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
 
@@ -613,15 +648,17 @@ private fun _PlayerScreen(
                         sliderPositionMs = state.currentPositionMs
                     }
                 }
-                val sliderColors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = Color.White,
-                    inactiveTickColor = Color.White.copy(alpha = 0.2f),
-                    inactiveTrackColor = Color.White.copy(alpha = 0.2f),
-                )
+                val sliderColors =
+                    SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = Color.White,
+                        inactiveTickColor = Color.White.copy(alpha = 0.2f),
+                        inactiveTrackColor = Color.White.copy(alpha = 0.2f),
+                    )
                 Slider(
-                    modifier = Modifier
-                        .padding(top = 16.dp),
+                    modifier =
+                        Modifier
+                            .padding(top = 16.dp),
                     value = (sliderPositionMs / 1000).toFloat(),
                     onValueChange = {
                         isUserDragging = true
@@ -637,7 +674,7 @@ private fun _PlayerScreen(
                         SliderDefaults.Thumb(
                             interactionSource = remember { MutableInteractionSource() },
                             colors = sliderColors,
-                            thumbSize = DpSize(4.dp, 24.dp)
+                            thumbSize = DpSize(4.dp, 24.dp),
                         )
                     },
                     track = {
@@ -648,219 +685,259 @@ private fun _PlayerScreen(
                                 drawStopIndicator(
                                     offset = offset,
                                     color = color,
-                                    size = 2.dp
+                                    size = 2.dp,
                                 )
-                            }
+                            },
                         )
-                    }
+                    },
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = (-8).dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .offset(y = (-8).dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = formatTime(sliderPositionMs),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
                         text = formatTime(currentPlaying.duration.inWholeMilliseconds),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-
                     Spacer(
-                        modifier = Modifier
-                            .size(56.dp)
+                        modifier =
+                            Modifier
+                                .size(56.dp),
                     )
 
                     IconButton(
-                        modifier = Modifier
-                            .size(56.dp),
-                        onClick = { sendIntent(PlayerIntent.Seek(false)) }
+                        modifier =
+                            Modifier
+                                .size(56.dp),
+                        onClick = { sendIntent(PlayerIntent.Seek(false)) },
                     ) {
                         Icon(
-                            modifier = Modifier
-                                .size(36.dp),
+                            modifier =
+                                Modifier
+                                    .size(36.dp),
                             imageVector = Replay10,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
 
                     Box(
-                        modifier = Modifier
-                            .size(56.dp),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .size(56.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        if (state.playbackState == STATE_LOADING)
+                        if (state.playbackState == STATE_LOADING) {
                             CircularWavyProgressIndicator()
-                        else
+                        } else {
                             Button(
-                                modifier = Modifier
-                                    .size(56.dp),
+                                modifier =
+                                    Modifier
+                                        .size(56.dp),
                                 onClick = {
                                     sendIntent(PlayerIntent.TogglePlaybackState)
                                 },
                                 shape = CircleShape,
-                                contentPadding = PaddingValues(8.dp)
+                                contentPadding = PaddingValues(8.dp),
                             ) {
                                 Icon(
-                                    modifier = Modifier
-                                        .size(36.dp),
-                                    imageVector = if (state.playbackState == STATE_PAUSED)
-                                        PlayArrowIcon
-                                    else
-                                        Pause,
-                                    contentDescription = null
+                                    modifier =
+                                        Modifier
+                                            .size(36.dp),
+                                    imageVector =
+                                        if (state.playbackState == STATE_PAUSED) {
+                                            PlayArrowIcon
+                                        } else {
+                                            Pause
+                                        },
+                                    contentDescription = null,
                                 )
                             }
+                        }
                     }
                     IconButton(
-                        modifier = Modifier
-                            .size(56.dp),
-                        onClick = { sendIntent(PlayerIntent.Seek(true)) }
+                        modifier =
+                            Modifier
+                                .size(56.dp),
+                        onClick = { sendIntent(PlayerIntent.Seek(true)) },
                     ) {
                         Icon(
-                            modifier = Modifier
-                                .size(36.dp),
+                            modifier =
+                                Modifier
+                                    .size(36.dp),
                             imageVector = Forward30,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
 
                     QueueButton(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(56.dp),
+                        modifier =
+                            Modifier
+                                .padding(end = 8.dp)
+                                .size(56.dp),
                         count = state.queuedCount,
                         onClick = {
                             animationScreen = true
                             showScreen = 1
-                        }
+                        },
                     )
                 }
 
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 48.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp),
                 ) {
                     Button(
-                        modifier = Modifier
-                            .align(Alignment.Center),
+                        modifier =
+                            Modifier
+                                .align(Alignment.Center),
                         onClick = {
                             sendIntent(PlayerIntent.Pause)
                             showSnipEditScreen = true
                         },
                         contentPadding = ButtonDefaults.contentPaddingFor(64.dp),
-                        shape = CircleShape
+                        shape = CircleShape,
                     ) {
                         Icon(
                             imageVector = CutIcon,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                         Text(
-                            modifier = Modifier
-                                .padding(start = 8.dp),
-                            text = if (currentPlaying.referenceUuid.isNotEmpty())
-                                me.anasmusa.learncast.Strings.update_snip.string()
-                            else me.anasmusa.learncast.Strings.create_snip.string(),
+                            modifier =
+                                Modifier
+                                    .padding(start = 8.dp),
+                            text =
+                                if (currentPlaying.referenceUuid.isNotEmpty()) {
+                                    me.anasmusa.learncast.Strings.UPDATE_SNIP
+                                        .string()
+                                } else {
+                                    me.anasmusa.learncast.Strings.CREATE_SNIP
+                                        .string()
+                                },
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
 
-                    if (currentPlaying.referenceType == ReferenceType.LESSON)
+                    if (currentPlaying.referenceType == ReferenceType.LESSON) {
                         Box(
-                            modifier = Modifier
-                                .padding(end = 8.dp)
-                                .size(48.dp)
-                                .align(Alignment.CenterEnd)
-                                .clickable(
-                                    onClick = {
-                                        animationScreen = true
-                                        showScreen = 2
-                                    }
-                                )
-                                .background(
-                                    Color.White.copy(0.2f),
-                                    CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+                            modifier =
+                                Modifier
+                                    .padding(end = 8.dp)
+                                    .size(48.dp)
+                                    .align(Alignment.CenterEnd)
+                                    .clickable(
+                                        onClick = {
+                                            animationScreen = true
+                                            showScreen = 2
+                                        },
+                                    ).background(
+                                        Color.White.copy(0.2f),
+                                        CircleShape,
+                                    ),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            if (state.snipCount == -1)
+                            if (state.snipCount == -1) {
                                 CircularWavyProgressIndicator(
                                     modifier = Modifier.padding(8.dp),
-                                    stroke = Stroke(
-                                        width = with(LocalDensity.current) { 3.dp.toPx() },
-                                        cap = StrokeCap.Round,
-                                    )
+                                    stroke =
+                                        Stroke(
+                                            width = with(LocalDensity.current) { 3.dp.toPx() },
+                                            cap = StrokeCap.Round,
+                                        ),
                                 )
-                            else
+                            } else {
                                 Text(
-                                    text = if (state.snipCount <= 99)
-                                        state.snipCount.toString()
-                                    else
-                                        "99+",
+                                    text =
+                                        if (state.snipCount <= 99) {
+                                            state.snipCount.toString()
+                                        } else {
+                                            "99+"
+                                        },
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontSize = 20.sp
+                                    fontSize = 20.sp,
                                 )
+                            }
                         }
+                    }
                 }
             }
 
             AnimatedVisibility(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
                 visible = showScreen != 0,
-                enter = if (animationScreen) slideInVertically(
-                    animationSpec = tween(300),
-                    initialOffsetY = { it }
-                ) else EnterTransition.None,
-                exit = if (animationScreen) slideOutVertically(
-                    animationSpec = tween(300),
-                    targetOffsetY = { it }
-                ) else ExitTransition.None
+                enter =
+                    if (animationScreen) {
+                        slideInVertically(
+                            animationSpec = tween(300),
+                            initialOffsetY = { it },
+                        )
+                    } else {
+                        EnterTransition.None
+                    },
+                exit =
+                    if (animationScreen) {
+                        slideOutVertically(
+                            animationSpec = tween(300),
+                            targetOffsetY = { it },
+                        )
+                    } else {
+                        ExitTransition.None
+                    },
             ) {
-                if (showScreen == 1)
+                if (showScreen == 1) {
                     QueueScreen(
                         backgroundColors = colors,
                         onCloseRequested = {
                             showScreen = 0
-                        }
+                        },
                     )
-                else
+                } else {
                     PlayerSnipScreen(
                         backgroundColors = colors,
                         onCloseRequested = {
                             showScreen = 0
-                        }
+                        },
                     )
+                }
             }
         }
 
-        if (showSnipEditScreen)
+        if (showSnipEditScreen) {
             SnipEditScreen(
                 clientSnipId = currentPlaying.referenceUuid,
                 queueItemId = currentPlaying.id,
                 startAt = (currentPlaying.startMs ?: 0) + state.currentPositionMs,
-                endAt = if (currentPlaying.endMs != null)
-                    currentPlaying.endMs!!
-                else
-                    min(
-                        state.currentPositionMs + 5.toDuration(DurationUnit.MINUTES).inWholeMilliseconds,
-                        currentPlaying.audioDuration.inWholeMilliseconds
-                    ),
+                endAt =
+                    if (currentPlaying.endMs != null) {
+                        currentPlaying.endMs!!
+                    } else {
+                        min(
+                            state.currentPositionMs + 5.toDuration(DurationUnit.MINUTES).inWholeMilliseconds,
+                            currentPlaying.audioDuration.inWholeMilliseconds,
+                        )
+                    },
                 duration = currentPlaying.audioDuration.inWholeMilliseconds,
                 audioPath = currentPlaying.audioPath,
                 note = null,
@@ -868,10 +945,11 @@ private fun _PlayerScreen(
                 onDismissRequest = {
                     showSnipEditScreen = false
                     if (it) sendIntent(PlayerIntent.Refresh)
-                }
+                },
             )
+        }
 
-        if (showActionSheet)
+        if (showActionSheet) {
             PlayerActionSheet(
                 isSnip = currentPlaying.referenceType == ReferenceType.SNIP,
                 downloadState = currentPlaying.downloadState,
@@ -890,11 +968,13 @@ private fun _PlayerScreen(
                 },
                 onDeleteClicked = {
                     sendIntent(PlayerIntent.DeleteSnip)
-                }
+                },
             )
+        }
 
-        if (state.isLoading)
+        if (state.isLoading) {
             Loader()
+        }
     }
 }
 
@@ -909,6 +989,6 @@ private fun ContentDrawScope.drawFadedEdge(leftEdge: Boolean) {
                 startX = if (leftEdge) 0f else size.width,
                 endX = if (leftEdge) edgeWidthPx else size.width - edgeWidthPx,
             ),
-        blendMode = BlendMode.DstIn
+        blendMode = BlendMode.DstIn,
     )
 }

@@ -38,29 +38,32 @@ internal class SyncRepositoryImpl(
     private val lessonService: LessonService,
     private val lessonDao: LessonDao,
     private val snipService: SnipService,
-    private val snipDao: SnipDao
+    private val snipDao: SnipDao,
 ) : SyncRepository {
-
-    override suspend fun sync(finishWhenDrained: Boolean) = withContext(Dispatchers.IO) {
-        if (finishWhenDrained) {
-            while (true) {
-                val outbox = outboxRepository.getToSync() ?: return@withContext
-                if (syncOutbox(outbox)) break
-            }
-        } else outboxDao.observeNextItemToSync()
-            .buffer(Channel.CONFLATED)
-            .collect {
-                val outbox = outboxRepository.getToSync() ?: return@collect
-                val abort = syncOutbox(outbox)
-                if (abort) {
-                    delay(2.toDuration(DurationUnit.MINUTES))
-                    return@collect
+    override suspend fun sync(finishWhenDrained: Boolean) =
+        withContext(Dispatchers.IO) {
+            if (finishWhenDrained) {
+                while (true) {
+                    val outbox = outboxRepository.getToSync() ?: return@withContext
+                    if (syncOutbox(outbox)) break
                 }
+            } else {
+                outboxDao
+                    .observeNextItemToSync()
+                    .buffer(Channel.CONFLATED)
+                    .collect {
+                        val outbox = outboxRepository.getToSync() ?: return@collect
+                        val abort = syncOutbox(outbox)
+                        if (abort) {
+                            delay(2.toDuration(DurationUnit.MINUTES))
+                            return@collect
+                        }
+                    }
             }
-    }
+        }
 
-    private suspend fun syncOutbox(outbox: OutboxEntity): Boolean {
-        return when (outbox.referenceType) {
+    private suspend fun syncOutbox(outbox: OutboxEntity): Boolean =
+        when (outbox.referenceType) {
             ReferenceType.LESSON -> {
                 syncLessonOutbox(outbox)
             }
@@ -69,10 +72,9 @@ internal class SyncRepositoryImpl(
                 syncSnipOutbox(outbox)
             }
         }
-    }
 
-    private suspend fun syncLessonOutbox(outbox: OutboxEntity): Boolean {
-        return when (outbox.actionType) {
+    private suspend fun syncLessonOutbox(outbox: OutboxEntity): Boolean =
+        when (outbox.actionType) {
             ActionType.UPDATE -> updateUserProgress(outbox)
             ActionType.LISTEN -> createListenSession(outbox)
             ActionType.FAVOURITE, ActionType.REMOVE_FAVOURITE -> favourite(outbox)
@@ -80,10 +82,9 @@ internal class SyncRepositoryImpl(
                 false
             }
         }
-    }
 
-    private suspend fun syncSnipOutbox(outbox: OutboxEntity): Boolean {
-        return when (outbox.actionType) {
+    private suspend fun syncSnipOutbox(outbox: OutboxEntity): Boolean =
+        when (outbox.actionType) {
             ActionType.CREATE -> createSnip(outbox)
             ActionType.UPDATE -> updateSnip(outbox)
             ActionType.DELETE -> deleteSnip(outbox)
@@ -91,138 +92,149 @@ internal class SyncRepositoryImpl(
                 false
             }
         }
-    }
 
     private suspend fun onOutboxSynced(
         id: Long,
         actionType: ActionType,
         time: LocalDateTime,
-        exception: Exception?
+        exception: Exception?,
     ): Boolean {
-        val networkError = when (exception) {
-            is IOException,
-            is ConnectTimeoutException,
-            is SocketTimeoutException,
-            is UnresolvedAddressException -> {
-                true
-            }
+        val networkError =
+            when (exception) {
+                is IOException,
+                is ConnectTimeoutException,
+                is SocketTimeoutException,
+                is UnresolvedAddressException,
+                -> {
+                    true
+                }
 
-            else -> false
-        }
+                else -> false
+            }
         outboxRepository.onOutboxSynced(
             id = id,
             actionType = actionType,
             time = time,
             success = exception == null,
-            networkError = networkError
+            networkError = networkError,
         )
         return networkError
     }
 
     private suspend fun updateUserProgress(outbox: OutboxEntity): Boolean {
         return try {
-            val progress = outboxDao.getLessonOutbox(outbox.id)
-                ?: run {
-                    outboxDao.deleteOutbox(outbox.id)
-                    return false
-                }
+            val progress =
+                outboxDao.getLessonOutbox(outbox.id)
+                    ?: run {
+                        outboxDao.deleteOutbox(outbox.id)
+                        return false
+                    }
 
-            val response = lessonService.updateProgress(
-                lessonId = progress.lessonId,
-                request = UpdateProgressRequest(
-                    status = progress.status,
-                    startedAt = progress.startedAt.toUTCInstant(),
-                    completedAt = progress.completedAt?.toUTCInstant(),
-                    lastPositionMs = progress.lastPositionMs.inWholeMilliseconds
+            val response =
+                lessonService.updateProgress(
+                    lessonId = progress.lessonId,
+                    request =
+                        UpdateProgressRequest(
+                            status = progress.status,
+                            startedAt = progress.startedAt.toUTCInstant(),
+                            completedAt = progress.completedAt?.toUTCInstant(),
+                            lastPositionMs = progress.lastPositionMs.inWholeMilliseconds,
+                        ),
                 )
-            )
             lessonDao.upsertProgress(response.data.toInput())
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
     }
 
     private suspend fun createListenSession(outbox: OutboxEntity): Boolean {
         return try {
-            val session = outboxDao.getListenOutbox(outbox.id)
-                ?: run {
-                    outboxDao.deleteOutbox(outbox.id)
-                    return false
-                }
-            val response = lessonService.listen(
-                lessonId = outbox.referenceId,
-                request = ListenSessionCreateRequest(
-                    sessionId = session.sessionId,
-                    createdAt = outbox.createdAt.toUTCInstant()
+            val session =
+                outboxDao.getListenOutbox(outbox.id)
+                    ?: run {
+                        outboxDao.deleteOutbox(outbox.id)
+                        return false
+                    }
+            val response =
+                lessonService.listen(
+                    lessonId = outbox.referenceId,
+                    request =
+                        ListenSessionCreateRequest(
+                            sessionId = session.sessionId,
+                            createdAt = outbox.createdAt.toUTCInstant(),
+                        ),
                 )
-            )
             lessonDao.updateListenCount(outbox.referenceId, response.data.listenCount)
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
     }
 
-    private suspend fun favourite(outbox: OutboxEntity): Boolean {
-        return try {
-            val response = if (outbox.actionType == ActionType.FAVOURITE)
-                lessonService.setFavourite(outbox.referenceId)
-            else
-                lessonService.removeFavourite(outbox.referenceId)
+    private suspend fun favourite(outbox: OutboxEntity): Boolean =
+        try {
+            val response =
+                if (outbox.actionType == ActionType.FAVOURITE) {
+                    lessonService.setFavourite(outbox.referenceId)
+                } else {
+                    lessonService.removeFavourite(outbox.referenceId)
+                }
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
-    }
 
     private suspend fun createSnip(outbox: OutboxEntity): Boolean {
         return try {
-            val snip = outboxDao.getSnipOutbox(outbox.id)
-                ?: run {
-                    outboxDao.deleteOutbox(outbox.id)
-                    return false
-                }
-            val response = snipService.create(
-                lessonId = snip.lessonId,
-                request = SnipCURequest(
-                    clientSnipId = snip.clientSnipId,
-                    startMs = snip.startMs,
-                    endMs = snip.endMs,
-                    note = snip.note,
-                    createdAt = outbox.createdAt.toUTCInstant()
+            val snip =
+                outboxDao.getSnipOutbox(outbox.id)
+                    ?: run {
+                        outboxDao.deleteOutbox(outbox.id)
+                        return false
+                    }
+            val response =
+                snipService.create(
+                    lessonId = snip.lessonId,
+                    request =
+                        SnipCURequest(
+                            clientSnipId = snip.clientSnipId,
+                            startMs = snip.startMs,
+                            endMs = snip.endMs,
+                            note = snip.note,
+                            createdAt = outbox.createdAt.toUTCInstant(),
+                        ),
                 )
-            )
             response.data.let { snipResponse ->
                 snipDao.insert(snipResponse.toEntity())
                 snipResponse.userSnipCount?.let { snipCount ->
@@ -233,54 +245,57 @@ internal class SyncRepositoryImpl(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
     }
 
     private suspend fun updateSnip(outbox: OutboxEntity): Boolean {
         return try {
-            val snip = outboxDao.getSnipOutbox(outbox.id)
-                ?: run {
-                    outboxDao.deleteOutbox(outbox.id)
-                    return false
-                }
-            val response = snipService.update(
-                clientSnipId = outbox.referenceUuid,
-                request = SnipCURequest(
-                    clientSnipId = snip.clientSnipId,
-                    startMs = snip.startMs,
-                    endMs = snip.endMs,
-                    note = snip.note,
-                    createdAt = outbox.createdAt.toUTCInstant()
+            val snip =
+                outboxDao.getSnipOutbox(outbox.id)
+                    ?: run {
+                        outboxDao.deleteOutbox(outbox.id)
+                        return false
+                    }
+            val response =
+                snipService.update(
+                    clientSnipId = outbox.referenceUuid,
+                    request =
+                        SnipCURequest(
+                            clientSnipId = snip.clientSnipId,
+                            startMs = snip.startMs,
+                            endMs = snip.endMs,
+                            note = snip.note,
+                            createdAt = outbox.createdAt.toUTCInstant(),
+                        ),
                 )
-            )
             snipDao.insert(response.data.toEntity())
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
     }
 
-    private suspend fun deleteSnip(outbox: OutboxEntity): Boolean {
-        return try {
+    private suspend fun deleteSnip(outbox: OutboxEntity): Boolean =
+        try {
             val response = snipService.delete(outbox.referenceUuid)
             snipDao.delete(outbox.referenceUuid)
             response.data?.let {
@@ -290,16 +305,14 @@ internal class SyncRepositoryImpl(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = response.time.toDateTime(),
-                exception = null
+                exception = null,
             )
         } catch (e: Exception) {
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,
                 time = nowLocalDateTime(),
-                exception = e
+                exception = e,
             )
         }
-    }
-
 }

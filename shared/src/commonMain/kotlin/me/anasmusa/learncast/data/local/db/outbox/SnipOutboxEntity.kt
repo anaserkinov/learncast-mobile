@@ -13,9 +13,9 @@ import me.anasmusa.learncast.data.local.db.TableNames
             entity = OutboxEntity::class,
             parentColumns = ["id"],
             childColumns = ["outboxId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+            onDelete = ForeignKey.CASCADE,
+        ),
+    ],
 )
 class SnipOutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
@@ -24,12 +24,12 @@ class SnipOutboxEntity(
     val lessonId: Long,
     val startMs: Long,
     val endMs: Long,
-    val note: String?
+    val note: String?,
 )
 
 class SnipWithOutbox(
     @Embedded
     val snip: SnipOutboxEntity,
     @Embedded(prefix = "outbox_")
-    val outbox: OutboxEntity
+    val outbox: OutboxEntity,
 )

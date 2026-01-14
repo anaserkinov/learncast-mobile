@@ -14,5 +14,5 @@ class SnipResponse(
     @SerialName("note_text") val note: String?,
     val lesson: LessonResponse,
     @SerialName("created_at") val createdAt: Instant,
-    @SerialName("user_snip_count") val userSnipCount: Long?
+    @SerialName("user_snip_count") val userSnipCount: Long?,
 )

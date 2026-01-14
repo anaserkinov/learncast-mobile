@@ -16,42 +16,50 @@ class PageRequestQuery(
     val order: QueryOrder? = null,
     val authorId: Long? = null,
     val topicId: Long? = null,
-    val lessonId: Long? = null
-){
+    val lessonId: Long? = null,
+) {
+    fun toStringKey() =
+        buildString {
+            append(search).append(':')
+            append(favourite).append(':')
+            append(status).append(':')
+            append(sort).append(':')
+            append(order).append(':')
+            append(authorId).append(':')
+            append(topicId).append(':')
+            append(lessonId)
+        }
 
-    fun toStringKey() = buildString {
-        append(search).append(':')
-        append(favourite).append(':')
-        append(status).append(':')
-        append(sort).append(':')
-        append(order).append(':')
-        append(authorId).append(':')
-        append(topicId).append(':')
-        append(lessonId)
-    }
-
-    fun load(url: URLBuilder){
+    fun load(url: URLBuilder) {
         url.apply {
             parameters.append("limit", limit.toString())
-            if (cursor != null)
+            if (cursor != null) {
                 parameters.append("cursor", cursor.toString())
-            if (!search.isNullOrBlank())
+            }
+            if (!search.isNullOrBlank()) {
                 parameters.append("search", search)
-            if (favourite != null)
+            }
+            if (favourite != null) {
                 parameters.append("favourite", favourite.toString())
-            if (status != null)
+            }
+            if (status != null) {
                 parameters.append("status", Json.encodeToString(status))
-            if (sort != null)
+            }
+            if (sort != null) {
                 parameters.append("sort", sort.value)
-            if (order != null)
+            }
+            if (order != null) {
                 parameters.append("order", order.value)
-            if (authorId != null)
+            }
+            if (authorId != null) {
                 parameters.append("author_id", authorId.toString())
-            if (topicId != null)
+            }
+            if (topicId != null) {
                 parameters.append("topic_id", topicId.toString())
-            if (lessonId != null)
+            }
+            if (lessonId != null) {
                 parameters.append("lesson_id", lessonId.toString())
+            }
         }
     }
-
 }

@@ -23,22 +23,22 @@ import me.anasmusa.learncast.ui.BaseViewModel
 data class AuthorListState(
     val searchQuery: String? = null,
     val inSearchMode: Boolean = false,
-    val authors: Flow<PagingData<Author>> = emptyFlow()
-): BaseState
+    val authors: Flow<PagingData<Author>> = emptyFlow(),
+) : BaseState
 
-sealed interface AuthorListIntent: BaseIntent{
-    data class UpdateSearchQuery(val query: String?, val inSearchMode: Boolean): AuthorListIntent
+sealed interface AuthorListIntent : BaseIntent {
+    data class UpdateSearchQuery(
+        val query: String?,
+        val inSearchMode: Boolean,
+    ) : AuthorListIntent
 }
 
-sealed interface AuthorListEvent: BaseEvent {
-
-}
+sealed interface AuthorListEvent : BaseEvent
 
 @OptIn(FlowPreview::class)
 class AuthorListViewModel(
-    private val authorRepository: AuthorRepository
-): BaseViewModel<AuthorListState, AuthorListIntent, AuthorListEvent>() {
-
+    private val authorRepository: AuthorRepository,
+) : BaseViewModel<AuthorListState, AuthorListIntent, AuthorListEvent>() {
     override val state: StateFlow<AuthorListState>
         field = MutableStateFlow(AuthorListState())
 
@@ -51,7 +51,7 @@ class AuthorListViewModel(
                 .collectLatest { query ->
                     state.update {
                         it.copy(
-                            authors = authorRepository.page(query)
+                            authors = authorRepository.page(query),
                         )
                     }
                 }
@@ -60,14 +60,15 @@ class AuthorListViewModel(
 
     override fun handle(intent: AuthorListIntent) {
         super.handle(intent)
-        when(intent){
+        when (intent) {
             is AuthorListIntent.UpdateSearchQuery -> updateSearchQuery(intent.query, intent.inSearchMode)
         }
     }
 
-
-    private fun updateSearchQuery(value: String?, inSearchMode: Boolean){
+    private fun updateSearchQuery(
+        value: String?,
+        inSearchMode: Boolean,
+    ) {
         state.update { it.copy(searchQuery = value, inSearchMode = inSearchMode) }
     }
-
 }

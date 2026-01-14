@@ -27,27 +27,28 @@ data class Lesson(
     val startedAt: LocalDateTime?,
     val lastPositionMs: Duration?,
     val status: UserProgressStatus,
-    val completedAt: LocalDateTime?
+    val completedAt: LocalDateTime?,
 )
 
-fun getSampleLesson() = Lesson(
-    id = 1,
-    title = "Lesson",
-    description = "description",
-    coverImagePath = null,
-    authorId = 2,
-    authorName = "Author",
-    topicId = 3,
-    topicTitle = "Topic",
-    createdAt = nowLocalDateTime(),
-    audioPath = "audio",
-    audioSize = 2434L,
-    audioDuration = 4.toDuration(DurationUnit.MINUTES),
-    listenCount = 1000L,
-    snipCount = 2321,
-    isFavourite = true,
-    startedAt = nowLocalDateTime(),
-    lastPositionMs = 0.toDuration(DurationUnit.MILLISECONDS),
-    status = UserProgressStatus.IN_PROGRESS,
-    completedAt = null
-)
+fun getSampleLesson() =
+    Lesson(
+        id = 1,
+        title = "Lesson",
+        description = "description",
+        coverImagePath = null,
+        authorId = 2,
+        authorName = "Author",
+        topicId = 3,
+        topicTitle = "Topic",
+        createdAt = nowLocalDateTime(),
+        audioPath = "audio",
+        audioSize = 2434L,
+        audioDuration = 4.toDuration(DurationUnit.MINUTES),
+        listenCount = 1000L,
+        snipCount = 2321,
+        isFavourite = true,
+        startedAt = nowLocalDateTime(),
+        lastPositionMs = 0.toDuration(DurationUnit.MILLISECONDS),
+        status = UserProgressStatus.IN_PROGRESS,
+        completedAt = null,
+    )

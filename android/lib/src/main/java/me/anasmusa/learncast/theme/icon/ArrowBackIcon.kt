@@ -11,34 +11,36 @@ val ArrowBackIcon: ImageVector
         if (_ArrowBackIcon != null) {
             return _ArrowBackIcon!!
         }
-        _ArrowBackIcon = ImageVector.Builder(
-            name = "ArrowBackIcon",
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = 960f,
-            viewportHeight = 960f
-        ).apply {
-            path(fill = SolidColor(Color.Black)) {
-                moveToRelative(142f, 480f)
-                lineToRelative(294f, 294f)
-                quadToRelative(15f, 15f, 14.5f, 35f)
-                reflectiveQuadTo(435f, 844f)
-                quadToRelative(-15f, 15f, -35f, 15f)
-                reflectiveQuadToRelative(-35f, -15f)
-                lineTo(57f, 537f)
-                quadToRelative(-12f, -12f, -18f, -27f)
-                reflectiveQuadToRelative(-6f, -30f)
-                quadToRelative(0f, -15f, 6f, -30f)
-                reflectiveQuadToRelative(18f, -27f)
-                lineToRelative(308f, -308f)
-                quadToRelative(15f, -15f, 35.5f, -14.5f)
-                reflectiveQuadTo(436f, 116f)
-                quadToRelative(15f, 15f, 15f, 35f)
-                reflectiveQuadToRelative(-15f, 35f)
-                lineTo(142f, 480f)
-                close()
-            }
-        }.build()
+        _ArrowBackIcon =
+            ImageVector
+                .Builder(
+                    name = "ArrowBackIcon",
+                    defaultWidth = 24.dp,
+                    defaultHeight = 24.dp,
+                    viewportWidth = 960f,
+                    viewportHeight = 960f,
+                ).apply {
+                    path(fill = SolidColor(Color.Black)) {
+                        moveToRelative(142f, 480f)
+                        lineToRelative(294f, 294f)
+                        quadToRelative(15f, 15f, 14.5f, 35f)
+                        reflectiveQuadTo(435f, 844f)
+                        quadToRelative(-15f, 15f, -35f, 15f)
+                        reflectiveQuadToRelative(-35f, -15f)
+                        lineTo(57f, 537f)
+                        quadToRelative(-12f, -12f, -18f, -27f)
+                        reflectiveQuadToRelative(-6f, -30f)
+                        quadToRelative(0f, -15f, 6f, -30f)
+                        reflectiveQuadToRelative(18f, -27f)
+                        lineToRelative(308f, -308f)
+                        quadToRelative(15f, -15f, 35.5f, -14.5f)
+                        reflectiveQuadTo(436f, 116f)
+                        quadToRelative(15f, 15f, 15f, 35f)
+                        reflectiveQuadToRelative(-15f, 35f)
+                        lineTo(142f, 480f)
+                        close()
+                    }
+                }.build()
 
         return _ArrowBackIcon!!
     }

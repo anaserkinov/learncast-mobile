@@ -10,8 +10,8 @@ import me.anasmusa.learncast.core.nowLocalDateTime
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.local.db.lesson.LessonDao
 import me.anasmusa.learncast.data.local.db.outbox.OutboxDao
-import me.anasmusa.learncast.data.local.db.paging_state.PagingStateDao
-import me.anasmusa.learncast.data.local.db.queue_item.QueueItemDao
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
+import me.anasmusa.learncast.data.local.db.queue.QueueItemDao
 import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
 import me.anasmusa.learncast.data.mapper.toUI
@@ -36,48 +36,49 @@ internal class SnipRepositoryImpl(
     private val lessonDao: LessonDao,
     private val queueItemDao: QueueItemDao,
     private val pagingStateDao: PagingStateDao,
-    private val outboxRepository: OutboxRepository
-): SnipRepository {
-
+    private val outboxRepository: OutboxRepository,
+) : SnipRepository {
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun save(
         clientSnipId: String,
         queueItemId: Long,
         startMs: Long,
         endMs: Long,
-        note: String?
+        note: String?,
     ): Result<Unit> {
         return try {
-            val queueItem = queueItemDao.getById(queueItemId)
-                ?: return Result.Fail(Strings.not_found.string())
+            val queueItem =
+                queueItemDao.getById(queueItemId)
+                    ?: return Result.Fail(Strings.NOT_FOUND.string())
 
-            if (clientSnipId == ""){
-                val snip = SnipEntity(
-                    clientSnipId = if (clientSnipId == "") Uuid.random().toHexString() else clientSnipId,
-                    id = 0,
-                    startMs = startMs,
-                    endMs = endMs,
-                    note = note?.trim()?.takeUnless { it.isEmpty() },
-                    createdAt = nowLocalDateTime(),
-                    lessonId = queueItem.lessonId,
-                    title = queueItem.title,
-                    description = queueItem.description,
-                    coverImagePath = queueItem.coverImagePath,
-                    authorId = queueItem.authorId,
-                    authorName = queueItem.authorName,
-                    topicId = queueItem.topicId,
-                    topicTitle = queueItem.topicTitle,
-                    audioPath = queueItem.audioPath,
-                    audioSize = queueItem.audioSize,
-                    audioDuration = queueItem.audioDuration
-                )
+            if (clientSnipId == "") {
+                val snip =
+                    SnipEntity(
+                        clientSnipId = if (clientSnipId == "") Uuid.random().toHexString() else clientSnipId,
+                        id = 0,
+                        startMs = startMs,
+                        endMs = endMs,
+                        note = note?.trim()?.takeUnless { it.isEmpty() },
+                        createdAt = nowLocalDateTime(),
+                        lessonId = queueItem.lessonId,
+                        title = queueItem.title,
+                        description = queueItem.description,
+                        coverImagePath = queueItem.coverImagePath,
+                        authorId = queueItem.authorId,
+                        authorName = queueItem.authorName,
+                        topicId = queueItem.topicId,
+                        topicTitle = queueItem.topicTitle,
+                        audioPath = queueItem.audioPath,
+                        audioSize = queueItem.audioSize,
+                        audioDuration = queueItem.audioDuration,
+                    )
                 snipDao.insert(snip)
                 outboxRepository.createSnip(
                     snip.clientSnipId,
                     snip.lessonId,
                     snip.startMs,
                     snip.endMs,
-                    snip.note
+                    snip.note,
                 )
             } else {
                 outboxRepository.updateSnip(
@@ -85,22 +86,23 @@ internal class SnipRepositoryImpl(
                     queueItem.lessonId,
                     startMs,
                     endMs,
-                    note
+                    note,
                 )
             }
 
             Result.Success(Unit)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.toResult()
         }
     }
 
     override suspend fun get(clientSnipId: String): Result<Snip> {
         return try {
-            val entity = snipDao.getByClientSnipId(clientSnipId)
-                ?: return Result.Fail(Strings.not_found.string())
+            val entity =
+                snipDao.getByClientSnipId(clientSnipId)
+                    ?: return Result.Fail(Strings.NOT_FOUND.string())
             Result.Success(entity.toUI())
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.toResult()
         }
     }
@@ -113,25 +115,28 @@ internal class SnipRepositoryImpl(
         search: String?,
         lessonId: Long?,
         sort: QuerySort?,
-        order: QueryOrder?
-    ): Flow<PagingData<Snip>> {
-        return CommonPager(
-            config = PagingConfig(
-                pageSize = 50,
-                enablePlaceholders = false
-            ),
-            commonMediator = SnipMediator(
-                service = snipService,
-                snipDao = snipDao,
-                outboxDao = outboxDao,
-                pagingStateDao = pagingStateDao,
-                request = PageRequestQuery(
-                    search = search,
-                    lessonId = lessonId,
-                    sort = sort,
-                    order = order
-                )
-            ),
+        order: QueryOrder?,
+    ): Flow<PagingData<Snip>> =
+        CommonPager(
+            config =
+                PagingConfig(
+                    pageSize = 50,
+                    enablePlaceholders = false,
+                ),
+            commonMediator =
+                SnipMediator(
+                    service = snipService,
+                    snipDao = snipDao,
+                    outboxDao = outboxDao,
+                    pagingStateDao = pagingStateDao,
+                    request =
+                        PageRequestQuery(
+                            search = search,
+                            lessonId = lessonId,
+                            sort = sort,
+                            order = order,
+                        ),
+                ),
             pagingSourceFactory = {
                 snipDao.getSnips(
                     search = search,
@@ -139,30 +144,29 @@ internal class SnipRepositoryImpl(
                     topicId = null,
                     lessonId = lessonId,
                     sort = sort,
-                    order = order
+                    order = order,
                 )
-            }
+            },
         ).flow.map {
             it.map { entry ->
                 entry.toUI()
             }
         }
-    }
 
-    override suspend fun getSnipCount(lessonId: Long): Int {
-        return try {
+    override suspend fun getSnipCount(lessonId: Long): Int =
+        try {
             try {
                 snipService.count(lessonId)?.let {
                     lessonDao.updateUserSnipCount(
                         lessonId,
-                        it.data.count
+                        it.data.count,
                     )
                 }
-            } catch (e: Exception){}
+            } catch (e: Exception) {
+            }
 
             lessonDao.getUserSnipCount(lessonId).toInt()
-        } catch (e: Exception){
+        } catch (e: Exception) {
             0
         }
-    }
 }

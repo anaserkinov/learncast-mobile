@@ -7,12 +7,13 @@ data class Author(
     val id: Long,
     val name: String,
     val avatarPath: String?,
-    val lessonCount: Long
+    val lessonCount: Long,
 )
 
-fun getSampleAuthor() = Author(
-    1L,
-    "Author",
-    null,
-    10
-)
+fun getSampleAuthor() =
+    Author(
+        1L,
+        "Author",
+        null,
+        10,
+    )
