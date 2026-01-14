@@ -1,12 +1,12 @@
 package me.anasmusa.learncast
 
-import me.anasmusa.learncast.data.local.localModule
-import me.anasmusa.learncast.data.network.networkModule
+import me.anasmusa.learncast.core.coreModule
+import me.anasmusa.learncast.data.dataModule
+import me.anasmusa.learncast.ui.uiModule
 
 fun getModules() =
     listOf(
-        localModule(),
-        networkModule(),
+        coreModule(),
         dataModule(),
         uiModule(),
     )

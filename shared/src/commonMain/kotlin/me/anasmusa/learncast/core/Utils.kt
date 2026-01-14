@@ -35,6 +35,6 @@ suspend fun Exception.toResult(): Result.Fail {
     }
 }
 
-fun String.normalizeUrl() = "${appConfig.baseUrl}/v1/file/$this"
+fun String.normalizeUrl() = "${appConfig.apiBaseUrl}/v1/file/$this"
 
 inline fun <reified T : Any> Scope.getOrCreateScope(scopeId: ScopeID): Scope = getKoin().getOrCreateScope<T>(scopeId)

@@ -15,9 +15,10 @@ import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.core.appConfig
+import me.anasmusa.learncast.core.player.HttpDataSourceFactory
+import me.anasmusa.learncast.data.DownloadCacheScope
 import me.anasmusa.learncast.data.model.DownloadState
 import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
-import me.anasmusa.learncast.player.HttpDataSourceFactory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.qualifier.named
@@ -96,7 +97,7 @@ class AndroidDownloadService :
         DownloadNotificationHelper(this, "media-download")
             .buildProgressNotification(
                 this,
-                appConfig.loginLogo,
+                appConfig.transparentLogo,
                 null,
                 null,
                 downloads,

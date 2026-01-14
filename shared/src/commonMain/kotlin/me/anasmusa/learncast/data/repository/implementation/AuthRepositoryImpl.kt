@@ -7,8 +7,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.PreferenceData
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.google.GoogleAuthManager
+import me.anasmusa.learncast.core.notification.NotificationManager
 import me.anasmusa.learncast.core.toResult
-import me.anasmusa.learncast.data.google.googleSignIn
 import me.anasmusa.learncast.data.local.Preferences
 import me.anasmusa.learncast.data.local.db.DBConnection
 import me.anasmusa.learncast.data.local.storage.StorageManager
@@ -25,6 +26,8 @@ internal class AuthRepositoryImpl(
     private val preference: Preferences,
     private val storageManager: StorageManager,
     private val downloadRepository: DownloadRepository,
+    private val googleAuthManager: GoogleAuthManager,
+    private val notificationManager: NotificationManager,
     private val dbConnection: DBConnection,
 ) : AuthRepository {
     private suspend fun handleResponse(response: LoginResponse) {
@@ -39,6 +42,7 @@ internal class AuthRepositoryImpl(
             ),
         )
         preference.updateToken(response.credentials.refreshToken, response.credentials.accessToken)
+        notificationManager.subscribe()
     }
 
     override suspend fun loginWithTelegram(hash: String): Result<Unit> {
@@ -59,7 +63,7 @@ internal class AuthRepositoryImpl(
 
     override suspend fun loginWithGoogle(): Result<Unit> {
         return try {
-            val tokenId = googleSignIn() ?: return Result.Fail(Strings.UNKNOWN_ERROR.string())
+            val tokenId = googleAuthManager.signIn() ?: return Result.Fail(Strings.UNKNOWN_ERROR.string())
             val result =
                 authService
                     .login(
@@ -85,6 +89,7 @@ internal class AuthRepositoryImpl(
                     downloadRepository.removeAllDownloads()
                 } catch (e: Exception) {
                 }
+                notificationManager.unSubscribe()
                 storageManager.clearHttpCaches()
                 dbConnection.clearAllTables()
                 preference.clear()

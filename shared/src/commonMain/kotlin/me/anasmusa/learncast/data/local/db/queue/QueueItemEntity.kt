@@ -51,7 +51,7 @@ class QueueItemEntity(
         COALESCE(lo.status, s.status, 'NOT_STARTED') AS state_status,
         COALESCE(s.completedAt, lo.completedAt) AS state_completedAt,
         d.state as downloadState,
-        d.percentDownloaded as downloadedPercent
+        d.percentDownloaded as percentDownloaded
         FROM ${TableNames.QUEUE_ITEM} AS q
         LEFT JOIN ${TableNames.DOWNLOAD_STATE} AS d ON d.referenceId = q.referenceId AND d.referenceUuid = q.referenceUuid AND d.referenceType = q.referenceType
         LEFT JOIN ${TableNames.LESSON_STATE} AS s ON s.lessonId = q.referenceId

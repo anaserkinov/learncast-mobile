@@ -8,8 +8,8 @@ import androidx.media3.database.DatabaseProvider
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.SimpleCache
 import me.anasmusa.learncast.ApplicationLoader
-import me.anasmusa.learncast.DownloadCacheScope
-import me.anasmusa.learncast.PlaybackCacheScope
+import me.anasmusa.learncast.data.DownloadCacheScope
+import me.anasmusa.learncast.data.PlaybackCacheScope
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import org.koin.core.Koin
 import org.koin.core.qualifier.named

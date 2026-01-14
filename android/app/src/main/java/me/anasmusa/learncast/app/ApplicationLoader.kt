@@ -2,7 +2,7 @@ package me.anasmusa.learncast.app
 
 import me.anasmusa.learncast.R
 import me.anasmusa.learncast.core.AppConfig
-import me.anasmusa.learncast.core.ApplicationLoader
+import me.anasmusa.learncast.lib.core.ApplicationLoader
 
 class ApplicationLoader : ApplicationLoader() {
     override fun onCreate() {
@@ -10,7 +10,8 @@ class ApplicationLoader : ApplicationLoader() {
             appName = "LearnCast",
             mainLogo = R.drawable.logo,
             loginLogo = R.drawable.logo_transparent,
-            baseUrl = "http://localhost:3000",
+            apiBaseUrl = "http://localhost:3000",
+            publicBaseUrl = "https://learncast.anasmusa.me",
             telegramBotId = 8292515516L,
             telegramOrigin = "http://127.0.0.1:80",
             googleClientId = "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",

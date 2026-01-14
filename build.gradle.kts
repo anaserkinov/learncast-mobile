@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.room) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.googleServices) apply false
 }
 
 subprojects {

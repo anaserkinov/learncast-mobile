@@ -16,54 +16,53 @@ import me.anasmusa.learncast.data.local.storage.StorageManager
 import me.anasmusa.learncast.data.local.storage.createStorageManager
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.implementation.OutboxRepositoryImpl
-import org.koin.dsl.module
+import org.koin.core.module.Module
 
-fun localModule() =
-    module {
-        single {
-            Preferences()
-        }
-        single {
-            getAppDatabase()
-        }
-
-        factory<StorageManager> {
-            createStorageManager()
-        }
-
-        factory<DBConnection> {
-            createDBConnection(get())
-        }
-
-        single<OutboxRepository> {
-            OutboxRepositoryImpl(
-                get(),
-                get(),
-            )
-        }
-
-        factory<AuthorDao> {
-            get<AppDatabase>().getAuthorDao()
-        }
-        factory<TopicDao> {
-            get<AppDatabase>().getTopicDao()
-        }
-        factory<LessonDao> {
-            get<AppDatabase>().getLessonDao()
-        }
-        factory<SnipDao> {
-            get<AppDatabase>().getSnipDao()
-        }
-        factory<QueueItemDao> {
-            get<AppDatabase>().getQueueItemDao()
-        }
-        factory<OutboxDao> {
-            get<AppDatabase>().getOutboxDao()
-        }
-        factory<PagingStateDao> {
-            get<AppDatabase>().getPagingStateDao()
-        }
-        factory<DownloadDao> {
-            get<AppDatabase>().getDownloadDao()
-        }
+internal fun Module.localModule() {
+    single {
+        Preferences()
     }
+    single {
+        getAppDatabase()
+    }
+
+    factory<StorageManager> {
+        createStorageManager()
+    }
+
+    factory<DBConnection> {
+        createDBConnection(get())
+    }
+
+    single<OutboxRepository> {
+        OutboxRepositoryImpl(
+            get(),
+            get(),
+        )
+    }
+
+    factory<AuthorDao> {
+        get<AppDatabase>().getAuthorDao()
+    }
+    factory<TopicDao> {
+        get<AppDatabase>().getTopicDao()
+    }
+    factory<LessonDao> {
+        get<AppDatabase>().getLessonDao()
+    }
+    factory<SnipDao> {
+        get<AppDatabase>().getSnipDao()
+    }
+    factory<QueueItemDao> {
+        get<AppDatabase>().getQueueItemDao()
+    }
+    factory<OutboxDao> {
+        get<AppDatabase>().getOutboxDao()
+    }
+    factory<PagingStateDao> {
+        get<AppDatabase>().getPagingStateDao()
+    }
+    factory<DownloadDao> {
+        get<AppDatabase>().getDownloadDao()
+    }
+}

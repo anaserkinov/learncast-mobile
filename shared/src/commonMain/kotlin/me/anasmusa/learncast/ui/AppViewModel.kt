@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.anasmusa.learncast.AppScope
+import me.anasmusa.learncast.data.AppScope
 import me.anasmusa.learncast.data.repository.abstraction.AppRepository
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository

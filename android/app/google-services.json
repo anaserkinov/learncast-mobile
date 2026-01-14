@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "22454749576",
+    "project_id": "learncast-7ec6e",
+    "storage_bucket": "learncast-7ec6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:22454749576:android:38c163cf864ddb317ad23d",
+        "android_client_info": {
+          "package_name": "me.anasmusa.learncast"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "22454749576-31e7ddbru1vfllf89534vrkv9nafpnm0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.anasmusa.learncast",
+            "certificate_hash": "e3c3474b9b9ee3515564aee6b86e32633b6fe2a1"
+          }
+        },
+        {
+          "client_id": "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD04rieSVfJ-ZHMcnbsEVWGg9oY4-wjJNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

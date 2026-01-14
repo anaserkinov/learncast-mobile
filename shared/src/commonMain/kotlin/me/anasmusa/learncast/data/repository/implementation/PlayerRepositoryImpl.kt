@@ -19,10 +19,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import me.anasmusa.learncast.core.EVENT_SHOW_PLAYER
 import me.anasmusa.learncast.core.STATE_PLAYING
+import me.anasmusa.learncast.core.player.createPlayer
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
-import me.anasmusa.learncast.player.createPlayer
 import kotlin.math.max
 
 internal class PlayerRepositoryImpl(

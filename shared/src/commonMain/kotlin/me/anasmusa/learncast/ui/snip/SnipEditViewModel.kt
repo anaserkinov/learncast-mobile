@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PLAYING
+import me.anasmusa.learncast.core.player.AudioPlayer
+import me.anasmusa.learncast.core.player.createAudioPlayer
 import me.anasmusa.learncast.data.model.fold
 import me.anasmusa.learncast.data.model.onSuccess
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
-import me.anasmusa.learncast.player.AudioPlayer
-import me.anasmusa.learncast.player.createAudioPlayer
 import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
