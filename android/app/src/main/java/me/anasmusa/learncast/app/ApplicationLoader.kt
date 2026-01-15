@@ -10,10 +10,9 @@ class ApplicationLoader : ApplicationLoader() {
             appName = "LearnCast",
             mainLogo = R.drawable.logo,
             loginLogo = R.drawable.logo_transparent,
-            apiBaseUrl = "http://localhost:3000",
+            apiBaseUrl = "https://api.anasmusa.me/learncast/",
             publicBaseUrl = "https://learncast.anasmusa.me",
-            telegramBotId = 8292515516L,
-            telegramOrigin = "http://127.0.0.1:80",
+            telegramBotId = 8538344134L,
             googleClientId = "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
         )
         super.onCreate()

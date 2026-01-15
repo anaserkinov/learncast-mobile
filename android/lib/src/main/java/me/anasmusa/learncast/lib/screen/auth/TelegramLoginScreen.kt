@@ -29,7 +29,7 @@ fun TelegramLoginScreen(
     onGetResult: (result: String) -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
-    val urlToLoad = "https://oauth.telegram.org/auth?bot_id=${appConfig.telegramBotId}&origin=${appConfig.telegramOrigin}&lang=uz"
+    val urlToLoad = "https://oauth.telegram.org/auth?bot_id=${appConfig.telegramBotId}&origin=${appConfig.publicBaseUrl}&lang=uz"
     Box(
         modifier =
             Modifier

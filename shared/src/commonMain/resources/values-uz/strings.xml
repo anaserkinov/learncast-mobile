@@ -57,23 +57,29 @@
     <string name="clear_download">Yuklanmalarni tozalash</string>
     <string name="signout">Chiqish</string>
     <plurals name="snip">
-                        
+                                
+        
         
         <item quantity="one">%d snip</item>
-                        
+                                
+        
         
         <item quantity="other">%d sniplar</item>
-                    
+                            
+    
     
     </plurals>
     <plurals name="lesson">
-                        
+                                
+        
         
         <item quantity="one">%d dars</item>
-                        
+                                
+        
         
         <item quantity="other">%d darslar</item>
-                    
+                            
+    
     
     </plurals>
 </resources>

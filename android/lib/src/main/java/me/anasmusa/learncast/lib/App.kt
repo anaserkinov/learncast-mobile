@@ -334,7 +334,6 @@ fun AppTheme(content: @Composable () -> Unit) {
         apiBaseUrl = "http://localhost:3000",
         publicBaseUrl = "http://localhost:3000",
         telegramBotId = 8292515516L,
-        telegramOrigin = "http://127.0.0.1:80",
         googleClientId = "",
     )
     val file =
