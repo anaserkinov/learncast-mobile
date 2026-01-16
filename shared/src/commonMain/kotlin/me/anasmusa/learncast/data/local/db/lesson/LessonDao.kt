@@ -11,6 +11,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import me.anasmusa.learncast.data.local.db.TableNames
 import me.anasmusa.learncast.data.local.db.bind
+import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.model.ActionType
 import me.anasmusa.learncast.data.model.DownloadState
 import me.anasmusa.learncast.data.model.QueryOrder
@@ -164,7 +165,7 @@ internal interface LessonDao {
                 }
             when (sort) {
                 QuerySort.CREATED_AT -> query.append(" ORDER BY l.createdAt $order, l.id $order")
-                QuerySort.SNIP_COUNT -> query.append(" ORDER BY l.snipCount $order, l.id $order")
+                QuerySort.SNIP_COUNT -> query.append(" ORDER BY state_snipCount $order, l.id $order")
             }
         }
 
@@ -231,11 +232,14 @@ internal interface LessonDao {
             args.add("%${search.lowercase()}%")
         }
 
-        return getLessons(
+        return getDownloadedLessons(
             RoomRawQuery(query.toString()) { it.bind(args) },
         )
     }
 
     @RawQuery(observedEntities = [LessonEntity::class])
     fun getLessons(query: RoomRawQuery): PagingSource<Int, LessonWithState>
+
+    @RawQuery(observedEntities = [LessonEntity::class, DownloadStateEntity::class])
+    fun getDownloadedLessons(query: RoomRawQuery): PagingSource<Int, LessonWithState>
 }

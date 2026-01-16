@@ -59,16 +59,23 @@ internal class LessonRepositoryImpl(
                     isDownloaded = isDownloaded,
                 ),
             pagingSourceFactory = {
-                lessonDao.getLessons(
-                    search = search,
-                    authorId = authorId,
-                    topicId = topicId,
-                    isFavourite = isFavourite,
-                    isDownloaded = isDownloaded,
-                    status = status,
-                    sort = sort,
-                    order = order,
-                )
+                if (isDownloaded != null) {
+                    lessonDao.getDownloadedLessons(
+                        search = search,
+                        isDownloaded = isDownloaded,
+                    )
+                } else {
+                    lessonDao.getLessons(
+                        search = search,
+                        authorId = authorId,
+                        topicId = topicId,
+                        isFavourite = isFavourite,
+                        isDownloaded = isDownloaded,
+                        status = status,
+                        sort = sort,
+                        order = order,
+                    )
+                }
             },
         ).flow.map {
             it.map { entry ->
