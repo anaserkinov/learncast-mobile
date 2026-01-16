@@ -55,7 +55,7 @@ class HomeViewModel(
     private val lessonRepository: LessonRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<HomeState, HomeIntent, HomeEvent>() {
-    override val state: StateFlow<HomeState>
+    final override val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
     init {

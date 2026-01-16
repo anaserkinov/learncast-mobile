@@ -49,7 +49,7 @@ class QueueViewModel(
     private val queueRepository: QueueRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<QueueState, QueueIntent, QueueEvent>() {
-    override val state: StateFlow<QueueState>
+    final override val state: StateFlow<QueueState>
         field = MutableStateFlow(QueueState())
 
     init {

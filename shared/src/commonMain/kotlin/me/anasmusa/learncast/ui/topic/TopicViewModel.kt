@@ -48,7 +48,7 @@ class TopicViewModel(
     private val queueRepository: QueueRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<TopicState, TopicIntent, TopicEvent>() {
-    override val state: StateFlow<TopicState>
+    final override val state: StateFlow<TopicState>
         field = MutableStateFlow(TopicState())
 
     override fun handle(intent: TopicIntent) {

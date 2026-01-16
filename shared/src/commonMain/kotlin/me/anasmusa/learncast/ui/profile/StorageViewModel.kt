@@ -34,7 +34,7 @@ class StorageViewModel(
     private val queueRepository: QueueRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<StorageState, StorageIntent, StorageEvent>() {
-    override val state: StateFlow<StorageState>
+    final override val state: StateFlow<StorageState>
         field = MutableStateFlow(StorageState())
 
     init {

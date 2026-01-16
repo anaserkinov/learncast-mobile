@@ -33,7 +33,7 @@ sealed interface LoginEvent : BaseEvent {
 class LoginViewModel(
     private val authRepository: AuthRepository,
 ) : BaseViewModel<LoginState, LoginIntent, LoginEvent>() {
-    override val state: StateFlow<LoginState>
+    final override val state: StateFlow<LoginState>
         field = MutableStateFlow(LoginState())
 
     override fun handle(intent: LoginIntent) {

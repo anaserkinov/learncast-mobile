@@ -47,7 +47,7 @@ class SearchViewModel(
     private val lessonRepository: LessonRepository,
     private val topicRepository: TopicRepository,
 ) : BaseViewModel<SearchState, SearchIntent, SearchEvent>() {
-    override val state: StateFlow<SearchState>
+    final override val state: StateFlow<SearchState>
         field = MutableStateFlow(SearchState())
 
     override fun handle(intent: SearchIntent) {

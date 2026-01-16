@@ -35,7 +35,7 @@ class AppViewModel(
     private val syncRepository: SyncRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<AppState, AppIntent, AppEvent>() {
-    override val state: StateFlow<AppState>
+    final override val state: StateFlow<AppState>
         field = MutableStateFlow(AppState())
 
     private var appStateJob: Job? = null

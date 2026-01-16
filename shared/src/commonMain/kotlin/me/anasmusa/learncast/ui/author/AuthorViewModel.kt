@@ -52,7 +52,7 @@ class AuthorViewModel(
     private val topicRepository: TopicRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<AuthorState, AuthorIntent, AuthorEvent>() {
-    override val state: StateFlow<AuthorState>
+    final override val state: StateFlow<AuthorState>
         field = MutableStateFlow(AuthorState())
 
     override fun handle(intent: AuthorIntent) {

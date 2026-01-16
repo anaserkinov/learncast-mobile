@@ -1,14 +1,6 @@
 import SwiftUI
 import Shared
 
-//
-//  ListPagingItems.swift
-//  iosApp
-//
-//  Created by Anas Erkinjonov on 02/12/25.
-//
-
-
 @Observable
 final class LazyPagingItems<T: AnyObject> {
     

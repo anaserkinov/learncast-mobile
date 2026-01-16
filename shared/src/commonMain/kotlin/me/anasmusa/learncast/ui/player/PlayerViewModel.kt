@@ -72,7 +72,7 @@ class PlayerViewModel(
     private val downloadRepository: DownloadRepository,
     private val snipRepository: SnipRepository,
 ) : me.anasmusa.learncast.ui.BaseViewModel<PlayerState, PlayerIntent, PlayerEvent>() {
-    override val state: StateFlow<PlayerState>
+    final override val state: StateFlow<PlayerState>
         field = MutableStateFlow(PlayerState())
 
     private var snipCountLoadJob: Job? = null

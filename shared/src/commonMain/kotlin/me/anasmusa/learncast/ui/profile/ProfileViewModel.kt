@@ -36,7 +36,7 @@ class ProfileViewModel(
     private val authRepository: AuthRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<ProfileState, ProfileIntent, ProfileEvent>() {
-    override val state: StateFlow<ProfileState>
+    final override val state: StateFlow<ProfileState>
         field = MutableStateFlow(ProfileState())
 
     init {

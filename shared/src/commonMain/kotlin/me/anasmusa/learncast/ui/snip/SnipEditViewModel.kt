@@ -68,7 +68,7 @@ class SnipEditViewModel(
 ) : BaseViewModel<SnipEditState, SnipEdiIntent, SnipEditEvent>() {
     private lateinit var audioPlayer: AudioPlayer
 
-    override val state: StateFlow<SnipEditState>
+    final override val state: StateFlow<SnipEditState>
         field = MutableStateFlow(SnipEditState())
 
     private var pauseAt = 0L

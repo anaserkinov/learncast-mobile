@@ -45,7 +45,7 @@ class PlayerSnipViewModel(
     private val snipRepository: SnipRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<PlayerSnipState, PlayerSnipIntent, SnipEvent>() {
-    override val state: StateFlow<PlayerSnipState>
+    final override val state: StateFlow<PlayerSnipState>
         field = MutableStateFlow(PlayerSnipState())
 
     init {

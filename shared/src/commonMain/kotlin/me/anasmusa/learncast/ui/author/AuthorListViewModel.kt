@@ -39,7 +39,7 @@ sealed interface AuthorListEvent : BaseEvent
 class AuthorListViewModel(
     private val authorRepository: AuthorRepository,
 ) : BaseViewModel<AuthorListState, AuthorListIntent, AuthorListEvent>() {
-    override val state: StateFlow<AuthorListState>
+    final override val state: StateFlow<AuthorListState>
         field = MutableStateFlow(AuthorListState())
 
     init {

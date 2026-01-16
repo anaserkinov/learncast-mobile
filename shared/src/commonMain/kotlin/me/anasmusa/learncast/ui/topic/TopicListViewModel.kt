@@ -39,7 +39,7 @@ sealed interface TopicListEvent : BaseEvent
 class TopicListViewModel(
     private val topicRepository: TopicRepository,
 ) : BaseViewModel<TopicListState, TopicListIntent, TopicListEvent>() {
-    override val state: StateFlow<TopicListState>
+    final override val state: StateFlow<TopicListState>
         field = MutableStateFlow(TopicListState())
 
     init {
