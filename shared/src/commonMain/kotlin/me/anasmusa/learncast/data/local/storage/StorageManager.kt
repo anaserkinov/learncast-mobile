@@ -7,8 +7,6 @@ interface StorageManager {
 
     suspend fun clearCaches()
 
-    suspend fun clearHttpCaches()
-
     suspend fun clearDownloads()
 }
 

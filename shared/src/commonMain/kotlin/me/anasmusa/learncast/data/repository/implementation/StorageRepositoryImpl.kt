@@ -4,10 +4,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.data.local.storage.StorageManager
+import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
 
 internal class StorageRepositoryImpl(
     private val storageManager: StorageManager,
+    private val downloadRepository: DownloadRepository,
 ) : StorageRepository {
     override suspend fun getCacheSize(): Float =
         try {
@@ -37,6 +39,7 @@ internal class StorageRepositoryImpl(
         withContext(Dispatchers.IO) {
             try {
                 storageManager.clearDownloads()
+                downloadRepository.removeAllDownloads()
                 storageManager.getDownloadSize()
             } catch (e: Exception) {
                 storageManager.getDownloadSize()

@@ -8,14 +8,15 @@ interface DownloadRepository {
         referenceId: Long,
         referenceUuid: String,
         referenceType: ReferenceType,
+        lessonId: Long,
         audioPath: String,
         startMs: Long?,
         endMs: Long?,
     )
 
-    suspend fun cancel(id: Long)
+    suspend fun remove(id: Long)
 
-    suspend fun cancel(
+    suspend fun remove(
         referenceId: Long,
         referenceUuid: String,
         referenceType: ReferenceType,

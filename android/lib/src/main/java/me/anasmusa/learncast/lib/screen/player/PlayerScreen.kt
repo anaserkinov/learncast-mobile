@@ -961,6 +961,9 @@ private fun _PlayerScreen(
                 onDownloadClicked = {
                     sendIntent(PlayerIntent.Download)
                 },
+                onRemoveDownloadClicked = {
+                    sendIntent(PlayerIntent.RemoveDownload)
+                },
                 onCompletedClicked = {
                     sendIntent(PlayerIntent.ToggleCompletedState)
                 },

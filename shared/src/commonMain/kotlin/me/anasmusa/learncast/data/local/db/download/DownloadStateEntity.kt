@@ -9,7 +9,6 @@ import me.anasmusa.learncast.data.model.ReferenceType
 @Entity(tableName = TableNames.DOWNLOAD_STATE)
 class DownloadStateEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
-    val parentId: Long,
     val referenceId: Long,
     val referenceUuid: String,
     val referenceType: ReferenceType,

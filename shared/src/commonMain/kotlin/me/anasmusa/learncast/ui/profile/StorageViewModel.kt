@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
@@ -33,7 +32,6 @@ sealed interface StorageEvent : BaseEvent
 class StorageViewModel(
     private val storageRepository: StorageRepository,
     private val queueRepository: QueueRepository,
-    private val downloadRepository: DownloadRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<StorageState, StorageIntent, StorageEvent>() {
     override val state: StateFlow<StorageState>
@@ -87,7 +85,6 @@ class StorageViewModel(
         state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             playerRepository.stopService()
-            downloadRepository.removeAllDownloads()
             val downloadSize = storageRepository.clearDownloads()
             state.update {
                 it.copy(

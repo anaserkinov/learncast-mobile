@@ -8,7 +8,6 @@ import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import me.anasmusa.learncast.AndroidDownloadService
 import me.anasmusa.learncast.core.normalizeUrl
-import me.anasmusa.learncast.data.local.db.DBConnection
 import me.anasmusa.learncast.data.local.db.download.DownloadDao
 import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.model.DownloadState
@@ -19,12 +18,12 @@ import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 internal class DownloadRepositoryImpl(
     private val context: Context,
     private val downloadDao: DownloadDao,
-    private val dbConnection: DBConnection,
 ) : DownloadRepository {
     override suspend fun download(
         referenceId: Long,
         referenceUuid: String,
         referenceType: ReferenceType,
+        lessonId: Long,
         audioPath: String,
         startMs: Long?,
         endMs: Long?,
@@ -34,71 +33,24 @@ internal class DownloadRepositoryImpl(
             when (downloadState?.state) {
                 DownloadState.DOWNLOADING, DownloadState.COMPLETED -> return
                 DownloadState.STOPPED -> {
-                    if (downloadState.parentId != 0L) {
-                        val lessonDownloadState = downloadDao.getById(downloadState.parentId)
-                        if (lessonDownloadState != null) {
-                            downloadDao.update(
-                                downloadState.id,
-                                lessonDownloadState.state,
-                                lessonDownloadState.percentDownloaded,
-                            )
-                            if (lessonDownloadState.state == DownloadState.STOPPED) {
-                                DownloadService.sendRemoveDownload(
-                                    context,
-                                    AndroidDownloadService::class.java,
-                                    lessonDownloadState.id.toString(),
-                                    false,
-                                )
-                            }
-                        }
-                        return
-                    }
-                    DownloadService.sendRemoveDownload(
+                    DownloadService.sendResumeDownloads(
                         context,
                         AndroidDownloadService::class.java,
-                        downloadState.id.toString(),
                         false,
                     )
                     return
                 }
+
                 else -> {}
             }
-            val lessonDownloadState = downloadDao.getLessonState(referenceId)
-            if (lessonDownloadState == null ||
-                lessonDownloadState.state == DownloadState.REMOVING
-            ) {
-                createDownloadRequest(
-                    referenceId = referenceId,
-                    referenceUuid = referenceUuid,
-                    referenceType = referenceType,
-                    audioPath = audioPath,
-                    startMs = startMs,
-                    endMs = endMs,
-                )
-            } else {
-                downloadDao.insert(
-                    DownloadStateEntity(
-                        id = 0L,
-                        parentId = lessonDownloadState.id,
-                        referenceId = referenceId,
-                        referenceUuid = referenceUuid,
-                        referenceType = referenceType,
-                        audioPath = audioPath,
-                        startMs = startMs,
-                        endMs = endMs,
-                        state = lessonDownloadState.state,
-                        percentDownloaded = lessonDownloadState.percentDownloaded,
-                    ),
-                )
-                if (lessonDownloadState.state == DownloadState.STOPPED) {
-                    DownloadService.sendRemoveDownload(
-                        context,
-                        AndroidDownloadService::class.java,
-                        lessonDownloadState.id.toString(),
-                        false,
-                    )
-                }
-            }
+            createDownloadRequest(
+                referenceId = referenceId,
+                referenceUuid = referenceUuid,
+                referenceType = referenceType,
+                audioPath = audioPath,
+                startMs = startMs,
+                endMs = endMs,
+            )
         } catch (e: Exception) {
         }
     }
@@ -115,7 +67,6 @@ internal class DownloadRepositoryImpl(
             downloadDao.insert(
                 DownloadStateEntity(
                     id = 0L,
-                    parentId = 0L,
                     referenceId = referenceId,
                     referenceUuid = referenceUuid,
                     referenceType = referenceType,
@@ -131,61 +82,38 @@ internal class DownloadRepositoryImpl(
             AndroidDownloadService::class.java,
             DownloadRequest
                 .Builder(id.toString(), audioPath.normalizeUrl().toUri())
-                .apply {
-                    if (startMs != null && endMs != null) {
-                        setTimeRange(startMs * 1000, endMs * 1000)
-                    }
-                }.build(),
+                .build(),
             false,
         )
     }
 
-    override suspend fun cancel(id: Long) {
+    override suspend fun remove(id: Long) {
         try {
             downloadDao.getById(id)?.let {
-                cancel(id, it.referenceType)
+                downloadDao.delete(it.audioPath)
             }
         } catch (e: Exception) {
         }
     }
 
-    override suspend fun cancel(
+    override suspend fun remove(
         referenceId: Long,
         referenceUuid: String,
         referenceType: ReferenceType,
     ) {
         try {
             downloadDao.get(referenceId, referenceUuid, referenceType)?.let {
-                cancel(it.id, referenceType)
-                DownloadService.sendRemoveDownload(
-                    context,
-                    AndroidDownloadService::class.java,
-                    it.id.toString(),
-                    false,
-                )
-            }
-        } catch (e: Exception) {
-        }
-    }
-
-    private suspend fun cancel(
-        id: Long,
-        referenceType: ReferenceType,
-    ) {
-        dbConnection.inWriteTransaction {
-            if (referenceType == ReferenceType.LESSON) {
-                downloadDao.getChildren(id).forEach {
-                    createDownloadRequest(
-                        it.referenceId,
-                        it.referenceUuid,
-                        it.referenceType,
-                        it.audioPath,
-                        it.startMs,
-                        it.endMs,
+                downloadDao.delete(it.id)
+                if (!downloadDao.isInUse(it.audioPath)) {
+                    DownloadService.sendRemoveDownload(
+                        context,
+                        AndroidDownloadService::class.java,
+                        it.id.toString(),
+                        false,
                     )
                 }
             }
-            downloadDao.delete(id)
+        } catch (e: Exception) {
         }
     }
 
@@ -205,11 +133,15 @@ internal class DownloadRepositoryImpl(
     }
 
     override suspend fun removeAllDownloads() {
-        DownloadService.sendRemoveAllDownloads(
-            context,
-            AndroidDownloadService::class.java,
-            false,
-        )
-        downloadDao.clear()
+        try {
+            DownloadService.clearDownloadManagerHelpers()
+            DownloadService.sendRemoveAllDownloads(
+                context,
+                AndroidDownloadService::class.java,
+                false,
+            )
+            downloadDao.clear()
+        } catch (e: Exception) {
+        }
     }
 }

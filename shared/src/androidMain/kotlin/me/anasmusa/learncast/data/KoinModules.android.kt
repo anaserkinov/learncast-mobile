@@ -49,7 +49,6 @@ internal actual fun Module.platformModule() {
         DownloadRepositoryImpl(
             androidContext(),
             get(),
-            get(),
         )
     }
 

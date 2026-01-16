@@ -48,6 +48,8 @@ sealed interface PlayerIntent : me.anasmusa.learncast.ui.BaseIntent {
 
     data object Download : PlayerIntent
 
+    data object RemoveDownload : PlayerIntent
+
     data object ToggleCompletedState : PlayerIntent
 
     data object ToggleFavourite : PlayerIntent
@@ -132,6 +134,7 @@ class PlayerViewModel(
             is PlayerIntent.SeekTo -> seekTo(intent.value)
             is PlayerIntent.Seek -> seek(intent.forward)
             is PlayerIntent.Download -> download()
+            is PlayerIntent.RemoveDownload -> removeDownload()
             is PlayerIntent.ToggleCompletedState -> toggleCompletedState()
             is PlayerIntent.ToggleFavourite -> toggleFavourite()
             is PlayerIntent.LoadSnipCount -> loadSnipCount()
@@ -156,9 +159,24 @@ class PlayerViewModel(
                     it.referenceId,
                     it.referenceUuid,
                     it.referenceType,
+                    it.lessonId,
                     it.audioPath,
                     it.startMs,
                     it.endMs,
+                )
+                state.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    private fun removeDownload() {
+        state.update { it.copy(isLoading = true) }
+        state.value.currentPlaying?.let {
+            viewModelScope.launch {
+                downloadRepository.remove(
+                    it.referenceId,
+                    it.referenceUuid,
+                    it.referenceType,
                 )
                 state.update { it.copy(isLoading = false) }
             }

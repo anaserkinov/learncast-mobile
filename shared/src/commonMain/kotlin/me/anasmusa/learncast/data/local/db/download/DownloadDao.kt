@@ -12,8 +12,8 @@ interface DownloadDao {
     @Insert
     suspend fun insert(item: DownloadStateEntity): Long
 
-    @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE referenceId = :referenceId AND referenceType = 'LESSON'")
-    suspend fun getLessonState(referenceId: Long): DownloadStateEntity?
+    @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id")
+    suspend fun getById(id: Long): DownloadStateEntity?
 
     @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE referenceId = :referenceId AND referenceUuid = :referenceUuid AND referenceType = :referenceType")
     suspend fun get(
@@ -22,21 +22,21 @@ interface DownloadDao {
         referenceType: ReferenceType,
     ): DownloadStateEntity?
 
-    @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id")
-    suspend fun getById(id: Long): DownloadStateEntity?
-
-    @Query("SELECT * FROM ${TableNames.DOWNLOAD_STATE} WHERE parentId = :id")
-    suspend fun getChildren(id: Long): List<DownloadStateEntity>
-
-    @Query("UPDATE ${TableNames.DOWNLOAD_STATE} SET state = :state, percentDownloaded = :percentDownloaded WHERE id = :id OR parentId = :id")
+    @Query("UPDATE ${TableNames.DOWNLOAD_STATE} SET state = :state, percentDownloaded = :percentDownloaded WHERE id = :id")
     suspend fun update(
         id: Long,
         state: DownloadState,
         percentDownloaded: Float,
     )
 
-    @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id OR parentId = :id")
+    @Query("SELECT EXISTS(SELECT id FROM ${TableNames.DOWNLOAD_STATE} WHERE audioPath = :audioPath)")
+    suspend fun isInUse(audioPath: String): Boolean
+
+    @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE} WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE} WHERE audioPath = :audioPath")
+    suspend fun delete(audioPath: String)
 
     @Query("DELETE FROM ${TableNames.DOWNLOAD_STATE}")
     suspend fun clear()

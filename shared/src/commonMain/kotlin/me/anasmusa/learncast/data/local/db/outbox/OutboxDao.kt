@@ -126,8 +126,8 @@ internal interface OutboxDao {
         """
         SELECT id
             FROM ${TableNames.OUTBOX} WHERE 
-            (status = 'PENDING' AND (lastTriedAt IS NULL OR unixepoch() * 1000 - lastTriedAt >= 3600000) OR 
-                status = 'IN_PROGRESS' AND lastTriedAt IS NOT NULL AND unixepoch() * 1000 - lastTriedAt >= 3600000) 
+            (status = 'PENDING' AND (lastTriedAt IS NULL OR CAST(strftime('%s') AS INT) * 1000 - lastTriedAt >= 3600000) OR 
+                status = 'IN_PROGRESS' AND lastTriedAt IS NOT NULL AND CAST(strftime('%s') AS INT) * 1000 - lastTriedAt >= 3600000) 
             ORDER BY lastTriedAt ASC, createdAt ASC
             LIMIT 1
         """,
@@ -137,15 +137,15 @@ internal interface OutboxDao {
     @Query(
         """SELECT *
         FROM ${TableNames.OUTBOX} WHERE 
-        (status = 'PENDING' AND (lastTriedAt IS NULL OR unixepoch() * 1000 - lastTriedAt >= 3600000) OR 
-            status = 'IN_PROGRESS' AND lastTriedAt IS NOT NULL AND unixepoch() * 1000 - lastTriedAt >= 3600000) 
+        (status = 'PENDING' AND (lastTriedAt IS NULL OR CAST(strftime('%s') AS INT) * 1000 - lastTriedAt >= 3600000) OR 
+            status = 'IN_PROGRESS' AND lastTriedAt IS NOT NULL AND CAST(strftime('%s') AS INT) * 1000 - lastTriedAt >= 3600000) 
         ORDER BY lastTriedAt ASC, createdAt ASC
         LIMIT 1
         """,
     )
     suspend fun getToSyncUnsafe(): OutboxEntity?
 
-    @Query("UPDATE ${TableNames.OUTBOX} SET status = :status, lastTriedAt = unixepoch() * 1000  WHERE id = :id")
+    @Query("UPDATE ${TableNames.OUTBOX} SET status = :status, lastTriedAt = CAST(strftime('%s') AS INT) * 1000  WHERE id = :id")
     suspend fun changeStatus(
         id: Long,
         status: OutboxStatus,

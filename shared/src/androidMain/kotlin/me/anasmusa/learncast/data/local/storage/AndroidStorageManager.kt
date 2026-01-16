@@ -48,7 +48,7 @@ class AndroidStorageManager(
         clearHttpCaches()
     }
 
-    override suspend fun clearHttpCaches() {
+    private suspend fun clearHttpCaches() {
         val cacheFolder = context.externalCacheDir ?: return
         File(cacheFolder, "http").deleteRecursively()
         koin.get<CachingCacheStorage>().clearMap()

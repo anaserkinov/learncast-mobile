@@ -12,20 +12,18 @@ import me.anasmusa.learncast.core.notification.NotificationManager
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.local.Preferences
 import me.anasmusa.learncast.data.local.db.DBConnection
-import me.anasmusa.learncast.data.local.storage.StorageManager
 import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.network.model.auth.LoginRequest
 import me.anasmusa.learncast.data.network.model.auth.LoginResponse
 import me.anasmusa.learncast.data.network.service.AuthService
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
-import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
+import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
 import me.anasmusa.learncast.string
 
 internal class AuthRepositoryImpl(
     private val authService: AuthService,
     private val preference: Preferences,
-    private val storageManager: StorageManager,
-    private val downloadRepository: DownloadRepository,
+    private val storageRepository: StorageRepository,
     private val googleAuthManager: GoogleAuthManager,
     private val notificationManager: NotificationManager,
     private val dbConnection: DBConnection,
@@ -85,12 +83,9 @@ internal class AuthRepositoryImpl(
                     authService.logout()
                 } catch (e: Exception) {
                 }
-                try {
-                    downloadRepository.removeAllDownloads()
-                } catch (e: Exception) {
-                }
+                storageRepository.clearCaches()
+                storageRepository.clearDownloads()
                 notificationManager.unSubscribe()
-                storageManager.clearHttpCaches()
                 dbConnection.clearAllTables()
                 preference.clear()
             } catch (e: Exception) {

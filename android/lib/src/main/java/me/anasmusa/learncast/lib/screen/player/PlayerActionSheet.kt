@@ -39,6 +39,7 @@ private fun LessonPlayerActionSheetPreview() {
             isFavourite = true,
             onDismissRequest = {},
             onDownloadClicked = {},
+            onRemoveDownloadClicked = {},
             onCompletedClicked = {},
             onFavouriteClicked = {},
             onDeleteClicked = {},
@@ -58,6 +59,7 @@ private fun SnipPlayerActionSheetPreview() {
             isFavourite = true,
             onDismissRequest = {},
             onDownloadClicked = {},
+            onRemoveDownloadClicked = {},
             onCompletedClicked = {},
             onFavouriteClicked = {},
             onDeleteClicked = {},
@@ -75,6 +77,7 @@ fun PlayerActionSheet(
     isFavourite: Boolean,
     onDismissRequest: () -> Unit,
     onDownloadClicked: () -> Unit,
+    onRemoveDownloadClicked: () -> Unit,
     onCompletedClicked: () -> Unit,
     onFavouriteClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
@@ -120,7 +123,11 @@ fun PlayerActionSheet(
                     paddingBetween = 28.dp,
                     onClick = {
                         onDismissRequest()
-                        onDownloadClicked()
+                        when (downloadState) {
+                            null, DownloadState.STOPPED -> onDownloadClicked()
+                            DownloadState.COMPLETED -> onRemoveDownloadClicked()
+                            else -> {}
+                        }
                     },
                 )
 

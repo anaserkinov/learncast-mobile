@@ -9,11 +9,9 @@ import androidx.media3.exoplayer.offline.DownloadNotificationHelper
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.media3.exoplayer.scheduler.Scheduler
 import androidx.media3.exoplayer.workmanager.WorkManagerScheduler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.player.HttpDataSourceFactory
 import me.anasmusa.learncast.data.DownloadCacheScope
@@ -22,7 +20,6 @@ import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.qualifier.named
-import java.lang.Exception
 
 @OptIn(UnstableApi::class)
 class AndroidDownloadService :
@@ -34,8 +31,6 @@ class AndroidDownloadService :
         appConfig.downloadNotificationMessage,
     ),
     KoinComponent {
-    private val scope = CoroutineScope(Dispatchers.Default)
-
     private fun Int.toDownloadState() =
         when (this) {
             Download.STATE_QUEUED, Download.STATE_DOWNLOADING, Download.STATE_RESTARTING -> DownloadState.DOWNLOADING
@@ -64,7 +59,7 @@ class AndroidDownloadService :
                     finalException: Exception?,
                 ) {
                     super.onDownloadChanged(downloadManager, download, finalException)
-                    scope.launch {
+                    runBlocking {
                         downloadRepository.update(
                             download.request.id.toLong(),
                             download.state.toDownloadState(),
@@ -78,8 +73,8 @@ class AndroidDownloadService :
                     download: Download,
                 ) {
                     super.onDownloadRemoved(downloadManager, download)
-                    scope.launch {
-                        downloadRepository.cancel(download.request.id.toLong())
+                    runBlocking {
+                        downloadRepository.remove(download.request.id.toLong())
                     }
                 }
             },
@@ -106,6 +101,5 @@ class AndroidDownloadService :
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
     }
 }

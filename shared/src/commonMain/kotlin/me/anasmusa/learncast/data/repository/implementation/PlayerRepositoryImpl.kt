@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,7 +38,10 @@ internal class PlayerRepositoryImpl(
     override val currentQueueItem =
         player.currentQueueItemId
             .flatMapLatest { if (it == null) flowOf(null) else queueRepository.observe(it) }
-            .stateIn(scope, SharingStarted.Companion.Eagerly, null)
+            .onEach {
+                if (it != null) {
+                }
+            }.stateIn(scope, SharingStarted.Companion.Eagerly, null)
     override val playbackPositionMs = MutableStateFlow(0L)
     override val playbackState = player.playbackState
     override val queuedCount = MutableStateFlow(0)
@@ -49,12 +53,23 @@ internal class PlayerRepositoryImpl(
                 .combine(playbackState) { queueItem, state ->
                     Pair(queueItem, state)
                 }.collectLatest {
-                    if (it.first != null && it.second == STATE_PLAYING) {
-                        while (true) {
-                            withContext(Dispatchers.Main) {
-                                playbackPositionMs.value = player.getCurrentPositonMs()
+                    if (it.first != null) {
+                        if (it.second == STATE_PLAYING) {
+                            while (true) {
+                                withContext(Dispatchers.Main) {
+                                    playbackPositionMs.value = player.getCurrentPositonMs()
+                                }
+                                delay(1000)
                             }
-                            delay(1000)
+                        } else {
+                            var delayDuration = 1000L
+                            while (true) {
+                                withContext(Dispatchers.Main) {
+                                    playbackPositionMs.value = player.getCurrentPositonMs()
+                                }
+                                delay(delayDuration)
+                                delayDuration = max(0, delayDuration * 2)
+                            }
                         }
                     }
                 }
@@ -62,7 +77,17 @@ internal class PlayerRepositoryImpl(
     }
 
     override fun addToQueue(item: QueueItem) {
-        if (item.id == currentQueueItem.value?.id) return
+        currentQueueItem.value?.let {
+            if (item.referenceId == it.referenceId &&
+                item.referenceUuid == it.referenceUuid &&
+                item.referenceType == it.referenceType
+            ) {
+                scope.launch {
+                    events.send(EVENT_SHOW_PLAYER)
+                }
+                return
+            }
+        }
         queueLoadJob?.cancel()
         queueLoadJob =
             scope.launch {

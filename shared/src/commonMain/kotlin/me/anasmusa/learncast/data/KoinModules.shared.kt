@@ -55,7 +55,6 @@ internal fun dataModule() =
                 get(),
                 get(),
                 get(),
-                get(),
             )
         }
         factory<TopicRepository> {
@@ -115,6 +114,7 @@ internal fun dataModule() =
 
         factory<StorageRepository> {
             StorageRepositoryImpl(
+                get(),
                 get(),
             )
         }
