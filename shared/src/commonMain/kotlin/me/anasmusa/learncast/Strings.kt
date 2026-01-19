@@ -1,7 +1,7 @@
 package me.anasmusa.learncast
 
 object Strings {
-    internal const val PLURAL_FIRST_INDEX = 57
+    internal const val PLURAL_FIRST_INDEX = 62
 
     const val ENGLISH = 1
     const val UZBEK = 2
@@ -59,6 +59,11 @@ object Strings {
     const val CLEAR_CACHE = 54
     const val CLEAR_DOWNLOAD = 55
     const val SIGNOUT = 56
-    const val SNIP = 57
-    const val LESSON = 64
+    const val SIGN_OUT_CONFIRM_MESSAGE = 57
+    const val YES = 58
+    const val REMOVE_DOWNLOADS = 59
+    const val CLEAR_CACHE_CONFIRM_MESSAGE = 60
+    const val CLEAR_DOWNLOADS_CONFIRM_MESSAGE = 61
+    const val SNIP = 62
+    const val LESSON = 69
 }

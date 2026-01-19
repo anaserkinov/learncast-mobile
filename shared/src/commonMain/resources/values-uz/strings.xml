@@ -56,29 +56,88 @@
     <string name="clear_cache">Keshni tozalash</string>
     <string name="clear_download">Yuklanmalarni tozalash</string>
     <string name="signout">Chiqish</string>
+    <string name="sign_out_confirm_message">Siz ushbu qurilmadan tizimdan chiqasiz va qayta kirishingiz kerak bo'ladi.</string>
+    <string name="yes">Ha</string>
+    <string name="remove_downloads">Yuklab olinganlarni o‘chirish</string>
+    <string name="clear_cache_confirm_message">Kesh maʼlumotlari ushbu qurilmadan o‘chiriladi. Bu akkauntingizga yoki yuklab olingan fayllarga taʼsir qilmaydi.</string>
+    <string name="clear_downloads_confirm_message">Ushbu qurilmadagi barcha yuklab olingan maʼlumotlar butunlay o‘chiriladi. Internetga ulanganingizda ularni qayta yuklab olishingiz mumkin.</string>
     <plurals name="snip">
-                                
+                                                                                                        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         <item quantity="one">%d snip</item>
-                                
+                                                                                                        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         <item quantity="other">%d sniplar</item>
-                            
+                                                                                                    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     </plurals>
     <plurals name="lesson">
-                                
+                                                                                                        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         <item quantity="one">%d dars</item>
-                                
+                                                                                                        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         <item quantity="other">%d darslar</item>
-                            
+                                                                                                    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     </plurals>

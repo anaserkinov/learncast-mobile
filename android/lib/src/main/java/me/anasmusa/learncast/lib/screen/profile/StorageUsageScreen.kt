@@ -21,6 +21,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -30,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.AppTheme
+import me.anasmusa.learncast.lib.component.ConfirmationBottomSheet
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
@@ -100,6 +104,8 @@ private fun _StorageUsageScreen(
     clearDownload: () -> Unit,
 ) {
     val env = LocalAppEnvironment.current
+    var showClearCacheConfirm by remember { mutableStateOf(false) }
+    var showClearDownloadsConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier =
@@ -164,7 +170,9 @@ private fun _StorageUsageScreen(
             }
             Button(
                 title = Strings.CLEAR_CACHE,
-                onClick = clearCache,
+                onClick = {
+                    showClearCacheConfirm = true
+                },
             )
 
             Row(
@@ -185,12 +193,44 @@ private fun _StorageUsageScreen(
             }
             Button(
                 title = Strings.CLEAR_DOWNLOAD,
-                onClick = clearDownload,
+                onClick = {
+                    showClearDownloadsConfirm = true
+                },
             )
         }
     }
 
     if (state.isLoading) {
         Loader()
+    }
+
+    if (showClearCacheConfirm) {
+        ConfirmationBottomSheet(
+            title = Strings.CLEAR_CACHE.string() + "?",
+            message = Strings.CLEAR_CACHE_CONFIRM_MESSAGE.string(),
+            positiveButtonTitle = Strings.CLEAR.string(),
+            onConfirm = {
+                showClearCacheConfirm = false
+                clearCache()
+            },
+            onDismiss = {
+                showClearCacheConfirm = false
+            },
+        )
+    }
+
+    if (showClearDownloadsConfirm) {
+        ConfirmationBottomSheet(
+            title = Strings.REMOVE_DOWNLOADS.string() + "?",
+            message = Strings.CLEAR_DOWNLOADS_CONFIRM_MESSAGE.string(),
+            positiveButtonTitle = Strings.CLEAR.string(),
+            onConfirm = {
+                showClearDownloadsConfirm = false
+                clearDownload()
+            },
+            onDismiss = {
+                showClearDownloadsConfirm = false
+            },
+        )
     }
 }
