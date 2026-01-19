@@ -13,7 +13,7 @@ platform :android do
 
       release = firebase_app_distribution(
         app: ENV["APP_ID"],
-        service_credentials: "firebase_distribution.json"
+        service_credentials_file: "firebase_distribution.json"
       )
   end
 
