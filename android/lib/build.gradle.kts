@@ -20,7 +20,8 @@ android {
 
     buildTypes {
         debug {
-            manifestPlaceholders["crashlyticsCollectionEnabled"] = false
+            val crashlyticsCollectionEnabled = project.findProperty("crashlyticsEnabled")?.toString()?.toBoolean() ?: true
+            manifestPlaceholders["crashlyticsCollectionEnabled"] = crashlyticsCollectionEnabled
         }
         release {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = true
