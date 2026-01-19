@@ -71,6 +71,11 @@
     <string name="clear_cache">Clear Cache</string>
     <string name="clear_download">Clear Downloads</string>
     <string name="signout">Sign out</string>
+    <string name="sign_out_confirm_message">You will be logged out from this device and will need to sign in again.</string>
+    <string name="yes">Yes</string>
+    <string name="remove_downloads">Remove downloads</string>
+    <string name="clear_cache_confirm_message">Cached data will be removed from this device. This won’t affect your account or downloaded content.</string>
+    <string name="clear_downloads_confirm_message">This will permanently remove all downloaded content from this device. You can download them again when you’re online.</string>
 
     <plurals name="snip">
         <item quantity="one">%d snip</item>
