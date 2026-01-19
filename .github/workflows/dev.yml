@@ -1,0 +1,44 @@
+name: Build and Distribute APK
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: '9.1.0'
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2
+          bundler-cache: true
+
+      - name: Decode Service Account Key JSON File
+        uses: timheuer/base64-to-file@v1
+        id: service_account_json_file
+        with:
+          fileName: "firebase_distribution.json"
+          encodedString: ${{ secrets.FIREBASE_DISTRIBUTION_ACCESS_KEY }}
+
+      - name: Distribute a new build to Firebase
+        run: bundle exec fastlane distribute
+        env:
+          APP_ID: ${{ secrets.APP_ID }}

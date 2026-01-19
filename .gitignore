@@ -22,3 +22,7 @@ shared/schemas
 **/app/release
 **/ios/Resources
 **/src/main/assets/
+
+**/fastlane/report.xml
+
+**/firebase_distribution.json

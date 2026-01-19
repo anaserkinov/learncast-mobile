@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc "Distribute a new build to Firebase Distribute"
+  lane :distribute do
+      gradle(
+        task: "assemble",
+        build_type: "Release",
+        properties: {
+            "environment" => "dev"
+        }
+      )
+
+      release = firebase_app_distribution(
+        app: ENV["APP_ID"],
+        service_credentials: "firebase_distribution.json"
+      )
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end
