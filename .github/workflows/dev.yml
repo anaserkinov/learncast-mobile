@@ -37,6 +37,7 @@ jobs:
         id: service_account_json_file
         with:
           fileName: "firebase_distribution.json"
+          fileDir: "./"
           encodedString: ${{ secrets.FIREBASE_DISTRIBUTION_ACCESS_KEY }}
 
       - name: Distribute a new build to Firebase
