@@ -23,8 +23,8 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file("keystore/keystore.jks")
+        getByName("debug") {
+            storeFile = file("keystores/debug.jks")
             storePassword = "learncast_app"
             keyAlias = "learncast_app"
             keyPassword = "learncast_app"
@@ -39,10 +39,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         debug {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {

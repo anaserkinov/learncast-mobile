@@ -19,7 +19,6 @@ captures
 node_modules/
 shared/schemas
 
-**/keystore
 **/app/release
 **/ios/Resources
 **/src/main/assets/
