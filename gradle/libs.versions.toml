@@ -1,10 +1,9 @@
 [versions]
-agp = "8.13.2"
+agp = "9.0.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
-androidx-appcompat = "1.7.1"
 androidx-lifecycle = "2.9.6"
 appUpdate = "2.1.0"
 kotlin = "2.3.0"
@@ -14,7 +13,6 @@ nav3Core = "1.0.0"
 kotlinSerialization = "2.3.0"
 kotlinxSerializationJson = "1.9.0"
 lifecycleViewmodelNav3 = "2.10.0"
-runtime = "1.10.0"
 skie = "0.10.9"
 ktor = "3.3.3"
 koin = "4.1.1"
@@ -138,6 +136,7 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+kotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
@@ -145,7 +144,6 @@ skie = { id = "co.touchlab.skie", version.ref = "skie" }
 squareupWire = { id = "com.squareup.wire", version.ref = "squarup-wire" }
 devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 room = { id = "androidx.room", version.ref = "room" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }

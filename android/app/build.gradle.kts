@@ -1,8 +1,5 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
@@ -32,6 +29,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
+
+            applicationIdSuffix = ".debug"
+        }
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -39,26 +42,29 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            signingConfig = signingConfigs.getByName("debug")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-        sourceSets.all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-            languageSettings.enableLanguageFeature("ExplicitBackingFields")
+
+            val idSuffix = project.findProperty("environment")?.toString()
+            if (idSuffix == "dev") {
+                applicationIdSuffix = ".dev"
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
     buildFeatures {
         compose = true
+    }
+
+}
+
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+        freeCompilerArgs.addAll(
+            listOf(
+                "-Xexplicit-backing-fields",
+                "-Xcontext-parameters"
+            )
+        )
     }
 }
 

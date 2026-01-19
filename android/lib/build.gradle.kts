@@ -1,8 +1,7 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.kotlin.dsl.sourceSets
 
 plugins {
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrains.kotlin.serialization)
 }
@@ -25,28 +24,19 @@ android {
         }
         release {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = true
+        }
+    }
+}
 
-
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
+        freeCompilerArgs.addAll(
+            listOf(
+                "-Xexplicit-backing-fields",
+                "-Xcontext-parameters"
             )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-        sourceSets.all {
-            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-            languageSettings.enableLanguageFeature("ExplicitBackingFields")
-            languageSettings.enableLanguageFeature("ContextParameters")
-        }
+        )
     }
 }
 
@@ -93,6 +83,7 @@ dependencies {
     implementation(libs.paging.compose)
 
     implementation(libs.app.update.ktx)
+    implementation(libs.androidx.core.ktx)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

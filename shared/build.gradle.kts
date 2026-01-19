@@ -1,9 +1,7 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import com.android.utils.forEach
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.w3c.dom.NodeList
 import javax.xml.parsers.DocumentBuilderFactory
@@ -15,7 +13,7 @@ import kotlin.collections.set
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinMultiplatformLibrary)
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.squareupWire)
     alias(libs.plugins.devtools.ksp)
@@ -24,10 +22,9 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
+    androidLibrary {
+        namespace = "me.anasmusa.learncast.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
     val xcf = XCFramework("Shared")
@@ -43,11 +40,13 @@ kotlin {
         }
     }
 
-    sourceSets.all {
-        languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
-        languageSettings.enableLanguageFeature("ExplicitBackingFields")
-        languageSettings.enableLanguageFeature("ContextParameters")
-        languageSettings.optIn("kotlin.time.ExperimentalTime")
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            listOf(
+                "-Xexplicit-backing-fields",
+                "-Xcontext-parameters"
+            )
+        )
     }
 
     sourceSets {
@@ -107,18 +106,6 @@ kotlin {
                 implementation(libs.sqlite.bundled)
             }
         }
-    }
-}
-
-android {
-    namespace = "me.anasmusa.learncast.shared"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
 
