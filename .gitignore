@@ -19,7 +19,10 @@ captures
 node_modules/
 shared/schemas
 
-**/keystore
 **/app/release
 **/ios/Resources
-**/src/main/assets/
+**/lib/src/main/assets/
+
+**/fastlane/report.xml
+
+**/firebase_distribution.json

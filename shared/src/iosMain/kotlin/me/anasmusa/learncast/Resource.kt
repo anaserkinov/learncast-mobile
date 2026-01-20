@@ -14,24 +14,20 @@ import platform.Foundation.stringWithContentsOfFile
 import platform.darwin.NSObject
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun readStringFile(
-    locale: String,
-    onLoad: (List<String>) -> Unit,
-) {
+actual fun readStringFile(locale: String): List<Pair<String, String>> {
     var file = "strings"
     if (locale != "en") {
         file += "-$locale"
     }
     val path = NSBundle.mainBundle.pathForResource(file, "xml") ?: ""
     val xmlContent = NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null) ?: ""
-    onLoad(
-        parseStringsXml(xmlContent),
-    )
+
+    return parseStringsXml(xmlContent)
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun parseStringsXml(xmlContent: String): List<String> {
-    val result = arrayListOf<String>()
+private fun parseStringsXml(xmlContent: String): List<Pair<String, String>> {
+    val result = arrayListOf<Pair<String, String>>()
 
     val byteArray = xmlContent.encodeToByteArray()
     val data =
@@ -42,9 +38,10 @@ private fun parseStringsXml(xmlContent: String): List<String> {
     val parser = NSXMLParser(data)
     parser.delegate =
         object : NSObject(), NSXMLParserDelegateProtocol {
-            val quantities = arrayOf("zero", "one", "two", "few", "many", "other")
+            // "zero", "one", "two", "few", "many", "other"
             var key: String? = null
             var value: String? = null
+            var pluralKey: String? = null
 
             override fun parser(
                 parser: NSXMLParser,
@@ -53,12 +50,10 @@ private fun parseStringsXml(xmlContent: String): List<String> {
                 qualifiedName: String?,
                 attributes: Map<Any?, *>,
             ) {
-                if (didStartElement == "string") {
-                    key = attributes["name"] as? String
-                } else if (didStartElement == "item") {
-                    key = attributes["quantity"] as? String
-                } else if (didStartElement == "plurals") {
-                    repeat(7) { result.add("") }
+                when (didStartElement) {
+                    "string" -> key = attributes["name"] as? String
+                    "item" -> key = attributes["quantity"] as? String
+                    "plurals" -> pluralKey = attributes["name"] as? String
                 }
             }
 
@@ -76,10 +71,9 @@ private fun parseStringsXml(xmlContent: String): List<String> {
                 qualifiedName: String?,
             ) {
                 if (didEndElement == "string" && key != null && value != null) {
-                    result.add(value.toString().trim())
+                    result.add(key!! to value.toString())
                 } else if (didEndElement == "item" && key != null && value != null) {
-                    val index = quantities.indexOf(key)
-                    result[result.size - 6 + index] = value.toString().trim()
+                    result.add("${pluralKey}_plurals_$key" to value!!)
                 }
             }
         }

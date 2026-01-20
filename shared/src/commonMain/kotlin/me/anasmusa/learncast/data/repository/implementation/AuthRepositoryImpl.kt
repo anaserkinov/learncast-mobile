@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.PreferenceData
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.google.GoogleAuthManager
 import me.anasmusa.learncast.core.notification.NotificationManager
@@ -18,7 +19,6 @@ import me.anasmusa.learncast.data.network.model.auth.LoginResponse
 import me.anasmusa.learncast.data.network.service.AuthService
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
-import me.anasmusa.learncast.string
 
 internal class AuthRepositoryImpl(
     private val authService: AuthService,
