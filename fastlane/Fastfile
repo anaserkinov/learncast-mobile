@@ -3,16 +3,17 @@ default_platform(:android)
 platform :android do
   desc "Distribute a new build to Firebase Distribute"
   lane :distribute do
-      branch_name = ENV["GITHUB_HEAD_REF"] || ENV["GITHUB_REF"] || "dev"
+      is_pr = ENV["GITHUB_EVENT_NAME"] == "pull_request"
 
-      version_name = if branch_name.include?("/")
-          branch_name.split("/").last
-      else branch_name
-          end
+      version_name = if is_pr
+          branch_name = ENV["GITHUB_HEAD_REF"] || ""
+          branch_name.include?("/") ? branch_name.split("/").last : branch_name
+        else
+          "dev"
+        end
 
       commit_count = 1
-
-      if ENV["GITHUB_EVENT_NAME"] == "pull_request" && ENV["GITHUB_EVENT_PATH"]
+      if is_pr && ENV["GITHUB_EVENT_PATH"]
           begin
               file = File.read(ENV["GITHUB_EVENT_PATH"])
               event_data = JSON.parse(file)
@@ -30,13 +31,20 @@ platform :android do
         build_type: "Release",
         properties: {
             "environment" => "dev",
-            "android.injected.version.name" => version_name
+            "versionNameSuffix" => version_name
         }
+      )
+
+      changelog_from_git_commits(
+        commits_count: commit_count,
+        pretty: "* %s (%an)",
+        merge_commit_filtering: "exclude_merges"
       )
 
       release = firebase_app_distribution(
         app: ENV["APP_ID"],
-        service_credentials_file: "firebase_distribution.json"
+        service_credentials_file: "firebase_distribution.json",
+        release_notes: lane_context[SharedValues::FL_CHANGELOG]
       )
   end
 

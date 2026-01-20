@@ -14,7 +14,11 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "1.0.0"
+        val baseVersion = "1.0.0"
+        versionName = if (project.hasProperty("versionNameSuffix"))
+            baseVersion + "-" +project.findProperty("versionNameSuffix").toString()
+        else baseVersion
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
