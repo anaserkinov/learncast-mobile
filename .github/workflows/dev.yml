@@ -29,6 +29,9 @@ jobs:
       - name: Run lint
         run: ./gradlew :android:app:lintRelease
 
+      - name: Run ktlintCheck
+        run: ./gradlew ktlintCheck
+
       - name: Upload html test report
         uses: actions/upload-artifact@v4
         with:
