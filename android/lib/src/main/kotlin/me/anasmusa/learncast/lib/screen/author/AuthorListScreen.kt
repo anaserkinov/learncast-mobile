@@ -39,7 +39,7 @@ import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.author.AuthorListIntent
 import me.anasmusa.learncast.ui.author.AuthorListViewModel
 import org.koin.compose.viewmodel.koinViewModel

@@ -1,6 +1,7 @@
 package me.anasmusa.learncast
 
 object Strings {
+
     internal const val PLURAL_FIRST_INDEX = 57
 
     const val ENGLISH = 1

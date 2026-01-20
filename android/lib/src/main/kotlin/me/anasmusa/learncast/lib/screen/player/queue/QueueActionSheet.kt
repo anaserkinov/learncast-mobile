@@ -31,7 +31,7 @@ import me.anasmusa.learncast.data.model.getSampleQueueItem
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SheetMenuButton
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 
 @Preview
 @Composable

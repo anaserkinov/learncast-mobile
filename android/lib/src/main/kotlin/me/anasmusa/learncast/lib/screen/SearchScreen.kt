@@ -44,7 +44,7 @@ import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.SearchIntent
 import me.anasmusa.learncast.ui.SearchState
 import me.anasmusa.learncast.ui.SearchViewModel

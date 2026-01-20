@@ -55,7 +55,7 @@ import me.anasmusa.learncast.lib.component.drag.rememberDragDropState
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.screen.player.BottomPlayer
 import me.anasmusa.learncast.lib.theme.icon.Close
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.player.queue.QueueIntent
 import me.anasmusa.learncast.ui.player.queue.QueueState
 import me.anasmusa.learncast.ui.player.queue.QueueViewModel

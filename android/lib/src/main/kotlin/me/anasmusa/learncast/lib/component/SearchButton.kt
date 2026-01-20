@@ -34,7 +34,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.theme.icon.SearchIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 
 @Composable
 fun RowScope.SearchButton(
@@ -68,7 +68,7 @@ fun RowScope.SearchButton(
         PrimaryButton(
             modifier = Modifier.weight(1f),
             icon = SearchIcon,
-            title = Strings.SEARCH,
+            titleKey = Strings.SEARCH,
         ) {
             onQueryChanged("")
         }

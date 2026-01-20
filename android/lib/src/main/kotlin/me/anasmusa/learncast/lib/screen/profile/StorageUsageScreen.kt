@@ -34,7 +34,7 @@ import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.profile.StorageIntent
 import me.anasmusa.learncast.ui.profile.StorageState
 import me.anasmusa.learncast.ui.profile.StorageViewModel
@@ -76,14 +76,14 @@ fun StorageUsageScreen() {
 @Composable
 private fun Button(
     modifier: Modifier = Modifier,
-    title: Int,
+    titleKey: String,
     clip: Boolean = true,
     onClick: () -> Unit,
 ) {
     PrimaryButton(
         modifier = modifier.fillMaxWidth(),
         icon = null,
-        title = title,
+        titleKey = titleKey,
         clip = clip,
         padding = PaddingValues(8.dp),
         paddingBetween = 24.dp,
@@ -163,7 +163,7 @@ private fun _StorageUsageScreen(
                 }
             }
             Button(
-                title = Strings.CLEAR_CACHE,
+                titleKey = Strings.CLEAR_CACHE,
                 onClick = clearCache,
             )
 
@@ -184,7 +184,7 @@ private fun _StorageUsageScreen(
                 }
             }
             Button(
-                title = Strings.CLEAR_DOWNLOAD,
+                titleKey = Strings.CLEAR_DOWNLOAD,
                 onClick = clearDownload,
             )
         }

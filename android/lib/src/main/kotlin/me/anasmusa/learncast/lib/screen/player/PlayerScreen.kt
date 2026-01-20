@@ -131,7 +131,7 @@ import me.anasmusa.learncast.lib.theme.icon.MoreVert
 import me.anasmusa.learncast.lib.theme.icon.Pause
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
 import me.anasmusa.learncast.lib.theme.icon.Replay10
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.player.PlayerEvent
 import me.anasmusa.learncast.ui.player.PlayerIntent
 import me.anasmusa.learncast.ui.player.PlayerState

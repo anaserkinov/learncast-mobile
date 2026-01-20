@@ -40,7 +40,7 @@ import me.anasmusa.learncast.lib.component.SnackBarHost
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.theme.icon.Google
 import me.anasmusa.learncast.lib.theme.icon.Telegram
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.auth.LoginEvent
 import me.anasmusa.learncast.ui.auth.LoginIntent
 import me.anasmusa.learncast.ui.auth.LoginViewModel

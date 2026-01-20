@@ -49,8 +49,8 @@ import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.lib.theme.icon.SearchIcon
-import me.anasmusa.learncast.quantityString
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.quantityString
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.author.AuthorIntent
 import me.anasmusa.learncast.ui.author.AuthorViewModel
 import org.koin.compose.viewmodel.koinViewModel

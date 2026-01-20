@@ -174,7 +174,7 @@ private fun _TopicScreen(
                     modifier =
                         Modifier
                             .wrapContentSize(),
-                    title = Strings.PLAY_ALL,
+                    titleKey = Strings.PLAY_ALL,
                     icon = null,
                     padding = PaddingValues(vertical = 8.dp, horizontal = 12.dp),
                     onClick = {

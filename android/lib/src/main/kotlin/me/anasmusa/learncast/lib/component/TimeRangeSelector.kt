@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.core.formatTime
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
@@ -280,7 +280,7 @@ fun TimeRangeSelector(
                 end = endSecondsState,
                 total = state.total,
                 currentPosition = currentPosition,
-                title = Strings.START,
+                titleKey = Strings.START,
                 color = color,
                 isStart = true,
                 horizontalOffset = with(density) { horizontalOffset.toDp() },
@@ -300,7 +300,7 @@ fun TimeRangeSelector(
                 end = startSecondsState,
                 total = state.total,
                 currentPosition = currentPosition,
-                title = Strings.END,
+                titleKey = Strings.END,
                 color = color,
                 isStart = false,
                 horizontalOffset = with(density) { horizontalOffset.toDp() },
@@ -318,7 +318,7 @@ private fun TimeSpinner(
     end: Int,
     total: Int,
     currentPosition: Int,
-    title: Int,
+    titleKey: String,
     color: Color,
     isStart: Boolean,
     horizontalOffset: Dp,
@@ -370,7 +370,7 @@ private fun TimeSpinner(
         modifier = modifier,
     ) {
         Text(
-            text = title.string(),
+            text = titleKey.string(),
             style = MaterialTheme.typography.titleMedium,
         )
         Box(

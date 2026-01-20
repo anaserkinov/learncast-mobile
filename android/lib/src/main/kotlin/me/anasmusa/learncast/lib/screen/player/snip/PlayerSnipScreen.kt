@@ -44,7 +44,7 @@ import me.anasmusa.learncast.lib.component.cell.SnipCell
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.screen.player.BottomPlayer
 import me.anasmusa.learncast.lib.theme.icon.Close
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipIntent
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipState
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipViewModel

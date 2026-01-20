@@ -45,7 +45,7 @@ import me.anasmusa.learncast.lib.component.SearchButton
 import me.anasmusa.learncast.lib.component.cell.SnipCell
 import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.snip.SnipListIntent
 import me.anasmusa.learncast.ui.snip.SnipListState
 import me.anasmusa.learncast.ui.snip.SnipListViewModel

@@ -26,7 +26,7 @@ import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.monthYear
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.Topic
-import me.anasmusa.learncast.quantityString
+import me.anasmusa.learncast.Resource.quantityString
 
 @Composable
 fun TopicCell(

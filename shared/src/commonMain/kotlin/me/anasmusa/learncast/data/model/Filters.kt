@@ -3,7 +3,7 @@ package me.anasmusa.learncast.data.model
 import me.anasmusa.learncast.Strings
 
 enum class Filters(
-    val title: Int,
+    val titleKey: String,
 ) {
     Latest(Strings.LATEST),
     InProgress(Strings.IN_PROGRESS),

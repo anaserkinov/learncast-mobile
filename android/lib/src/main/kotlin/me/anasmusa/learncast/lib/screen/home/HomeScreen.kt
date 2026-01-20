@@ -53,7 +53,7 @@ import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.GridIcon
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.home.HomeIntent
 import me.anasmusa.learncast.ui.home.HomeState
 import me.anasmusa.learncast.ui.home.HomeViewModel
@@ -156,14 +156,14 @@ private fun _HomeScreen(
                             PrimaryButton(
                                 modifier = Modifier.weight(1f),
                                 icon = PersonIcon,
-                                title = Strings.AUTHORS,
+                                titleKey = Strings.AUTHORS,
                             ) {
                                 navigate(Screen.AuthorList)
                             }
                             PrimaryButton(
                                 modifier = Modifier.weight(1f),
                                 icon = GridIcon,
-                                title = Strings.TOPICS,
+                                titleKey = Strings.TOPICS,
                             ) {
                                 navigate(Screen.TopicList)
                             }
@@ -195,7 +195,7 @@ private fun _HomeScreen(
                                     },
                                     label = {
                                         Text(
-                                            text = it.title.string(),
+                                            text = it.titleKey.string(),
                                         )
                                     },
                                 )

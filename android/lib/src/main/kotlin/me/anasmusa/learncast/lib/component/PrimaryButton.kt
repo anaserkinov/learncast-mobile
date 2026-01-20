@@ -18,13 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
+
 
 @Composable
 fun PrimaryButton(
     modifier: Modifier = Modifier,
+    titleKey: String,
     icon: ImageVector?,
-    title: Int,
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
     paddingBetween: Dp = 8.dp,
@@ -35,7 +36,7 @@ fun PrimaryButton(
     PrimaryButton(
         modifier,
         icon,
-        title.string(),
+        titleKey.string(),
         clip,
         padding,
         paddingBetween,

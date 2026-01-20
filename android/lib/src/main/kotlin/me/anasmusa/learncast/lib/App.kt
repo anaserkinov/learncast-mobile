@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntOffset
@@ -71,13 +72,12 @@ import me.anasmusa.learncast.lib.theme.icon.CutIcon
 import me.anasmusa.learncast.lib.theme.icon.HomeIcon
 import me.anasmusa.learncast.lib.theme.playerBackgroundColors
 import me.anasmusa.learncast.parseStringsXml
-import me.anasmusa.learncast.string
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.ui.AppEvent
 import me.anasmusa.learncast.ui.AppIntent
 import me.anasmusa.learncast.ui.AppViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import java.io.BufferedReader
-import java.io.File
 import kotlin.math.min
 
 @Composable
@@ -240,22 +240,22 @@ fun App(
                             ) {
                                 repeat(3) {
                                     val icon: ImageVector
-                                    val name: Int
+                                    val nameKey: String
 
                                     when (it) {
                                         0 -> {
                                             icon = HomeIcon
-                                            name = Strings.HOME
+                                            nameKey = Strings.HOME
                                         }
 
                                         1 -> {
                                             icon = CutIcon
-                                            name = Strings.SNIPS
+                                            nameKey = Strings.SNIPS
                                         }
 
                                         else -> {
                                             icon = PersonIcon
-                                            name = Strings.PROFILE
+                                            nameKey = Strings.PROFILE
                                         }
                                     }
 
@@ -267,7 +267,7 @@ fun App(
                                                 contentDescription = null,
                                             )
                                         },
-                                        label = { Text(name.string()) },
+                                        label = { Text(nameKey.string()) },
                                         onClick = {
                                             selectedPage = it
                                         },
@@ -336,12 +336,11 @@ fun AppTheme(content: @Composable () -> Unit) {
         telegramBotId = 8292515516L,
         googleClientId = "",
     )
-    val file =
-        File("/Users/anas/AndroidStudioProjects/LearnCast/android/lib/src/main/assets/values/strings.xml")
+    val assets = LocalContext.current.assets
     Resource.setStrings(
         "en",
         parseStringsXml(
-            file.bufferedReader().use(BufferedReader::readText),
+            assets.open("strings.xml").bufferedReader().use(BufferedReader::readText),
         ),
     )
 

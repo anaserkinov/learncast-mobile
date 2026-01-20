@@ -77,14 +77,14 @@ fun ProfileScreen() {
 private fun Button(
     modifier: Modifier = Modifier,
     icon: ImageVector?,
-    title: Int,
+    titleKey: String,
     clip: Boolean = true,
     onClick: () -> Unit,
 ) {
     PrimaryButton(
         modifier = modifier,
         icon = icon,
-        title = title,
+        titleKey = titleKey,
         clip = clip,
         padding = PaddingValues(16.dp),
         paddingBetween = 24.dp,
@@ -175,7 +175,7 @@ private fun _ProfileScreen(
                             .fillMaxWidth()
                             .padding(top = 24.dp),
                     icon = Storage,
-                    title = Strings.STORAGE_USAGE,
+                    titleKey = Strings.STORAGE_USAGE,
                 ) {
                     env.navigate(Screen.StorageUsageScreen)
                 }
@@ -189,7 +189,7 @@ private fun _ProfileScreen(
                         Modifier
                             .fillMaxWidth(),
                     icon = Logout,
-                    title = Strings.SIGNOUT,
+                    titleKey = Strings.SIGNOUT,
                 ) {
                     signout()
                 }

@@ -5,6 +5,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.nowLocalDateTime
 import me.anasmusa.learncast.core.toResult
@@ -25,7 +26,6 @@ import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.SnipMediator
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
-import me.anasmusa.learncast.string
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

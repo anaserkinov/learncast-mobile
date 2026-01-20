@@ -34,3 +34,14 @@ val installGitHook = tasks.register("installGitHook", Copy::class) {
         other { read = true; execute = true }
     }
 }
+
+tasks.matching { it.name == "prepareKotlinBuildScriptModel" || it.name == "assemble" }.configureEach {
+    dependsOn(installGitHook)
+}
+
+project(":android:lib") {
+    tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }
+        .configureEach {
+            dependsOn(project(":shared").tasks.named("copyStringsToAndroid"))
+        }
+}
