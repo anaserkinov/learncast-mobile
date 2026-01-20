@@ -3,11 +3,34 @@ default_platform(:android)
 platform :android do
   desc "Distribute a new build to Firebase Distribute"
   lane :distribute do
+      branch_name = ENV["GITHUB_HEAD_REF"] || ENV["GITHUB_REF"] || "dev"
+
+      version_name = if branch_name.include?("/")
+          branch_name.split("/").last
+      else branch_name
+          end
+
+      commit_count = 1
+
+      if ENV["GITHUB_EVENT_NAME"] == "pull_request" && ENV["GITHUB_EVENT_PATH"]
+          begin
+              file = File.read(ENV["GITHUB_EVENT_PATH"])
+              event_data = JSON.parse(file)
+              commit_count = event_data["pull_request"]["commits"] || 1
+          rescue => e
+              UI.error("Failed to parse GitHub event JSON: #{e.message}")
+              commit_count = 1
+          end
+      end
+
+      UI.message("Branch: #{version_name} | Commits in PR: #{commit_count}")
+
       gradle(
         task: "assemble",
         build_type: "Release",
         properties: {
-            "environment" => "dev"
+            "environment" => "dev",
+            "android.injected.version.name" => version_name
         }
       )
 
