@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -94,6 +95,7 @@ fun SnipEditScreenPreview() {
     }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 fun SnipEditScreen(
     clientSnipId: String,

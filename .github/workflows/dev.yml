@@ -26,6 +26,15 @@ jobs:
         with:
           gradle-version: '9.1.0'
 
+      - name: Run lint
+        run: ./gradlew :android:app:lintRelease
+
+      - name: Upload html test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint.html
+          path: /android/app/build/reports/lint-results-release.html
+
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
         with:

@@ -54,6 +54,12 @@ android {
         compose = true
     }
 
+    lint {
+        quiet = true
+        xmlReport = false
+        textReport = false
+        checkDependencies = true
+    }
 }
 
 kotlin {

@@ -1,6 +1,7 @@
 package me.anasmusa.learncast.lib
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.BackHandler
@@ -81,6 +82,7 @@ import java.io.BufferedReader
 import kotlin.math.min
 
 @Composable
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun App(
     backgroundColors: List<Color>,
     playerBackgroundColors: List<Color>,
@@ -277,7 +279,7 @@ fun App(
                         }
                     }
                 },
-            ) { _ ->
+            ) {  _ ->
                 val animationSpec = tween<IntOffset>(300)
                 NavDisplay(
                     modifier =

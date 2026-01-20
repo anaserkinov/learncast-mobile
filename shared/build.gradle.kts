@@ -1,18 +1,7 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import com.android.build.gradle.internal.tasks.MergeJavaResourceTask
-import com.android.build.gradle.tasks.MergeResources
-import com.android.utils.forEach
-import org.jetbrains.kotlin.com.intellij.openapi.util.registry.EarlyAccessRegistryManager.fileName
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-import org.w3c.dom.NodeList
-import javax.xml.parsers.DocumentBuilderFactory
-import javax.xml.transform.TransformerFactory
-import javax.xml.transform.dom.DOMSource
-import javax.xml.transform.stream.StreamResult
-import kotlin.apply
-import kotlin.collections.set
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -22,6 +11,13 @@ plugins {
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.skie)
     alias(libs.plugins.room)
+}
+
+val generateStringResources by tasks.registering(GenerateStringResourcesTask::class) {
+    inputDir.set(layout.projectDirectory.dir("src/commonMain/resources"))
+    outputDir.set(
+        layout.buildDirectory.dir("generated/source/kmp_strings/main/kotlin")
+    )
 }
 
 kotlin {
@@ -54,9 +50,7 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir(
-                layout.buildDirectory.dir("generated/source/kmp_strings/me/anasmusa/learncast/kotlin")
-            )
+            kotlin.srcDir(generateStringResources)
             dependencies {
                 implementation(libs.coroutine)
 
@@ -146,13 +140,6 @@ skie {
     }
 }
 
-val generateStringResources by tasks.registering(GenerateStringResourcesTask::class) {
-    inputDir.set(layout.projectDirectory.dir("src/commonMain/resources"))
-    outputDir.set(
-        layout.buildDirectory.dir("generated/source/kmp_strings/me/anasmusa/learncast/kotlin")
-    )
-}
-
 val copyStringsToAndroid by tasks.registering(Copy::class) {
     group = "resources"
     description = "Copy KMP string resources to Android assets"
@@ -168,19 +155,6 @@ val copyStringsToIos by tasks.registering(Copy::class) {
     into(layout.projectDirectory.dir("../ios/Resources"))
 }
 
-
-tasks.withType<com.google.devtools.ksp.gradle.KspAATask>()
-    .configureEach {
-        dependsOn(generateStringResources)
-        dependsOn(copyStringsToIos)
-    }
-
-tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintCheckTask>()
-    .configureEach {
-        dependsOn(generateStringResources)
-    }
-
-tasks.withType<org.jlleitschuh.gradle.ktlint.tasks.KtLintFormatTask>()
-    .configureEach {
-        dependsOn(generateStringResources)
-    }
+tasks.matching { it.name.startsWith("embedAndSign") }.configureEach {
+    dependsOn(copyStringsToIos)
+}
