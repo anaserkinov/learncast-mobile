@@ -1,9 +1,8 @@
-import org.gradle.kotlin.dsl.sourceSets
-
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -32,12 +31,27 @@ kotlin {
     compilerOptions {
         languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
         freeCompilerArgs.addAll(
-            listOf(
-                "-Xexplicit-backing-fields",
-                "-Xcontext-parameters"
-            )
+            listOf("-Xexplicit-backing-fields")
         )
     }
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    android.set(true)
+}
+
+afterEvaluate {
+    tasks.named("preBuild").configure {
+        dependsOn(copyStringsToAndroid)
+    }
+}
+
+val copyStringsToAndroid by tasks.registering(Copy::class) {
+    group = "resources"
+    description = "Copy KMP string resources to Android assets"
+
+    from(layout.projectDirectory.dir("src/commonMain/resources"))
+    into(layout.projectDirectory.dir("../android/lib/src/main/assets"))
 }
 
 dependencies {

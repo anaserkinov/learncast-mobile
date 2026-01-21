@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -70,12 +71,13 @@ kotlin {
     compilerOptions {
         languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_0
         freeCompilerArgs.addAll(
-            listOf(
-                "-Xexplicit-backing-fields",
-                "-Xcontext-parameters"
-            )
+            listOf("-Xexplicit-backing-fields")
         )
     }
+}
+
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    android.set(true)
 }
 
 dependencies {

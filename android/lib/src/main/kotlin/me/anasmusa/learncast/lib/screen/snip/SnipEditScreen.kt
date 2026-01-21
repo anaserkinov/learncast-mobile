@@ -131,7 +131,7 @@ fun SnipEditScreen(
     }
 
     LaunchedEffect(viewModel) {
-        viewModel.subscribe {
+        viewModel.subscribe(this) {
             when (it) {
                 SnipEditEvent.Finish ->
                     onDismissRequest(true)

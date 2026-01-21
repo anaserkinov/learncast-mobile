@@ -358,7 +358,7 @@ fun PlayerScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(viewModel, draggableState) {
-        viewModel.subscribe {
+        viewModel.subscribe(this) {
             when (it) {
                 PlayerEvent.ShowPlayer -> {
                     draggableState.animateTo("expanded")

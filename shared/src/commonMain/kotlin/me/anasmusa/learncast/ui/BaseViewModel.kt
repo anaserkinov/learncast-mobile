@@ -10,34 +10,37 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
-import kotlin.jvm.JvmField
 
 interface BaseState
+
 interface BaseIntent
+
 interface BaseEvent
 
 abstract class BaseViewModel<
-        State : BaseState,
-        Intent : BaseIntent,
-        Event : BaseEvent> : ViewModel() {
-
+    State : BaseState,
+    Intent : BaseIntent,
+    Event : BaseEvent,
+> : ViewModel() {
     abstract val state: StateFlow<State>
 
-    private val _events = Channel<Event>(Channel.BUFFERED)
+    private val events = Channel<Event>(Channel.BUFFERED)
 
     open fun handle(intent: Intent) {
-
     }
 
-    protected suspend fun send(event: Event) = withContext(Dispatchers.Main.immediate) {
-        _events.send(event)
-    }
+    protected suspend fun send(event: Event) =
+        withContext(Dispatchers.Main.immediate) {
+            events.send(event)
+        }
 
-    context(scope: CoroutineScope)
-    fun subscribe(onEvent: suspend (Event) -> Unit) {
-        _events.receiveAsFlow()
+    fun subscribe(
+        scope: CoroutineScope,
+        onEvent: suspend (Event) -> Unit,
+    ) {
+        events
+            .receiveAsFlow()
             .onEach(onEvent)
             .launchIn(scope + Dispatchers.Main.immediate)
     }
-
 }
