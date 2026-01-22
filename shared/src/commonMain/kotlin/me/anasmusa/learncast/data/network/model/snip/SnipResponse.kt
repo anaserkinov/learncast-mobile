@@ -1,9 +1,9 @@
 package me.anasmusa.learncast.data.network.model.snip
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.anasmusa.learncast.data.network.model.lesson.LessonResponse
+import kotlin.time.Instant
 
 @Serializable
 class SnipResponse(

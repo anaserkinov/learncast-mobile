@@ -9,7 +9,7 @@ class ApplicationLoader : ApplicationLoader() {
         AppConfig.update(
             appName = "LearnCast",
             mainLogo = R.drawable.logo,
-            loginLogo = R.drawable.logo_transparent,
+            transparentLogo = R.drawable.logo_transparent,
             apiBaseUrl = "https://api.anasmusa.me/learncast/",
             publicBaseUrl = "https://learncast.anasmusa.me",
             telegramBotId = 8538344134L,

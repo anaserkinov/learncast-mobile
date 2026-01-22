@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -28,6 +29,16 @@ import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.Author
 import me.anasmusa.learncast.Resource.quantityString
+import me.anasmusa.learncast.data.model.getSampleAuthor
+
+@Preview
+@Composable
+private fun AuthorCellPreview(){
+    AuthorCell(
+        author = getSampleAuthor(),
+        onClick = {}
+    )
+}
 
 @Composable
 fun AuthorCell(
@@ -54,7 +65,7 @@ fun AuthorCell(
                 if (author.avatarPath != null) {
                     author.avatarPath!!.normalizeUrl()
                 } else {
-                    appConfig.mainLogo
+                    appConfig.mainLogoInt
                 },
             contentScale = ContentScale.Crop,
             contentDescription = null,

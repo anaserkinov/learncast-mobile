@@ -1,13 +1,12 @@
 package me.anasmusa.learncast.data.network.model.topic
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.anasmusa.learncast.data.network.model.author.AuthorResponse
+import kotlin.time.Instant
 
 @Serializable
 class TopicResponse(
-    val id: Long,
     val topic: Topic,
     val author: AuthorResponse,
     @SerialName("completed_lesson_count") val completedLessonCount: Long,

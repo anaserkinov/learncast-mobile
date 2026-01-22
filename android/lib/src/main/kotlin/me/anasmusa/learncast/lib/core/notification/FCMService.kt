@@ -52,7 +52,7 @@ class FCMService : FirebaseMessagingService() {
             val notification =
                 NotificationCompat
                     .Builder(this, it.channelId ?: "news")
-                    .setSmallIcon(appConfig.transparentLogo)
+                    .setSmallIcon(appConfig.transparentLogoInt)
                     .setContentTitle(it.title)
                     .setContentText(it.body)
                     .setAutoCancel(true)

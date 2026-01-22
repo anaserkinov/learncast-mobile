@@ -51,7 +51,7 @@ fun SnipCell(
                 if (snip.coverImagePath != null) {
                     snip.coverImagePath!!.normalizeUrl()
                 } else {
-                    appConfig.mainLogo
+                    appConfig.mainLogoInt
                 },
             contentScale = ContentScale.Crop,
             contentDescription = null,

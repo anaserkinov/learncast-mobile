@@ -79,7 +79,7 @@ fun BottomPlayer(
                 if (currentPlaying.coverImagePath != null) {
                     currentPlaying.coverImagePath!!.normalizeUrl()
                 } else {
-                    appConfig.mainLogo
+                    appConfig.mainLogoInt
                 },
             contentScale = ContentScale.Crop,
             contentDescription = null,

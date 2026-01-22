@@ -253,7 +253,7 @@ private fun CollapsedPlayer(
                     if (currentPlaying.coverImagePath != null) {
                         currentPlaying.coverImagePath!!.normalizeUrl()
                     } else {
-                        appConfig.mainLogo
+                        appConfig.mainLogoInt
                     },
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(Color.Black.copy(0.3f), BlendMode.SrcAtop),
@@ -606,7 +606,7 @@ private fun _PlayerScreen(
                         if (currentPlaying.coverImagePath != null) {
                             currentPlaying.coverImagePath!!.normalizeUrl()
                         } else {
-                            appConfig.mainLogo
+                            appConfig.mainLogoInt
                         },
                     contentScale = ContentScale.Crop,
                     contentDescription = null,
