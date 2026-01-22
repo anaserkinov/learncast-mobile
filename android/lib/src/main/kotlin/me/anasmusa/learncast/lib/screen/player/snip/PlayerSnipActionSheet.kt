@@ -83,7 +83,7 @@ fun PlayerSnipActionSheet(
                         if (item.coverImagePath != null) {
                             item.coverImagePath!!.normalizeUrl()
                         } else {
-                            appConfig.mainLogo
+                            appConfig.mainLogoInt
                         },
                     contentScale = ContentScale.Crop,
                     contentDescription = null,

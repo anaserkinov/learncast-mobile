@@ -9,8 +9,7 @@ import kotlin.time.toDuration
 
 internal fun TopicResponse.toEntity() =
     TopicEntity(
-        id = id,
-        topicId = topic.id,
+        id = topic.id,
         title = topic.title,
         description = topic.description,
         coverImagePath = topic.coverImagePath,
@@ -25,7 +24,6 @@ internal fun TopicResponse.toEntity() =
 internal fun TopicEntity.toUI() =
     Topic(
         id = id,
-        topicId = topicId,
         title = title,
         description = description,
         coverImagePath = coverImagePath,

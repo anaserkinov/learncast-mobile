@@ -16,6 +16,7 @@ import me.anasmusa.learncast.data.network.model.DeletedRequestQuery
 import me.anasmusa.learncast.data.network.model.PageRequestQuery
 import me.anasmusa.learncast.data.network.service.TopicService
 import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.time.toDuration
 
@@ -32,6 +33,7 @@ internal class TopicMediator(
 
     override fun isLastLoadedItem(item: TopicEntity): Boolean = item.id == lastItemId
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, TopicEntity>,
@@ -65,7 +67,7 @@ internal class TopicMediator(
             )
             response.data.items
                 .lastOrNull()
-                ?.let { lastItemId = it.id }
+                ?.let { lastItemId = it.topic.id }
             updatedTime = response.time
 
             MediatorResult.Success(request.cursor == null)

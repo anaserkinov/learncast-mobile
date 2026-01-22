@@ -332,7 +332,7 @@ fun AppTheme(content: @Composable () -> Unit) {
     AppConfig.update(
         appName = "LearnCast",
         mainLogo = R.drawable.logo,
-        loginLogo = R.drawable.logo_transparent,
+        transparentLogo = R.drawable.logo_transparent,
         apiBaseUrl = "http://localhost:3000",
         publicBaseUrl = "http://localhost:3000",
         telegramBotId = 8292515516L,

@@ -1,6 +1,5 @@
 //
 //  koin.swift
-//  iosApp
 //
 //  Created by Anas Erkinjonov on 24/02/25.
 //  Copyright © 2025 orgName. All rights reserved.

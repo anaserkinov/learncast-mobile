@@ -28,6 +28,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":android:app")
+include(":android:learncast")
 include(":android:lib")
 include(":shared")

@@ -10,7 +10,6 @@ import kotlin.time.toDuration
 @Serializable
 data class Topic(
     val id: Long,
-    val topicId: Long,
     val title: String,
     val description: String?,
     val coverImagePath: String?,
@@ -24,7 +23,6 @@ data class Topic(
 
 fun getSampleTopic() =
     Topic(
-        0L,
         0L,
         "Topic",
         "Description dgfebgeqb tbtrb wryt bnwyt bywt bwytn bybwytb trwrtwyb yw5 hnyjnynbrtbrtwnyn",

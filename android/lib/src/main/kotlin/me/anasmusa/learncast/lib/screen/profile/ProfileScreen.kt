@@ -144,7 +144,7 @@ private fun _ProfileScreen(
                             if (state.user!!.avatarPath != null) {
                                 state.user!!.avatarPath!!
                             } else {
-                                appConfig.mainLogo
+                                appConfig.mainLogoInt
                             },
                         contentScale = ContentScale.Crop,
                         contentDescription = null,

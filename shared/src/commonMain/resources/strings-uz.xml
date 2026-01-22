@@ -29,7 +29,7 @@
     <string name="clear">Tozalash</string>
     <string name="play_all">Hammasini qo'yish</string>
     <string name="play_now">Hozir eshitish</string>
-    <string name="no">Yo'q</string>
+    <string name="no_text">Yo'q</string>
     <string name="download">Yuklab olish</string>
     <string name="downloading">Yuklanmoqda... %d%</string>
     <string name="resume_download">Yuklashni davom ettirish</string>

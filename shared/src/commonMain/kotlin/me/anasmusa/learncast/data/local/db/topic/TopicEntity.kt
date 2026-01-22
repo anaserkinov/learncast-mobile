@@ -9,7 +9,6 @@ import kotlin.time.Duration
 @Entity(tableName = TableNames.TOPIC)
 class TopicEntity(
     @PrimaryKey val id: Long,
-    val topicId: Long,
     val title: String,
     val description: String?,
     val coverImagePath: String?,

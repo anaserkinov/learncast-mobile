@@ -39,7 +39,7 @@
 
     <string name="play_all">Play all</string>
     <string name="play_now">Play now</string>
-    <string name="no">No</string>
+    <string name="no_text">No</string>
 
     <string name="download">Download</string>
     <string name="downloading">Downloading... %d%</string>

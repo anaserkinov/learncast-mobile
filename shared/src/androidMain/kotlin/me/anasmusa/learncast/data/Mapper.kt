@@ -1,7 +1,7 @@
 package me.anasmusa.learncast.data
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import me.anasmusa.learncast.core.appConfig
@@ -20,11 +20,7 @@ internal fun QueueItem.toMediaItem(context: Context): MediaItem =
                 .setArtist(subTitle)
                 .setDescription(description)
                 .setArtworkUri(
-                    if (coverImagePath != null) {
-                        Uri.parse(coverImagePath.normalizeUrl())
-                    } else {
-                        Uri.parse("android.resource://${context.packageName}/${appConfig.mainLogo}")
-                    },
+                    coverImagePath?.normalizeUrl()?.toUri() ?: "android.resource://${context.packageName}/${appConfig.mainLogoInt}".toUri(),
                 ).setIsBrowsable(false)
                 .setIsPlayable(true)
                 .build(),

@@ -85,14 +85,14 @@ fun TopicScreen(topic: Topic) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(viewModel) {
-        viewModel.handle(TopicIntent.Load(topic.topicId, topic.authorId))
+        viewModel.handle(TopicIntent.Load(topic.id, topic.authorId))
     }
 
     _TopicScreen(
         state = state,
         topic = topic,
         playAll = {
-            viewModel.handle(TopicIntent.PlayAll(topic.topicId, topic.authorId))
+            viewModel.handle(TopicIntent.PlayAll(topic.id, topic.authorId))
         },
         onLessonClicked = {
             viewModel.handle(TopicIntent.AddToQueue(it))
@@ -190,7 +190,7 @@ private fun _TopicScreen(
 
                 IconButton(
                     onClick = {
-                        env.navigate(Screen.Search(topic.authorId, topic.topicId))
+                        env.navigate(Screen.Search(topic.authorId, topic.id))
                     },
                 ) {
                     Icon(

@@ -123,7 +123,7 @@ private fun _LoginScreen(
                     modifier =
                         Modifier
                             .size(200.dp),
-                    painter = painterResource(appConfig.transparentLogo),
+                    painter = painterResource(appConfig.transparentLogoInt),
                     contentDescription = null,
                 )
 
