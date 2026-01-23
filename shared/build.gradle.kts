@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.devtools.ksp)
     alias(libs.plugins.skie)
     alias(libs.plugins.room)
+    alias(libs.plugins.ktlint)
 }
 
 val generateStringResources by tasks.registering(GenerateStringResourcesTask::class) {
@@ -41,10 +42,7 @@ kotlin {
 
     compilerOptions {
         freeCompilerArgs.addAll(
-            listOf(
-                "-Xexplicit-backing-fields",
-                "-Xcontext-parameters"
-            )
+            listOf("-XXLanguage:+ExplicitBackingFields")
         )
     }
 
@@ -138,14 +136,6 @@ skie {
     analytics {
         disableUpload.set(true)
     }
-}
-
-val copyStringsToAndroid by tasks.registering(Copy::class) {
-    group = "resources"
-    description = "Copy KMP string resources to Android assets"
-
-    from(layout.projectDirectory.dir("src/commonMain/resources"))
-    into(layout.projectDirectory.dir("../android/lib/src/main/assets"))
 }
 
 val copyStringsToIos by tasks.registering(Copy::class) {

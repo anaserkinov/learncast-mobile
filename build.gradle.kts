@@ -15,16 +15,6 @@ plugins {
     alias(libs.plugins.crashlytics) apply false
 }
 
-subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        debug.set(true)
-        filter {
-            exclude("**/BaseViewModel.kt")
-        }
-    }
-}
-
 val installGitHook = tasks.register("installGitHook", Copy::class) {
     from("$rootDir/pre-commit")
     into("$rootDir/.git/hooks")
@@ -38,13 +28,5 @@ val installGitHook = tasks.register("installGitHook", Copy::class) {
 allprojects {
     afterEvaluate {
         tasks.findByName("preBuild")?.dependsOn(installGitHook)
-    }
-}
-
-project(":android:lib") {
-    afterEvaluate {
-        tasks.named("preBuild").configure {
-            dependsOn(project(":shared").tasks.named("copyStringsToAndroid"))
-        }
     }
 }

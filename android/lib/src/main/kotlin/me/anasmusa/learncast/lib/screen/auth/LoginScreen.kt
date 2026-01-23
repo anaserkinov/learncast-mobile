@@ -62,7 +62,7 @@ fun LoginScreen() {
     val snackBarState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel) {
-        viewModel.subscribe {
+        viewModel.subscribe(this) {
             when (it) {
                 is LoginEvent.ShowError -> snackBarState.showSnackbar(it.message)
             }

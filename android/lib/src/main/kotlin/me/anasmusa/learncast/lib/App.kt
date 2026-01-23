@@ -130,7 +130,7 @@ fun App(
 
         LaunchedEffect(viewModel) {
             launch {
-                viewModel.subscribe {
+                viewModel.subscribe(this) {
                     when (it) {
                         is AppEvent.ShowLoginScreen -> {
                             backStack.clear()
