@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -27,7 +26,6 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
-    val xcf = XCFramework("Shared")
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -35,8 +33,6 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "Shared"
             isStatic = true
-
-            xcf.add(this)
         }
     }
 
