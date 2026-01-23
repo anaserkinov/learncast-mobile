@@ -19,7 +19,12 @@ actual fun readStringFile(locale: String): List<Pair<String, String>> {
     if (locale != "en") {
         file += "-$locale"
     }
-    val path = NSBundle.mainBundle.pathForResource(file, "xml") ?: ""
+    val bundle =
+        NSBundle.allFrameworks.find {
+            (it as NSBundle).bundlePath.endsWith("/lib.framework")
+        } as? NSBundle ?: return emptyList()
+
+    val path = bundle.pathForResource(file, "xml") ?: ""
     val xmlContent = NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null) ?: ""
 
     return parseStringsXml(xmlContent)
