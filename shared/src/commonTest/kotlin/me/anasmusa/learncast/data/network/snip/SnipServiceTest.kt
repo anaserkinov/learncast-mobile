@@ -51,7 +51,7 @@ import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
 import me.anasmusa.learncast.data.network.TestFixtures.wrapInPageResponse
 import me.anasmusa.learncast.data.network.common.model.DeletedRequestQuery
 import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.createHttpClient
+import me.anasmusa.learncast.data.network.createTestHttpClient
 import me.anasmusa.learncast.data.network.snip.model.SnipCURequest
 import me.anasmusa.learncast.data.network.snip.model.SnipCountResponse
 import kotlin.time.Clock
@@ -62,7 +62,7 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 class SnipServiceTest : BehaviorSpec({
 
-    lateinit var service: SnipService
+    val service = SnipService(createHttpClient())
 
     Given("SnipService") {
 
@@ -339,14 +339,10 @@ class SnipServiceTest : BehaviorSpec({
             }
         }
     }
-
-    beforeTest {
-        service = SnipService(createTestHttpClient())
-    }
 }) {
     companion object {
         @OptIn(ExperimentalTime::class)
-        fun createTestHttpClient() = createHttpClient {
+        fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
                     SnipService.PAGE_PATH -> handlePageRequest(it)

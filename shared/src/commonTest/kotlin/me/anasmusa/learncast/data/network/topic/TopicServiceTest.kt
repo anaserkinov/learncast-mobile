@@ -52,7 +52,7 @@ import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
 import me.anasmusa.learncast.data.network.TestFixtures.wrapInPageResponse
 import me.anasmusa.learncast.data.network.common.model.DeletedRequestQuery
 import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.createHttpClient
+import me.anasmusa.learncast.data.network.createTestHttpClient
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
@@ -61,7 +61,8 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 class TopicServiceTest : BehaviorSpec({
 
-    lateinit var service: TopicService
+    val service = TopicService(createHttpClient())
+
 
     Given("TopicService") {
 
@@ -215,14 +216,10 @@ class TopicServiceTest : BehaviorSpec({
             }
         }
     }
-
-    beforeTest {
-        service = TopicService(createTestHttpClient())
-    }
 }) {
     companion object {
         @OptIn(ExperimentalTime::class)
-        fun createTestHttpClient() = createHttpClient {
+        fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
                     TopicService.PAGE -> handlePageRequest(it)

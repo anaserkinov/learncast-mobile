@@ -6,7 +6,7 @@ import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.cache.HttpCache
 import org.koin.mp.KoinPlatform
 
-actual fun HttpClient(
+actual fun createHttpClient(
     block: HttpClientConfig<*>.() -> Unit,
 ): HttpClient =
     HttpClient(OkHttp) {
