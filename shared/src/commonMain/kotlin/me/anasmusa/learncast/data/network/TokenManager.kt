@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import me.anasmusa.learncast.data.local.Preferences
-import me.anasmusa.learncast.data.network.model.auth.RefreshTokenRequest
-import me.anasmusa.learncast.data.network.service.AuthService
+import me.anasmusa.learncast.data.local.preference.Preferences
+import me.anasmusa.learncast.data.network.auth.AuthService
+import me.anasmusa.learncast.data.network.auth.model.RefreshTokenRequest
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 
 internal class TokenManager(

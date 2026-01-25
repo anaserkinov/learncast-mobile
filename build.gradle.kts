@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.googleServices) apply false
     alias(libs.plugins.crashlytics) apply false
+    alias(libs.plugins.kotest) apply false
 }
 
 val installGitHook = tasks.register("installGitHook", Copy::class) {

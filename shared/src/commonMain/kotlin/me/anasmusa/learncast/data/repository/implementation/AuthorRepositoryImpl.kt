@@ -10,8 +10,8 @@ import me.anasmusa.learncast.data.local.db.author.AuthorDao
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
 import me.anasmusa.learncast.data.mapper.toUI
 import me.anasmusa.learncast.data.model.Author
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.AuthorService
+import me.anasmusa.learncast.data.network.author.AuthorService
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import me.anasmusa.learncast.data.paging.AuthorMediator
 import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.repository.abstraction.AuthorRepository

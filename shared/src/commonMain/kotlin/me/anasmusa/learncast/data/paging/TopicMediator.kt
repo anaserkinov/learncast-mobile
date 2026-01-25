@@ -12,9 +12,9 @@ import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
 import me.anasmusa.learncast.data.local.db.topic.TopicDao
 import me.anasmusa.learncast.data.local.db.topic.TopicEntity
 import me.anasmusa.learncast.data.mapper.toEntity
-import me.anasmusa.learncast.data.network.model.DeletedRequestQuery
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.TopicService
+import me.anasmusa.learncast.data.network.common.model.DeletedRequestQuery
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
+import me.anasmusa.learncast.data.network.topic.TopicService
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant

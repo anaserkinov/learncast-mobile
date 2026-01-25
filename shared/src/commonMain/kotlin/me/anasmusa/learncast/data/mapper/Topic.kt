@@ -3,7 +3,7 @@ package me.anasmusa.learncast.data.mapper
 import me.anasmusa.learncast.core.toDateTime
 import me.anasmusa.learncast.data.local.db.topic.TopicEntity
 import me.anasmusa.learncast.data.model.Topic
-import me.anasmusa.learncast.data.network.model.topic.TopicResponse
+import me.anasmusa.learncast.data.network.topic.model.TopicResponse
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

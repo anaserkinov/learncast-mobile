@@ -20,8 +20,8 @@ import me.anasmusa.learncast.data.model.QueryOrder
 import me.anasmusa.learncast.data.model.QuerySort
 import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.model.Snip
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.SnipService
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
+import me.anasmusa.learncast.data.network.snip.SnipService
 import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.SnipMediator
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository

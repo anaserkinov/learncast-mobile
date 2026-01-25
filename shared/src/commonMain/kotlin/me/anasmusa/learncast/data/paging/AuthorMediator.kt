@@ -12,9 +12,9 @@ import me.anasmusa.learncast.data.local.db.author.AuthorEntity
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
 import me.anasmusa.learncast.data.mapper.toEntity
-import me.anasmusa.learncast.data.network.model.DeletedRequestQuery
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.AuthorService
+import me.anasmusa.learncast.data.network.author.AuthorService
+import me.anasmusa.learncast.data.network.common.model.DeletedRequestQuery
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 import kotlin.time.toDuration
