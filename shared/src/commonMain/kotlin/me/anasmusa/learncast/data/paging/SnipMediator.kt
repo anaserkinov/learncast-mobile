@@ -16,9 +16,9 @@ import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
 import me.anasmusa.learncast.data.mapper.toEntity
 import me.anasmusa.learncast.data.model.ReferenceType
-import me.anasmusa.learncast.data.network.model.DeletedRequestQuery
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.SnipService
+import me.anasmusa.learncast.data.network.common.model.DeletedRequestQuery
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
+import me.anasmusa.learncast.data.network.snip.SnipService
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 import kotlin.time.toDuration

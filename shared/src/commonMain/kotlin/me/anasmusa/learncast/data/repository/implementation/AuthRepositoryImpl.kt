@@ -11,12 +11,12 @@ import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.google.GoogleAuthManager
 import me.anasmusa.learncast.core.notification.NotificationManager
 import me.anasmusa.learncast.core.toResult
-import me.anasmusa.learncast.data.local.Preferences
 import me.anasmusa.learncast.data.local.db.DBConnection
+import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result
-import me.anasmusa.learncast.data.network.model.auth.LoginRequest
-import me.anasmusa.learncast.data.network.model.auth.LoginResponse
-import me.anasmusa.learncast.data.network.service.AuthService
+import me.anasmusa.learncast.data.network.auth.AuthService
+import me.anasmusa.learncast.data.network.auth.model.LoginRequest
+import me.anasmusa.learncast.data.network.auth.model.LoginResponse
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
 

@@ -9,8 +9,8 @@ import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
-import me.anasmusa.learncast.data.network.model.lesson.LessonProgressResponse
-import me.anasmusa.learncast.data.network.model.lesson.LessonResponse
+import me.anasmusa.learncast.data.network.lesson.model.LessonProgressResponse
+import me.anasmusa.learncast.data.network.lesson.model.LessonResponse
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

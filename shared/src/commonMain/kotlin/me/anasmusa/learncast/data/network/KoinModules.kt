@@ -13,11 +13,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import me.anasmusa.learncast.core.InstantSerializer
 import me.anasmusa.learncast.core.appConfig
-import me.anasmusa.learncast.data.network.service.AuthService
-import me.anasmusa.learncast.data.network.service.AuthorService
-import me.anasmusa.learncast.data.network.service.LessonService
-import me.anasmusa.learncast.data.network.service.SnipService
-import me.anasmusa.learncast.data.network.service.TopicService
+import me.anasmusa.learncast.data.network.auth.AuthService
+import me.anasmusa.learncast.data.network.author.AuthorService
+import me.anasmusa.learncast.data.network.lesson.LessonService
+import me.anasmusa.learncast.data.network.snip.SnipService
+import me.anasmusa.learncast.data.network.topic.TopicService
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import kotlin.time.ExperimentalTime

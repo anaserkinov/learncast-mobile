@@ -13,8 +13,8 @@ import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.QueryOrder
 import me.anasmusa.learncast.data.model.QuerySort
 import me.anasmusa.learncast.data.model.UserProgressStatus
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.LessonService
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
+import me.anasmusa.learncast.data.network.lesson.LessonService
 import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.LessonMediator
 import me.anasmusa.learncast.data.repository.abstraction.LessonRepository

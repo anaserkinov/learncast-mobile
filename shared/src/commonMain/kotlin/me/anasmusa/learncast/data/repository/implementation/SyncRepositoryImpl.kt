@@ -22,11 +22,11 @@ import me.anasmusa.learncast.data.mapper.toEntity
 import me.anasmusa.learncast.data.mapper.toInput
 import me.anasmusa.learncast.data.model.ActionType
 import me.anasmusa.learncast.data.model.ReferenceType
-import me.anasmusa.learncast.data.network.model.lesson.ListenSessionCreateRequest
-import me.anasmusa.learncast.data.network.model.lesson.UpdateProgressRequest
-import me.anasmusa.learncast.data.network.model.snip.SnipCURequest
-import me.anasmusa.learncast.data.network.service.LessonService
-import me.anasmusa.learncast.data.network.service.SnipService
+import me.anasmusa.learncast.data.network.lesson.LessonService
+import me.anasmusa.learncast.data.network.lesson.model.ListenSessionCreateRequest
+import me.anasmusa.learncast.data.network.lesson.model.UpdateProgressRequest
+import me.anasmusa.learncast.data.network.snip.SnipService
+import me.anasmusa.learncast.data.network.snip.model.SnipCURequest
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
 import kotlin.time.DurationUnit

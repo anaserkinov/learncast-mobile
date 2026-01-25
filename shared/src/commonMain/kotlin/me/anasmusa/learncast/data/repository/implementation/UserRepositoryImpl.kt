@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.take
 import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.toResult
-import me.anasmusa.learncast.data.local.Preferences
+import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.model.User
 import me.anasmusa.learncast.data.repository.abstraction.UserRepository
