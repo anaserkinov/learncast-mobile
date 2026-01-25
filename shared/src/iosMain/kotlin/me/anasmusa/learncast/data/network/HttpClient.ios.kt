@@ -2,7 +2,12 @@ package me.anasmusa.learncast.data.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.engine.darwin.Darwin
 
-expect fun HttpClient(
+actual fun createHttpClient(
     block: HttpClientConfig<*>.() -> Unit,
-): HttpClient
+): HttpClient =
+    HttpClient(Darwin) {
+        engine {}
+        block()
+    }
