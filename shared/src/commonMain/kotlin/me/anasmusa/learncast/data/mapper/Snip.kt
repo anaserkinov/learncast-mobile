@@ -6,7 +6,7 @@ import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.Snip
 import me.anasmusa.learncast.data.model.UserProgressStatus
-import me.anasmusa.learncast.data.network.model.snip.SnipResponse
+import me.anasmusa.learncast.data.network.snip.model.SnipResponse
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 

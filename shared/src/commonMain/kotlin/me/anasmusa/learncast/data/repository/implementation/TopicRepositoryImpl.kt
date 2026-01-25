@@ -10,8 +10,8 @@ import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
 import me.anasmusa.learncast.data.local.db.topic.TopicDao
 import me.anasmusa.learncast.data.mapper.toUI
 import me.anasmusa.learncast.data.model.Topic
-import me.anasmusa.learncast.data.network.model.PageRequestQuery
-import me.anasmusa.learncast.data.network.service.TopicService
+import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
+import me.anasmusa.learncast.data.network.topic.TopicService
 import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.TopicMediator
 import me.anasmusa.learncast.data.repository.abstraction.TopicRepository

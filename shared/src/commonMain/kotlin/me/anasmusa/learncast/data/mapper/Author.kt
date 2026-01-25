@@ -3,7 +3,7 @@ package me.anasmusa.learncast.data.mapper
 import me.anasmusa.learncast.core.toDateTime
 import me.anasmusa.learncast.data.local.db.author.AuthorEntity
 import me.anasmusa.learncast.data.model.Author
-import me.anasmusa.learncast.data.network.model.author.AuthorResponse
+import me.anasmusa.learncast.data.network.author.model.AuthorResponse
 
 internal fun AuthorResponse.toEntity() =
     AuthorEntity(

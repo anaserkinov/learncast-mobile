@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.skie)
     alias(libs.plugins.room)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.kotest)
 }
 
 val generateStringResources by tasks.registering(GenerateStringResourcesTask::class) {
@@ -24,6 +25,25 @@ kotlin {
     androidLibrary {
         namespace = "me.anasmusa.learncast.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+        withHostTestBuilder {}.configure {}
+
+        optimization {
+            consumerKeepRules.apply {
+                publish = true
+                file("consumer-proguard-rules.pro")
+            }
+        }
+    }
+    androidComponents {
+        onVariants{
+            it.hostTests.forEach {
+                it.value.configureTestTask {
+                    it.useJUnitPlatform()
+                    it.systemProperty("kotest.framework.config.fqn", "me.anasmusa.learncast.KotestProjectConfig")
+                }
+            }
+        }
     }
 
     listOf(
@@ -102,6 +122,25 @@ kotlin {
                 implementation(libs.sqlite.bundled)
             }
         }
+
+        commonTest {
+            dependencies {
+                implementation(libs.kotest.engine)
+                implementation(libs.kotest.assertions)
+
+                implementation(libs.ktor.client.mock)
+            }
+        }
+
+        getByName("androidHostTest") {
+            dependencies {
+                implementation(libs.kotest.junit5)
+            }
+        }
+    }
+
+    sourceSets.commonTest.dependencies {
+        implementation(kotlin("test"))
     }
 }
 

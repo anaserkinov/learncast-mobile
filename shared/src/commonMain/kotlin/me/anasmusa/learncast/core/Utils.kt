@@ -5,7 +5,7 @@ import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.io.IOException
 import me.anasmusa.learncast.data.model.Result
-import me.anasmusa.learncast.data.network.model.BaseResponse
+import me.anasmusa.learncast.data.network.common.model.BaseResponse
 import org.koin.core.scope.Scope
 import org.koin.core.scope.ScopeID
 
