@@ -34,14 +34,14 @@ import me.anasmusa.learncast.data.network.TestFixtures.respondJson
 import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.RefreshTokenRequest
-import me.anasmusa.learncast.data.network.createHttpClient
+import me.anasmusa.learncast.data.network.createTestHttpClient
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 class AuthServiceTest : BehaviorSpec({
 
-    lateinit var client: HttpClient
-    lateinit var service: AuthService
+    val client = createHttpClient()
+    val service = AuthService(client)
 
     Given("AuthService") {
 
@@ -142,15 +142,10 @@ class AuthServiceTest : BehaviorSpec({
             }
         }
     }
-
-    beforeTest {
-        client = createTestHttpClient()
-        service = AuthService(client)
-    }
 }) {
     companion object {
         @OptIn(ExperimentalTime::class)
-        fun createTestHttpClient() = createHttpClient {
+        fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
                     AuthService.SIGN_IN -> handleSignIn(it)

@@ -249,7 +249,7 @@ class TokenManagerTest : BehaviorSpec({
     beforeTest {
         preferences = FakePreferences()
         authRepository = FakeAuthRepository(preferences)
-        val authService = AuthService(createTestHttpClient())
+        val authService = AuthService(createHttpClient())
         tokenManager = TokenManager(authService, preferences, authRepository)
     }
 }) {
@@ -274,7 +274,7 @@ class TokenManagerTest : BehaviorSpec({
         const val BAD_REQUEST_REFRESH_TOKEN = "bad_request_token"
 
         @OptIn(ExperimentalTime::class)
-        fun createTestHttpClient() = createHttpClient {
+        fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
                     AuthService.REFRESH_TOKEN -> handleRefreshToken(it)
