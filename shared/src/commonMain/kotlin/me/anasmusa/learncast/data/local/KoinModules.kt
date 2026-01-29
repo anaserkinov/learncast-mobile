@@ -24,7 +24,7 @@ internal fun Module.localModule() {
     single<Preferences> {
         PreferenceImpl()
     }
-    single {
+    single<AppDatabase> {
         getAppDatabase()
     }
 

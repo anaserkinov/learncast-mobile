@@ -1,7 +1,7 @@
 [versions]
 agp = "9.0.0"
 android-compileSdk = "36"
-android-minSdk = "24"
+android-minSdk = "26"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.9.6"
@@ -42,7 +42,7 @@ googleServices = "4.4.4"
 crashlytics = "3.0.6"
 firebaseBom = "34.8.0"
 kotest = "6.1.1"
-
+androidxTest = "1.7.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -125,7 +125,9 @@ kotest-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "k
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-
+androidx-test-core-ktx = { module = "androidx.test:core-ktx", version.ref = "androidxTest" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
+coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutine" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
