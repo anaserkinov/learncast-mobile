@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -25,13 +26,41 @@ kotlin {
     androidLibrary {
         namespace = "me.anasmusa.learncast.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
 
         withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder {
+            this.sourceSetTreeName = KotlinSourceSetTree.test.toString()
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+            managedDevices {
+                localDevices.add(
+                    localDevices.create("pixel2api30") {
+                        // Use device profiles you typically see in Android Studio.
+                        device = "Pixel 2"
+                        // Use only API levels 27 and higher.
+                        apiLevel = 30
+                        // To include Google services, use "google".
+                        systemImageSource = "aosp-atd"
+                    }
+                )
+            }
+        }
+
+        packaging {
+            resources.pickFirsts.addAll(
+                listOf(
+                    "META-INF/AL2.0",
+                    "META-INF/LGPL2.1",
+                )
+            )
+        }
 
         optimization {
             consumerKeepRules.apply {
                 publish = true
-                file("consumer-proguard-rules.pro")
+                file("consumer-rules.pro")
             }
         }
     }
@@ -135,6 +164,13 @@ kotlin {
         getByName("androidHostTest") {
             dependencies {
                 implementation(libs.kotest.junit5)
+            }
+        }
+        getByName("androidDeviceTest") {
+            dependencies {
+                implementation(libs.androidx.test.core.ktx)
+                implementation(libs.androidx.test.runner)
+                implementation(libs.coroutine.test)
             }
         }
     }
