@@ -32,7 +32,7 @@ object DownloadCacheScope {
 internal actual fun Module.platformModule() {
     single<SQLiteDatabase> {
         SQLiteDatabase.openOrCreateDatabase(
-            ApplicationLoader.Companion.context.getDatabasePath("app.db"),
+            ApplicationLoader.context.getDatabasePath("app.db"),
             null,
         )
     }
