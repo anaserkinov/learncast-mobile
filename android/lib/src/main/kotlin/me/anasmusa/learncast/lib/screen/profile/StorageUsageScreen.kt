@@ -22,9 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,9 +30,10 @@ import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
-import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.nav.LocalNavController
+import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.ui.profile.StorageIntent
 import me.anasmusa.learncast.ui.profile.StorageState
 import me.anasmusa.learncast.ui.profile.StorageViewModel
@@ -86,7 +85,7 @@ private fun Button(
         titleKey = titleKey,
         clip = clip,
         padding = PaddingValues(8.dp),
-        paddingBetween = 24.dp,
+        spacing = 24.dp,
         horizontalArrangement = Arrangement.Center,
         onClick = onClick,
     )
@@ -99,17 +98,12 @@ private fun _StorageUsageScreen(
     clearCache: () -> Unit,
     clearDownload: () -> Unit,
 ) {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
 
     Scaffold(
         modifier =
             Modifier
-                .background(
-                    Brush.verticalGradient(
-                        colors = LocalAppEnvironment.current.backgroundColors,
-                        endY = with(LocalDensity.current) { 100.dp.toPx() },
-                    ),
-                ),
+                .background(backgroundBrush()),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -123,7 +117,7 @@ private fun _StorageUsageScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() },
+                        onClick = { navController.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,

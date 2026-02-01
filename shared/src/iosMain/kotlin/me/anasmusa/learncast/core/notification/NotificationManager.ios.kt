@@ -1,5 +1,11 @@
 package me.anasmusa.learncast.core.notification
 
-internal actual fun createNotificationManager(): NotificationManager {
-    TODO("Not yet implemented")
+private class IosNotificationManager : NotificationManager {
+    override fun subscribe() {
+    }
+
+    override fun unSubscribe() {
+    }
 }
+
+internal actual fun createNotificationManager(): NotificationManager = IosNotificationManager()

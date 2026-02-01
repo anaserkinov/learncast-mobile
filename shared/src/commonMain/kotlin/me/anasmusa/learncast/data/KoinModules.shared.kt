@@ -32,6 +32,10 @@ object AppScope {
     const val ID = "app-ui-scope"
 }
 
+object AuthorizedUserScope {
+    const val ID = "authorized-user-scope"
+}
+
 internal expect fun Module.platformModule()
 
 internal fun dataModule() =

@@ -22,5 +22,5 @@ object KoinUtils {
         kClass: KClass<*>,
         qualifier: Qualifier? = null,
         parameter: ParametersDefinition? = null,
-    ): T = koin!!.get(kClass, qualifier, null)
+    ): T = koin!!.get(kClass, qualifier, parameter)
 }

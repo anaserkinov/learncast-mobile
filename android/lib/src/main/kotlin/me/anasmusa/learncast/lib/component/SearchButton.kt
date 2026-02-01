@@ -31,28 +31,32 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.theme.icon.SearchIcon
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.AppTheme
+
+@Preview
+@Composable
+private fun SearchButtonPreview(){
+    AppTheme {
+        Row {
+            SearchButton(
+                searchQuery = null,
+                onQueryChanged = {}
+            )
+        }
+    }
+}
 
 @Composable
 fun RowScope.SearchButton(
     searchQuery: String?,
-    onQueryChanged: (value: String?) -> Unit,
-    leftContent: (@Composable RowScope.(weight: Float) -> Unit)? = null,
+    onQueryChanged: (value: String?) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-
-    if (leftContent != null) {
-        val topicButtonWeight by animateFloatAsState(
-            if (searchQuery != null) 0f else 1f,
-            animationSpec = tween(300),
-        )
-        if (topicButtonWeight != 0f) {
-            leftContent.invoke(this, topicButtonWeight)
-        }
-    }
 
     if (searchQuery != null) {
         LaunchedEffect(Unit) {

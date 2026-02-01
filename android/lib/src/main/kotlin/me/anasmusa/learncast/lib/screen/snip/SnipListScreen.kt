@@ -75,9 +75,10 @@ private fun SnipListScreenPreview() {
 }
 
 @Composable
-fun SnipListScreen() {
+fun SnipListScreen(
+    viewModel: SnipListViewModel = koinViewModel<SnipListViewModel>()
+) {
     val env = LocalAppEnvironment.current
-    val viewModel = koinViewModel<SnipListViewModel>()
     val state by viewModel.state.collectAsState()
 
     _SnipListScreen(

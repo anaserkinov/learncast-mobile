@@ -2,6 +2,7 @@ package me.anasmusa.learncast.ui.home
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,6 +59,12 @@ class HomeViewModel(
     final override val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
+    val lessons by lazy {
+        state
+            .map { it.lessons }
+            .distinctUntilChanged()
+    }
+
     init {
         state
             .map { it.searchQuery to it.selectedFilter }
@@ -95,16 +102,17 @@ class HomeViewModel(
                 state.update {
                     it.copy(
                         lessons =
-                            lessonRepository.page(
-                                search = query,
-                                authorId = null,
-                                topicId = null,
-                                isFavourite = isFavourite,
-                                status = status,
-                                isDownloaded = isDownloaded,
-                                sort = sort,
-                                order = order,
-                            ),
+                            lessonRepository
+                                .page(
+                                    search = query,
+                                    authorId = null,
+                                    topicId = null,
+                                    isFavourite = isFavourite,
+                                    status = status,
+                                    isDownloaded = isDownloaded,
+                                    sort = sort,
+                                    order = order,
+                                ).cachedIn(viewModelScope),
                     )
                 }
             }.launchIn(viewModelScope)

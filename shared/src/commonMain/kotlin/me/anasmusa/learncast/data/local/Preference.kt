@@ -57,17 +57,6 @@ class Preferences {
             it.lang
         }
 
-    suspend fun setNightMode(enabled: Boolean) {
-        dataStore.updateData {
-            it.copy(isNightMode = enabled)
-        }
-    }
-
-    fun isNightMode(): Flow<Boolean?> =
-        dataStore.data.map {
-            it.isNightMode
-        }
-
     suspend fun clear() {
         dataStore.updateData {
             it.copy(

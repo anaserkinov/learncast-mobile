@@ -45,6 +45,7 @@ import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.SearchIntent
 import me.anasmusa.learncast.ui.SearchState
 import me.anasmusa.learncast.ui.SearchViewModel
@@ -105,7 +106,7 @@ private fun _SearchScreen(
     openTopic: (Topic) -> Unit,
     addToQueue: (Lesson) -> Unit,
 ) {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
 
     val lessons = state.lessons.collectAsLazyPagingItems()
     val topics = state.topics.collectAsLazyPagingItems()
@@ -139,7 +140,7 @@ private fun _SearchScreen(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() },
+                        onClick = { navController.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,

@@ -16,5 +16,4 @@ message PreferenceData {
   optional string accessToken = 2;
   optional string refreshToken = 3;
   optional string lang = 4;
-  bool isNightMode = 5;
 }

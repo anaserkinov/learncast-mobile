@@ -37,6 +37,7 @@ import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.Logout
 import me.anasmusa.learncast.lib.theme.icon.Storage
@@ -61,8 +62,9 @@ private fun ProfileScreenPreview() {
 }
 
 @Composable
-fun ProfileScreen() {
-    val viewModel = koinViewModel<ProfileViewModel>()
+fun ProfileScreen(
+    viewModel: ProfileViewModel = koinViewModel<ProfileViewModel>()
+) {
     val state by viewModel.state.collectAsState()
 
     _ProfileScreen(
@@ -87,7 +89,7 @@ private fun Button(
         titleKey = titleKey,
         clip = clip,
         padding = PaddingValues(16.dp),
-        paddingBetween = 24.dp,
+        spacing = 24.dp,
         onClick = onClick,
     )
 }
@@ -97,7 +99,7 @@ private fun _ProfileScreen(
     state: ProfileState,
     signout: () -> Unit,
 ) {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
 
     Scaffold(
         modifier =
@@ -177,7 +179,7 @@ private fun _ProfileScreen(
                     icon = Storage,
                     titleKey = Strings.STORAGE_USAGE,
                 ) {
-                    env.navigate(Screen.StorageUsageScreen)
+                    navController.navigate(Screen.StorageUsageScreen)
                 }
 
                 Spacer(

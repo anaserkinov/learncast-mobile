@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Shared
+import Kingfisher
 
 struct AuthorCell: View {
     let author: Author
@@ -17,22 +18,16 @@ struct AuthorCell: View {
             HStack(alignment: .center, spacing: 8) {
                 if let avatarPath = author.avatarPath,
                    let url = URL(string: UtilsKt.normalizeUrl(avatarPath)) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                        } else {
-                            Image(appConfig.mainLogoString)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
+                    KFImage(url)
+                        .resizable()
+                        .onSuccess { result in
+                            print("Image loaded from cache: \(result.cacheType)")
                         }
-                    }
-                    .frame(width: 64, height: 64)
-                    .clipShape(Circle())
-                    .padding(.trailing, 8)
+                        .clipShape(Circle())
+                        .frame(width: 64, height: 64)
+                        .padding(.trailing, 8)
                 } else {
-                    Image(appConfig.mainLogoString)
+                    Image("MainLogo")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 64, height: 64)
@@ -41,13 +36,11 @@ struct AuthorCell: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(author.name)
-                        .font(.title3)
-                        .fontWeight(.semibold)
+                        .font(Typography.TitleMedium)
                         .lineLimit(2)
                         .truncationMode(.tail)
                     Text(Resource.shared.quantityString(Strings.shared.LESSON, arg: author.lessonCount))
-                        .font(.body)
-                        .foregroundColor(.secondary)
+                        .font(Typography.BodyMedium)
                         .opacity(0.7)
                 }
                 .frame(height: 64, alignment: .center)
@@ -55,13 +48,15 @@ struct AuthorCell: View {
             .padding(4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 8)
-            .background(Color.clear) // Ensure the area isn't "empty"
-            .contentShape(Rectangle()) // Make the entire area tappable and show highlight
+            .background(Color.clear)
+            .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
     }
 }
 
 #Preview {
-    AuthorCell(author: getSampleAuthor(), onClick: {})
+    PreviewRoot {
+        AuthorCell(author: getSampleAuthor(), onClick: {})
+    }
 }
