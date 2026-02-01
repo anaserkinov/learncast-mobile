@@ -24,10 +24,10 @@ sealed interface LoginIntent : BaseIntent {
     object LoginWithGoogle : LoginIntent
 }
 
-sealed interface LoginEvent : BaseEvent {
+sealed class LoginEvent : BaseEvent {
     data class ShowError(
         val message: String,
-    ) : LoginEvent
+    ) : LoginEvent()
 }
 
 class LoginViewModel(

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A8787D432F2FC2DB000B631A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A8787D422F2FC2DB000B631A /* Kingfisher */; };
 		A8B5D7BF2F23A8C1007A433E /* lib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8B5D7B72F23A8C1007A433E /* lib.framework */; };
 		A8B5D7C02F23A8C1007A433E /* lib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A8B5D7B72F23A8C1007A433E /* lib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A8B5D7D02F23B872007A433E /* strings.xml in Resources */ = {isa = PBXBuildFile; fileRef = A8B5D7CD2F23B86B007A433E /* strings.xml */; };
@@ -45,7 +46,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A8257F592F22772000C2EA7B /* Exceptions for "learncast" folder in "learncast" target */ = {
+		A8787DFD2F2FCE85000B631A /* Exceptions for "learncast" folder in "learncast" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -63,7 +64,7 @@
 		A8257F4E2F22771300C2EA7B /* learncast */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A8257F592F22772000C2EA7B /* Exceptions for "learncast" folder in "learncast" target */,
+				A8787DFD2F2FCE85000B631A /* Exceptions for "learncast" folder in "learncast" target */,
 			);
 			path = learncast;
 			sourceTree = "<group>";
@@ -88,6 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8787D432F2FC2DB000B631A /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +181,7 @@
 			);
 			name = lib;
 			packageProductDependencies = (
+				A8787D422F2FC2DB000B631A /* Kingfisher */,
 			);
 			productName = lib;
 			productReference = A8B5D7B72F23A8C1007A433E /* lib.framework */;
@@ -212,6 +215,7 @@
 			mainGroup = F6ABD0B12E8ED841F94D8F97;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				A8787D412F2FC2DB000B631A /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 34F9245C1419FF786238759F /* Products */;
@@ -428,6 +432,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = learncast/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LearnCast;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -435,12 +440,13 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_PREPROCESS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.anasmusa.learncast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -463,6 +469,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = learncast/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LearnCast;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -470,12 +477,13 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_PREPROCESS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.anasmusa.learncast;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -598,6 +606,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A8787D412F2FC2DB000B631A /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A8787D422F2FC2DB000B631A /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A8787D412F2FC2DB000B631A /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A23F91330DBC32409BB2EAF2 /* Project object */;
 }

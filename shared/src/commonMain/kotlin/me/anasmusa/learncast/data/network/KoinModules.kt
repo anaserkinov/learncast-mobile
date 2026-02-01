@@ -1,6 +1,5 @@
 package me.anasmusa.learncast.data.network
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
@@ -8,9 +7,6 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -33,15 +29,15 @@ internal fun Module.networkModule() {
         me.anasmusa.learncast.data.network.HttpClient {
             expectSuccess = true
 
-            install(Logging) {
-                level = LogLevel.ALL
-                logger =
-                    object : Logger {
-                        override fun log(message: String) {
-                            Napier.v(message)
-                        }
-                    }
-            }
+//            install(Logging) {
+//                level = LogLevel.ALL
+//                logger =
+//                    object : Logger {
+//                        override fun log(message: String) {
+//                            Napier.v(message)
+//                        }
+//                    }
+//            }
 
             install(HttpTimeout) {
                 connectTimeoutMillis = 10_000

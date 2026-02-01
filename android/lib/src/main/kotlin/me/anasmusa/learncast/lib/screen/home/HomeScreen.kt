@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.simplestarts.app.ui.theme.icons.PersonIcon
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.flowOf
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.data.model.Filters
 import me.anasmusa.learncast.data.model.Lesson
@@ -51,9 +51,10 @@ import me.anasmusa.learncast.lib.component.cell.LessonCell
 import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.GridIcon
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.theme.icon.PersonIcon
 import me.anasmusa.learncast.ui.home.HomeIntent
 import me.anasmusa.learncast.ui.home.HomeState
 import me.anasmusa.learncast.ui.home.HomeViewModel
@@ -84,16 +85,18 @@ private fun HomeScreenPreview() {
 }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = koinViewModel<HomeViewModel>()
+) {
     val env = LocalAppEnvironment.current
-    val viewModel = koinViewModel<HomeViewModel>()
+    val navController = LocalNavController.current
     val state by viewModel.state.collectAsState()
 
     _HomeScreen(
         state = state,
         hazeState = env.hazeState,
         navigate = {
-            env.navigate(it)
+            navController.navigate(it)
         },
         onQueryChanged = {
             viewModel.handle(
@@ -133,7 +136,10 @@ private fun _HomeScreen(
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
+                ),
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(
@@ -143,8 +149,8 @@ private fun _HomeScreen(
                     ) {
                         Text(
                             text = Strings.HOME.string(),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineMediumEmphasized,
+                            fontWeight = FontWeight.Bold
                         )
                         Row(
                             modifier =

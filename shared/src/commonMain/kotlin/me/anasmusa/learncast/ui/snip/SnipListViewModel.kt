@@ -2,6 +2,7 @@ package me.anasmusa.learncast.ui.snip
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,12 +59,13 @@ class SnipListViewModel(
                 state.update {
                     it.copy(
                         snips =
-                            snipRepository.page(
-                                search = query,
-                                lessonId = null,
-                                sort = null,
-                                order = null,
-                            ),
+                            snipRepository
+                                .page(
+                                    search = query,
+                                    lessonId = null,
+                                    sort = null,
+                                    order = null,
+                                ).cachedIn(viewModelScope),
                     )
                 }
             }.launchIn(viewModelScope)

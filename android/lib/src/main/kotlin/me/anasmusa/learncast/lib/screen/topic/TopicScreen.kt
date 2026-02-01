@@ -49,6 +49,7 @@ import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.component.cell.LessonCell
 import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
@@ -109,6 +110,7 @@ private fun _TopicScreen(
     onLessonClicked: (lesson: Lesson) -> Unit,
 ) {
     val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val pagingState = state.lessons.collectAsLazyPagingItems()
 
@@ -127,7 +129,7 @@ private fun _TopicScreen(
                     ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() },
+                        onClick = { navController.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
@@ -190,7 +192,7 @@ private fun _TopicScreen(
 
                 IconButton(
                     onClick = {
-                        env.navigate(Screen.Search(topic.authorId, topic.id))
+                        navController.navigate(Screen.Search(topic.authorId, topic.id))
                     },
                 ) {
                     Icon(

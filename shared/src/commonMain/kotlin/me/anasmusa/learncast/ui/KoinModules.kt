@@ -1,5 +1,7 @@
 package me.anasmusa.learncast.ui
 
+import me.anasmusa.learncast.core.getOrCreateScope
+import me.anasmusa.learncast.data.AuthorizedUserScope
 import me.anasmusa.learncast.ui.auth.LoginViewModel
 import me.anasmusa.learncast.ui.author.AuthorListViewModel
 import me.anasmusa.learncast.ui.author.AuthorViewModel
@@ -14,6 +16,7 @@ import me.anasmusa.learncast.ui.snip.SnipListViewModel
 import me.anasmusa.learncast.ui.topic.TopicListViewModel
 import me.anasmusa.learncast.ui.topic.TopicViewModel
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.scopedOf
 import org.koin.dsl.module
 
 internal fun uiModule() =
@@ -22,7 +25,20 @@ internal fun uiModule() =
         factoryOf(::PlayerViewModel)
         factoryOf(::LoginViewModel)
 
-        factoryOf(::HomeViewModel)
+        scope<AuthorizedUserScope> {
+            scopedOf(::HomeViewModel)
+            scopedOf(::SnipListViewModel)
+            scopedOf(::ProfileViewModel)
+        }
+        factory<HomeViewModel> {
+            getOrCreateScope<AuthorizedUserScope>(AuthorizedUserScope.ID).get()
+        }
+        factory<SnipListViewModel> {
+            getOrCreateScope<AuthorizedUserScope>(AuthorizedUserScope.ID).get()
+        }
+        factory<ProfileViewModel> {
+            getOrCreateScope<AuthorizedUserScope>(AuthorizedUserScope.ID).get()
+        }
 
         factoryOf(::TopicListViewModel)
         factoryOf(::TopicViewModel)
@@ -30,7 +46,6 @@ internal fun uiModule() =
         factoryOf(::AuthorListViewModel)
         factoryOf(::AuthorViewModel)
 
-        factoryOf(::SnipListViewModel)
         factoryOf(::SnipEditViewModel)
 
         factoryOf(::QueueViewModel)
@@ -38,6 +53,5 @@ internal fun uiModule() =
 
         factoryOf(::SearchViewModel)
 
-        factoryOf(::ProfileViewModel)
         factoryOf(::StorageViewModel)
     }

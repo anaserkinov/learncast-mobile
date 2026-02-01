@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -25,6 +27,8 @@ abstract class BaseViewModel<
     abstract val state: StateFlow<State>
 
     private val events = Channel<Event>(Channel.BUFFERED)
+    val eventsFlow: Flow<Event>
+        get() = events.consumeAsFlow()
 
     open fun handle(intent: Intent) {
     }

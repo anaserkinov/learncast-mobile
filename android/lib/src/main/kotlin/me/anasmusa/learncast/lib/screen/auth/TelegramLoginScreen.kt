@@ -1,6 +1,9 @@
 package me.anasmusa.learncast.lib.screen.auth
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
+import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -27,6 +30,7 @@ import me.anasmusa.learncast.core.appConfig
 @Composable
 fun TelegramLoginScreen(
     onGetResult: (result: String) -> Unit,
+    onCancel: () -> Unit,
 ) {
     var isLoading by remember { mutableStateOf(true) }
     val urlToLoad = "https://oauth.telegram.org/auth?bot_id=${appConfig.telegramBotId}&origin=${appConfig.publicBaseUrl}&lang=uz"
@@ -42,9 +46,14 @@ fun TelegramLoginScreen(
                 WebView(context).apply {
                     setBackgroundColor(android.graphics.Color.WHITE)
                     settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
 //                    val cookieManager = CookieManager.getInstance()
 //                    cookieManager.removeAllCookies(null)
 //                    cookieManager.flush()
+                    addJavascriptInterface(
+                        CancelJsInterface(onCancel),
+                        "AndroidCancelHandler"
+                    )
 
                     webViewClient =
                         object : WebViewClient() {
@@ -63,6 +72,7 @@ fun TelegramLoginScreen(
                             ) {
                                 super.onPageFinished(view, url)
                                 isLoading = false
+                                injectCancelInterceptor(this@apply)
                             }
 
                             override fun shouldOverrideUrlLoading(
@@ -100,3 +110,57 @@ fun TelegramLoginScreen(
         }
     }
 }
+
+class CancelJsInterface(
+    private val onCancel: () -> Unit
+) {
+
+    @JavascriptInterface
+    fun onCancel() {
+        Handler(Looper.getMainLooper()).post {
+            this.onCancel.invoke()
+        }
+    }
+}
+
+
+private fun injectCancelInterceptor(webView: WebView) {
+    val js = """
+        (function() {
+            const originalLoginCancel = window.loginCancel;
+
+            window.loginCancel = function(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                AndroidCancelHandler.onCancel();
+
+                if (originalLoginCancel && typeof originalLoginCancel === 'function') {
+                    originalLoginCancel.call(this, event);
+                }
+
+                return false;
+            };
+
+            document.addEventListener('click', function(e) {
+                const button = e.target.closest('button');
+
+                if (
+                    button &&
+                    button.classList.contains('button-item-flat') &&
+                    button.getAttribute('onclick') &&
+                    button.getAttribute('onclick').includes('loginCancel')
+                ) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    AndroidCancelHandler.onCancel();
+                }
+            }, true);
+        })();
+    """.trimIndent()
+
+    webView.evaluateJavascript(js, null)
+}
+

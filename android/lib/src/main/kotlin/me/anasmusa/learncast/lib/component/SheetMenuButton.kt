@@ -29,7 +29,7 @@ fun SheetMenuButton(
         title = title,
         clip = clip,
         padding = padding,
-        paddingBetween = paddingBetween,
+        spacing = paddingBetween,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         onClick = onClick,
     )

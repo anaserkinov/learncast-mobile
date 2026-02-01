@@ -30,22 +30,22 @@ data class Lesson(
     val completedAt: LocalDateTime?,
 )
 
-fun getSampleLesson() =
+fun getSampleLesson(id: Long = 1) =
     Lesson(
-        id = 1,
-        title = "Lesson",
+        id = id,
+        title = "Lesson $id",
         description = "description",
         coverImagePath = null,
         authorId = 2,
-        authorName = "Author",
+        authorName = "Author $id",
         topicId = 3,
-        topicTitle = "Topic",
+        topicTitle = "Topic $id",
         createdAt = nowLocalDateTime(),
         audioPath = "audio",
-        audioSize = 2434L,
+        audioSize = id * 2434L,
         audioDuration = 4.toDuration(DurationUnit.MINUTES),
-        listenCount = 1000L,
-        snipCount = 2321,
+        listenCount = id * 1000L,
+        snipCount = id * 2321,
         isFavourite = true,
         startedAt = nowLocalDateTime(),
         lastPositionMs = 0.toDuration(DurationUnit.MILLISECONDS),
