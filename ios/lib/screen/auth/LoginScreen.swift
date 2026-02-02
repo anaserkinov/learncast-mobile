@@ -5,17 +5,18 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-
-import SwiftUI
 import Shared
+import SwiftUI
 
 struct LoginScreen: View {
-    
-    @State private var viewModel = ObservableViewModel<LoginState, LoginIntent, LoginEvent, LoginViewModel>()
-    
+
+    @State private var viewModel = ObservableViewModel<
+        LoginState, LoginIntent, LoginEvent, LoginViewModel
+    >()
+
     @State private var snackbarMessage: String?
     @State private var showSnackbar = false
-    
+
     var body: some View {
         _LoginScreen(
             state: viewModel.state,
@@ -30,16 +31,18 @@ struct LoginScreen: View {
         .task {
             await viewModel.collect()
         }
-        .onChange(of: viewModel.event, initial: false, { _, event in
-            guard let event = event else { return }
-            switch event {
-            case let showError as LoginEvent.ShowError:
-                snackbarMessage = showError.message
-                showSnackbar = true
-            default:
-                break
-            }
-        })
+        .onChange(
+            of: viewModel.event, initial: false,
+            { _, event in
+                guard let event = event else { return }
+                switch event {
+                case let showError as LoginEvent.ShowError:
+                    snackbarMessage = showError.message
+                    showSnackbar = true
+                default:
+                    break
+                }
+            })
     }
 }
 
@@ -48,9 +51,9 @@ private struct _LoginScreen: View {
 
     var state: LoginState
     var handle: (Shared.LoginIntent) -> Void
-    
+
     @State private var showTelegramLogin = false
-    
+
     var body: some View {
         ZStack {
             GeometryReader { geo in
@@ -60,19 +63,19 @@ private struct _LoginScreen: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 200, height: 200)
-                        
+
                         Text(appConfig.appName)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .multilineTextAlignment(.center)
                     }
                     .frame(height: geo.size.height * 0.4)
-                    
+
                     VStack(spacing: 24) {
                         Text(Strings.shared.SIGN_IN_CONTINUE.string())
                             .frame(maxWidth: .infinity)
                             .multilineTextAlignment(.center)
-                        
+
                         VStack(spacing: 12) {
                             Button {
                                 showTelegramLogin = true
@@ -81,15 +84,15 @@ private struct _LoginScreen: View {
                                     Image("Telegram")
                                         .resizable()
                                         .frame(width: 28, height: 28)
-                                    
+
                                     Text(Strings.shared.CONTINUE_TELEGRAM.string())
-                                        .font(Typography.LabelLarge)
+                                        .font(Typography.labelLarge)
                                 }
-                                .foregroundStyle(Colors.OnPrimary)
+                                .foregroundStyle(Colors.onPrimary)
                                 .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.borderedProminent)
-                            
+
                             Button {
                                 handle(LoginIntentLoginWithGoogle())
                             } label: {
@@ -97,11 +100,11 @@ private struct _LoginScreen: View {
                                     Image("Google")
                                         .resizable()
                                         .frame(width: 28, height: 28)
-                                    
+
                                     Text(Strings.shared.CONTINUE_GOOGLE.string())
-                                        .font(Typography.LabelLarge)
+                                        .font(Typography.labelLarge)
                                 }
-                                .foregroundStyle(Colors.OnPrimary)
+                                .foregroundStyle(Colors.onPrimary)
                                 .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.borderedProminent)
@@ -113,7 +116,7 @@ private struct _LoginScreen: View {
                 }
                 .padding(.top)
             }
-            
+
             if state.isLoading {
                 LoaderView()
             }

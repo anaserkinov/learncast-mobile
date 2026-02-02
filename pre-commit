@@ -1,17 +1,20 @@
 #!/bin/sh
 
-CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '\.kts\?$')
+# -------------------------
+# Kotlin files
+# -------------------------
+CHANGED_KOTLIN_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '\.kts\?$')
 
-if [ -n "$CHANGED_FILES" ]; then
+if [ -n "$CHANGED_KOTLIN_FILES" ]; then
   echo "🔍 Found changed Kotlin files:"
-  echo "$CHANGED_FILES"
+  echo "$CHANGED_KOTLIN_FILES"
 
-  FILE_LIST_COMMA_SEP=$(echo "$CHANGED_FILES" | tr '\n' ',')
+  FILE_LIST_COMMA_SEP=$(echo "$CHANGED_KOTLIN_FILES" | tr '\n' ',')
   echo "🛠  Running ktlintFormat for includes: $FILE_LIST_COMMA_SEP"
   ./gradlew ktlintFormat -Pincludes="$FILE_LIST_COMMA_SEP"
 
-  echo "➕ Adding formatted changes to commit..."
-  echo "$CHANGED_FILES" | xargs git add
+  echo "➕ Adding formatted Kotlin changes to commit..."
+  echo "$CHANGED_KOTLIN_FILES" | xargs git add
 
   echo "🔎 Running ktlintCheck..."
   ./gradlew ktlintCheck -Pincludes="$FILE_LIST_COMMA_SEP"
@@ -22,6 +25,32 @@ if [ -n "$CHANGED_FILES" ]; then
   fi
 else
   echo "ℹ️ No changed Kotlin files to check."
+fi
+
+# -------------------------
+# Swift files
+# -------------------------
+CHANGED_SWIFT_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '\.swift$')
+
+if [ -n "$CHANGED_SWIFT_FILES" ]; then
+  echo "🔍 Found changed Swift files:"
+  echo "$CHANGED_SWIFT_FILES"
+
+  echo "🛠  Running swift-format format..."
+  swift-format format . -r -i
+
+  echo "➕ Adding formatted Swift changes to commit..."
+  echo "$CHANGED_SWIFT_FILES" | xargs git add
+
+  echo "🔎 Running swift-format lint..."
+  swift-format lint . -r -s
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Swift lint check failed! Please fix the errors and try again."
+    exit 1
+  fi
+else
+  echo "ℹ️ No changed Swift files to check."
 fi
 
 exit 0

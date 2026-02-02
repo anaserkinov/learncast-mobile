@@ -5,18 +5,19 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-import SwiftUI
 import Shared
+import SwiftUI
 
-struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: View, Footer: View>: View {
-    
+struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: View, Footer: View>:
+    View
+{
+
     private let pagingState: ListPagingState<T>
     private let cell: (T?) -> Content
     private let id: KeyPath<ListPagingState<T>.Element, ID>
     private let header: (() -> Header)?
     private let footer: (() -> Footer)?
 
-    
     init(
         pagingState: ListPagingState<T>,
         id: KeyPath<ListPagingState<T>.Element, ID>,
@@ -30,7 +31,7 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
         self.footer = footer
         self.cell = cell
     }
-    
+
     var body: some View {
         List {
             if let header {
@@ -39,7 +40,7 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
             }
-            
+
             ForEach(
                 pagingState,
                 id: id
@@ -54,7 +55,7 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
                 ProgressView()
                     .frame(maxWidth: .infinity, alignment: .center)
             }
-            
+
             if let footer {
                 footer()
                     .listRowBackground(Color.clear)
@@ -67,7 +68,7 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
             pagingState.refresh()
         }
     }
-    
+
 }
 
 #Preview {

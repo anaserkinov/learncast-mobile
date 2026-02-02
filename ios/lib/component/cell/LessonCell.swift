@@ -5,9 +5,9 @@
 //  Created by Anas Erkinjonov on 22/01/26.
 //
 
-import SwiftUI
-import Shared
 import Kingfisher
+import Shared
+import SwiftUI
 
 struct LessonCell: View {
     let lesson: Lesson
@@ -17,7 +17,8 @@ struct LessonCell: View {
         Button(action: onClick) {
             HStack(alignment: .center, spacing: 8) {
                 if let coverImagePath = lesson.coverImagePath,
-                   let url = URL(string: UtilsKt.normalizeUrl(coverImagePath)) {
+                    let url = URL(string: UtilsKt.normalizeUrl(coverImagePath))
+                {
                     KFImage(url)
                         .resizable()
                         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -33,22 +34,22 @@ struct LessonCell: View {
                 }
                 VStack(alignment: .leading) {
                     Text(lesson.authorName)
-                        .font(Typography.BodyMedium)
+                        .font(Typography.bodyMedium)
                         .opacity(0.7)
-                    
+
                     Text(
                         lesson.topicTitle != nil
                             ? "\(lesson.title) - \(lesson.topicTitle!)"
                             : lesson.title
                     )
-                    .font(Typography.TitleMedium)
+                    .font(Typography.titleMedium)
                     .lineLimit(2)
-                    
+
                     Text(
                         "\(lesson.createdAt.dayMonth()) · \(lesson.audioDuration)"
                     )
-                        .font(Typography.BodyMedium)
-                        .opacity(0.7)
+                    .font(Typography.bodyMedium)
+                    .opacity(0.7)
                 }
                 .frame(height: 80, alignment: .center)
             }
@@ -67,4 +68,3 @@ struct LessonCell: View {
         LessonCell(lesson: getSampleLesson(id: 1), onClick: {})
     }
 }
-

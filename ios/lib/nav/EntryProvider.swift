@@ -10,7 +10,7 @@ import SwiftUI
 @ViewBuilder
 func getView(screen: Screen?) -> some View {
     switch screen {
-    case .Login: LoginScreen()
+    case .login: LoginScreen()
     default: EmptyView()
     }
 }

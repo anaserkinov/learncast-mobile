@@ -5,9 +5,9 @@
 //  Created by Anas Erkinjonov on 22/01/26.
 //
 
-import SwiftUI
-import Shared
 import Kingfisher
+import Shared
+import SwiftUI
 
 struct AuthorCell: View {
     let author: Author
@@ -17,7 +17,8 @@ struct AuthorCell: View {
         Button(action: onClick) {
             HStack(alignment: .center, spacing: 8) {
                 if let avatarPath = author.avatarPath,
-                   let url = URL(string: UtilsKt.normalizeUrl(avatarPath)) {
+                    let url = URL(string: UtilsKt.normalizeUrl(avatarPath))
+                {
                     KFImage(url)
                         .resizable()
                         .onSuccess { result in
@@ -36,12 +37,15 @@ struct AuthorCell: View {
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     Text(author.name)
-                        .font(Typography.TitleMedium)
+                        .font(Typography.titleMedium)
                         .lineLimit(2)
                         .truncationMode(.tail)
-                    Text(Resource.shared.quantityString(Strings.shared.LESSON, arg: author.lessonCount))
-                        .font(Typography.BodyMedium)
-                        .opacity(0.7)
+                    Text(
+                        Resource.shared.quantityString(
+                            Strings.shared.LESSON, arg: author.lessonCount)
+                    )
+                    .font(Typography.bodyMedium)
+                    .opacity(0.7)
                 }
                 .frame(height: 64, alignment: .center)
             }
