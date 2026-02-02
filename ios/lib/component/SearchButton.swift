@@ -68,18 +68,18 @@ struct SearchInput: View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 20))
-                .foregroundColor(Colors.OnTertiaryContainer)
+                .foregroundColor(Colors.onTertiaryContainer)
 
             ZStack(alignment: .leading) {
                 if text.isEmpty {
                     Text(Strings.shared.SEARCH.string())
                         .font(Typography.titleMedium)
-                        .foregroundColor(Colors.OnTertiaryContainer.opacity(0.5))
+                        .foregroundColor(Colors.onTertiaryContainer.opacity(0.5))
                 }
 
                 TextField("", text: $text)
                     .font(Typography.titleMedium)
-                    .foregroundColor(Colors.OnTertiaryContainer)
+                    .foregroundColor(Colors.onTertiaryContainer)
                     .focused($isFocused)
                     .textFieldStyle(.plain)
             }
