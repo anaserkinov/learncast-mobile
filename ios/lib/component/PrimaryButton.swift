@@ -78,7 +78,7 @@ struct PrimaryButton: View {
             .frame(maxWidth: .infinity, alignment: alignment)
             .background(backgroundColor)
         }
-        .tint(Colors.OnTertiaryContainer)
+        .tint(Colors.onTertiaryContainer)
         .applyIf(clip) { view in
             view.clipShape(RoundedRectangle(cornerRadius: 8))
         }
