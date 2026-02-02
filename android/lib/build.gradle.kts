@@ -50,8 +50,8 @@ val copyStringsToAndroid by tasks.registering(Copy::class) {
     group = "resources"
     description = "Copy KMP string resources to Android assets"
 
-    from(layout.projectDirectory.dir("src/commonMain/resources"))
-    into(layout.projectDirectory.dir("../android/lib/src/main/assets"))
+    from(layout.projectDirectory.dir("../../shared/src/commonMain/resources"))
+    into(layout.projectDirectory.dir("src/main/assets"))
 }
 
 dependencies {
