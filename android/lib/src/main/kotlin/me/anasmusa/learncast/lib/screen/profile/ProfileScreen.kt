@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,10 +33,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.data.model.User
 import me.anasmusa.learncast.lib.AppTheme
+import me.anasmusa.learncast.lib.component.ConfirmationBottomSheet
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
@@ -100,6 +105,7 @@ private fun _ProfileScreen(
     signout: () -> Unit,
 ) {
     val navController = LocalNavController.current
+    var showLogoutConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier =
@@ -193,13 +199,28 @@ private fun _ProfileScreen(
                     icon = Logout,
                     titleKey = Strings.SIGNOUT,
                 ) {
-                    signout()
+                    showLogoutConfirm = true
                 }
             }
         }
 
         if (state.isLoading) {
             Loader()
+        }
+
+        if (showLogoutConfirm) {
+            ConfirmationBottomSheet(
+                title = Strings.SIGNOUT.string() + "?",
+                message = Strings.SIGN_OUT_CONFIRM_MESSAGE.string(),
+                positiveButtonTitle = Strings.SIGNOUT.string(),
+                onConfirm = {
+                    showLogoutConfirm = false
+                    signout()
+                },
+                onDismiss = {
+                    showLogoutConfirm = false
+                },
+            )
         }
     }
 }

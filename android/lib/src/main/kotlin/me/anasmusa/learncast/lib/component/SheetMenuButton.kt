@@ -1,5 +1,6 @@
 package me.anasmusa.learncast.lib.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,8 +17,9 @@ fun SheetMenuButton(
     icon: ImageVector?,
     title: String,
     clip: Boolean = true,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     padding: PaddingValues = PaddingValues(12.dp),
-    paddingBetween: Dp = 8.dp,
+    spacing: Dp = 8.dp,
     onClick: () -> Unit,
 ) {
     PrimaryButton(
@@ -29,8 +31,37 @@ fun SheetMenuButton(
         title = title,
         clip = clip,
         padding = padding,
-        spacing = paddingBetween,
+        spacing = spacing,
+        horizontalArrangement = horizontalArrangement,
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         onClick = onClick,
+    )
+}
+
+@Composable
+fun SheetMenuWhiteButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector?,
+    title: String,
+    clip: Boolean = true,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    padding: PaddingValues = PaddingValues(12.dp),
+    spacing: Dp = 8.dp,
+    onClick: () -> Unit,
+) {
+    PrimaryButton(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(56.dp),
+        icon = icon,
+        title = title,
+        clip = clip,
+        padding = padding,
+        spacing = spacing,
+        horizontalArrangement = horizontalArrangement,
+        backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
+        onClick = onClick,
+        titleColor = MaterialTheme.colorScheme.background,
     )
 }
