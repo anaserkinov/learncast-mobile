@@ -11,8 +11,8 @@ enum Screen: Hashable {
     case entrance
     case login
     case home
-    case Snips
-    case Profile
+    case snips
+    case profile
     case topicList
     case topic(topic: Topic)
     case authorList
@@ -20,7 +20,6 @@ enum Screen: Hashable {
     case search(
         authorId: Int64,
         topicId: Int64?,
-        selectedTab: Int = 0,
-    )
+        selectedTab: Int = 0)
     case storageUsageScreen
 }
