@@ -5,8 +5,8 @@
 //  Created by Anas Erkinjonov on 29/01/26.
 //
 
-import SwiftUI
 import Shared
+import SwiftUI
 
 extension PrimaryButton {
     init(
@@ -15,7 +15,7 @@ extension PrimaryButton {
         clip: Bool = true,
         padding: EdgeInsets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12),
         spacing: CGFloat = 8,
-        backgroundColor: Color = Colors.TertiaryContainer,
+        backgroundColor: Color = Colors.tertiaryContainer,
         horizontalAlignment: HorizontalAlignment = .leading,
         onClick: @escaping () -> Void
     ) {
@@ -41,14 +41,14 @@ struct PrimaryButton: View {
     let backgroundColor: Color
     let horizontalAlignment: HorizontalAlignment
     let onClick: () -> Void
-    
+
     init(
         title: String,
         icon: String? = nil,
         clip: Bool = true,
         padding: EdgeInsets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12),
         spacing: CGFloat = 8,
-        backgroundColor: Color = Color(Colors.TertiaryContainer),
+        backgroundColor: Color = Color(Colors.tertiaryContainer),
         horizontalAlignment: HorizontalAlignment = .leading,
         onClick: @escaping () -> Void
     ) {
@@ -72,7 +72,7 @@ struct PrimaryButton: View {
 
                 Text(title)
                     .lineLimit(1)
-                    .font(Typography.TitleMedium)
+                    .font(Typography.titleMedium)
             }
             .padding(padding)
             .frame(maxWidth: .infinity, alignment: alignment)
@@ -100,9 +100,9 @@ struct PrimaryButton: View {
 }
 
 #Preview {
-    PreviewRoot{
+    PreviewRoot {
         PrimaryButton(titleKey: Strings.shared.SEARCH, icon: "magnifyingglass") {
-            
+
         }
     }
 }

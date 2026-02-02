@@ -5,23 +5,21 @@
 //  Created by Anas Erkinjonov on 23/01/26.
 //
 
-
-import SwiftUI
 import Shared
-
+import SwiftUI
 
 public struct AppView: View {
-    
+
     @State
     private var viewModel = ObservableViewModel<AppState, AppIntent, AppEvent, AppViewModel>()
 
     @State
     private var env = AppEnvironment()
     @State
-    private var selectedTab: Screen = .Entrance
-    
+    private var selectedTab: Screen = .entrance
+
     public init() {}
-    
+
     public var body: some View {
         _AppView(
             state: viewModel.state,
@@ -32,43 +30,44 @@ public struct AppView: View {
             viewModel.handle(intent: AppIntentLoad())
             await viewModel.collect()
         }
-        .onChange(of: viewModel.event, initial: false, { _, event in
-            guard let event = event else { return }
-            switch event {
-            case is AppEvent.ShowLoginScreen:
-                selectedTab = .Login
-            case is AppEvent.ShowHomeScreen:
-                selectedTab = .Home
-            default:
-                break
-            }
-        })
+        .onChange(
+            of: viewModel.event, initial: false,
+            { _, event in
+                guard let event = event else { return }
+                switch event {
+                case is AppEvent.ShowLoginScreen:
+                    selectedTab = .login
+                case is AppEvent.ShowHomeScreen:
+                    selectedTab = .home
+                default:
+                    break
+                }
+            })
     }
 }
 
 private struct _AppView: View {
-    
+
     var state: AppState
     var env: AppEnvironment
-    
+
     @State
     private var homeNavController = NavController()
     @State
     private var snipsNavController = NavController()
     @State
     private var profileNavController = NavController()
-    
-    
+
     @Binding
     var selectedTab: Screen
-    
+
     @State
     private var stringsLoaded = false
-    
+
     @ViewBuilder
     private func navStack(
         navController: Binding<NavController>,
-        root: @escaping() -> some View
+        root: @escaping () -> some View
     ) -> some View {
         NavigationStack(path: navController.backStack) {
             root()
@@ -77,36 +76,36 @@ private struct _AppView: View {
                 }
         }
     }
-    
+
     public var body: some View {
         ZStack {
             switch selectedTab {
-            case .Entrance: EmptyView()
-            case .Login: LoginScreen()
-            default :
+            case .entrance: EmptyView()
+            case .login: LoginScreen()
+            default:
                 TabView(selection: $selectedTab) {
-                    navStack(navController: $homeNavController){
+                    navStack(navController: $homeNavController) {
                         HomeScreen()
                     }
-                    .tag(Screen.Home)
+                    .tag(Screen.home)
                     .tabItem {
                         Image(systemName: "house")
                         Text(Strings.shared.HOME.string())
                     }
-                    
-                    navStack(navController: $snipsNavController){
+
+                    navStack(navController: $snipsNavController) {
                         SnipListScreen()
                     }
-                    .tag(Screen.Snips)
+                    .tag(Screen.snips)
                     .tabItem {
                         Image(systemName: "scissors")
                         Text(Strings.shared.SNIPS.string())
                     }
-                    
-                    navStack(navController: $profileNavController){
+
+                    navStack(navController: $profileNavController) {
                         ProfileScreen()
                     }
-                    .tag(Screen.Profile)
+                    .tag(Screen.profile)
                     .tabItem {
                         Image(systemName: "person")
                         Text(Strings.shared.PROFILE.string())
@@ -115,55 +114,56 @@ private struct _AppView: View {
                 .navigationBarBackButtonHidden()
             }
         }
-        .font(Typography.BodyMedium)
+        .font(Typography.bodyMedium)
         .preferredColorScheme(.dark)
         .onAppear {
             if !stringsLoaded {
-                Resource.shared.setLocale(locale: "uz", onLoad: {
-                    stringsLoaded = true
-                })
+                Resource.shared.setLocale(
+                    locale: "uz",
+                    onLoad: {
+                        stringsLoaded = true
+                    })
             }
         }
     }
 }
 
-
 struct PreviewRoot<Content: View>: View {
     let content: Content
     @State
     private var env = AppEnvironment()
-    
+
     init(@ViewBuilder content: () -> Content) {
         PreviewSetup.setup()
         self.content = content()
     }
-    
+
     var body: some View {
         content
             .environment(\.env, env)
-            .font(Typography.BodyMedium)
+            .font(Typography.bodyMedium)
             .preferredColorScheme(.dark)
     }
 }
 
 enum PreviewSetup {
-    
+
     private static var isInitialized = false
-    
+
     static func setup() {
         guard !isInitialized else { return }
         isInitialized = true
-        
+
         AppConfig.companion.update(
             appName: "LearnCast",
             mainLogo: "MainLogo",
             transparentLogo: "TransparentLogo",
             apiBaseUrl: "https://api.anasmusa.me/learncast/",
             publicBaseUrl: "https://learncast.anasmusa.me",
-            telegramBotId: 8538344134,
+            telegramBotId: 8_538_344_134,
             googleClientId: "preview-google-client-id"
         )
-        
+
         Resource.shared.setLocale(locale: "uz", onLoad: {})
     }
 }
@@ -173,7 +173,7 @@ enum PreviewSetup {
         _AppView(
             state: AppState(isLoggedIn: true),
             env: AppEnvironment(),
-            selectedTab: .constant(.Home)
+            selectedTab: .constant(.home)
         )
     }
 }

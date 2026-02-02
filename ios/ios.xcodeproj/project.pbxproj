@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A81B4FA32F30AB8100937968 /* .swift-format in Resources */ = {isa = PBXBuildFile; fileRef = A81B4FA22F30AB8100937968 /* .swift-format */; };
 		A8787D432F2FC2DB000B631A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A8787D422F2FC2DB000B631A /* Kingfisher */; };
 		A8B5D7BF2F23A8C1007A433E /* lib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8B5D7B72F23A8C1007A433E /* lib.framework */; };
 		A8B5D7C02F23A8C1007A433E /* lib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A8B5D7B72F23A8C1007A433E /* lib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -39,6 +40,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A81B4FA22F30AB8100937968 /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
 		A8257F4D2F22771300C2EA7B /* learncast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = learncast.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8B5D7B72F23A8C1007A433E /* lib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = lib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8B5D7CD2F23B86B007A433E /* strings.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = strings.xml; sourceTree = "<group>"; };
@@ -46,7 +48,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A8787DFD2F2FCE85000B631A /* Exceptions for "learncast" folder in "learncast" target */ = {
+		A8787DFD2F2FCE85000B631A /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -64,7 +66,7 @@
 		A8257F4E2F22771300C2EA7B /* learncast */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				A8787DFD2F2FCE85000B631A /* Exceptions for "learncast" folder in "learncast" target */,
+				A8787DFD2F2FCE85000B631A /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
 			path = learncast;
 			sourceTree = "<group>";
@@ -117,6 +119,7 @@
 		F6ABD0B12E8ED841F94D8F97 = {
 			isa = PBXGroup;
 			children = (
+				A81B4FA22F30AB8100937968 /* .swift-format */,
 				A8B5D7CF2F23B86B007A433E /* Resources */,
 				475A449428F32ABF0FE14394 /* Configuration */,
 				A8257F4E2F22771300C2EA7B /* learncast */,
@@ -233,6 +236,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A81B4FA32F30AB8100937968 /* .swift-format in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

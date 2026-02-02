@@ -3,23 +3,26 @@
 //
 
 import Foundation
-import UIKit
 import Shared
+import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
         AppConfig.companion.update(
             appName: "LearnCast",
             mainLogo: "MainLogo",
             transparentLogo: "TransparentLogo",
             apiBaseUrl: "https://api.anasmusa.me/learncast/",
             publicBaseUrl: "https://learncast.anasmusa.me",
-            telegramBotId: 8538344134,
-            googleClientId: "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com"
+            telegramBotId: 8_538_344_134,
+            googleClientId:
+                "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com"
         )
-        
+
         Initializer.shared.doInitApp()
         return true
     }

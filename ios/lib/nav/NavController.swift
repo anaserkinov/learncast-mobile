@@ -11,27 +11,26 @@ import SwiftUI
 @Observable
 public class NavController {
     var backStack = [Screen]()
-    
+
     func navigate(screen: Screen) {
         backStack.append(screen)
     }
-    
+
     func popBack() {
         backStack.removeLast()
     }
-    
-    func removeAll(){
+
+    func removeAll() {
         backStack.removeAll()
     }
 }
-
 
 private struct NavControllerKey: EnvironmentKey {
     static var defaultValue: NavController = NavController()
 }
 
-public extension EnvironmentValues {
-    var navController: NavController {
+extension EnvironmentValues {
+    public var navController: NavController {
         get { self[NavControllerKey.self] }
         set { self[NavControllerKey.self] = newValue }
     }

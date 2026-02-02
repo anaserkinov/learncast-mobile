@@ -5,7 +5,6 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-
 //
 //  SnackbarModifier.swift
 //  iosApp
@@ -19,15 +18,15 @@ struct SnackbarModifier: ViewModifier {
     @Binding var isPresented: Bool
     let message: String
     let duration: TimeInterval = 3.0
-    
+
     func body(content: Content) -> some View {
         ZStack {
             content
-            
+
             if isPresented {
                 VStack {
                     Spacer()
-                    
+
                     Text(message)
                         .padding()
                         .background(

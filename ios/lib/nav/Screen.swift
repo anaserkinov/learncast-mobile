@@ -7,20 +7,20 @@
 import Foundation
 import Shared
 
-enum Screen: Hashable{
-    case Entrance
-    case Login
-    case Home
-    case Snips
+enum Screen: Hashable {
+    case entrance
+    case login
+    case home
+    case snips
     case Profile
-    case TopicList
-    case Topic(topic: Topic)
-    case AuthorList
-    case Author(author: Author)
-    case Search(
+    case topicList
+    case topic(topic: Topic)
+    case authorList
+    case author(author: Author)
+    case search(
         authorId: Int64,
         topicId: Int64?,
         selectedTab: Int = 0,
     )
-    case StorageUsageScreen
+    case storageUsageScreen
 }
