@@ -103,7 +103,7 @@ fun PlayerSnipActionSheet(
             SheetMenuButton(
                 icon = PlayArrowIcon,
                 title = Strings.PLAY_NOW.string(),
-                paddingBetween = 28.dp,
+                spacing = 28.dp,
                 onClick = onPlay,
             )
 
