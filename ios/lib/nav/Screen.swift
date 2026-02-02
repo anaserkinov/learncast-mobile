@@ -11,7 +11,7 @@ enum Screen: Hashable {
     case entrance
     case login
     case home
-    case snips
+    case Snips
     case Profile
     case topicList
     case topic(topic: Topic)
