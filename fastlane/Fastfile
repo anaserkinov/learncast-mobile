@@ -1,9 +1,15 @@
+require "net/http"
+require "json"
+
 default_platform(:android)
 
 platform :android do
   desc "Distribute a new build to Firebase Distribute"
   lane :distribute do
-      is_pr = ENV["GITHUB_EVENT_NAME"] == "pull_request"
+
+      event_name = ENV["GITHUB_EVENT_NAME"]
+      is_pr = event_name == "pull_request"
+      is_push = event_name == "push"
 
       version_name = if is_pr
           branch_name = ENV["GITHUB_HEAD_REF"] || ""
@@ -12,19 +18,56 @@ platform :android do
           "dev"
         end
 
-      commit_count = 1
-      if is_pr && ENV["GITHUB_EVENT_PATH"]
+      changelog = ""
+
+      if is_pr
           begin
-              file = File.read(ENV["GITHUB_EVENT_PATH"])
-              event_data = JSON.parse(file)
-              commit_count = event_data["pull_request"]["commits"] || 1
+              repo = ENV["GITHUB_REPOSITORY"]
+              token = ENV["GITHUB_TOKEN"]
+
+              pr_number = ENV["GITHUB_REF"]&.match(/refs\/pull\/(\d+)\/merge/)&.[](1) ||
+                  ENV["GITHUB_EVENT_PATH"] && JSON.parse(File.read(ENV["GITHUB_EVENT_PATH"]))["pull_request"]["number"]
+              uri = URI("https://api.github.com/repos/#{repo}/pulls/#{pr_number}/commits")
+              request = Net::HTTP::Get.new(uri)
+              request["Authorization"] = "Bearer #{token}"
+              request["Accept"] = "application/vnd.github+json"
+
+              response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+                  http.request(request)
+              end
+
+              if response.code == "200"
+                  commits = JSON.parse(response.body)
+
+                  changelog = commits.map do |c|
+                       msg = c["commit"]["message"].lines.first
+                       author = c["commit"]["author"]["name"]
+                       "* #{msg} (#{author})"
+                  end.join("\n")
+              else
+                  UI.error("GitHub API returned #{response.code}: #{response.body}")
+              end
           rescue => e
-              UI.error("Failed to parse GitHub event JSON: #{e.message}")
-              commit_count = 1
+              UI.error("Failed to build pull request changelog: #{e.message}")
+          end
+      elsif is_push
+          begin
+              event = JSON.parse(File.read(ENV["GITHUB_EVENT_PATH"]))
+
+              commits = event["commits"] || []
+
+              changelog = commits.map do |c|
+                 msg = c["message"].lines.first
+                 author = c["author"]["name"]
+                 "* #{msg} (#{author})"
+              end.join("\n")
+
+          rescue => e
+               UI.error("Failed to build push changelog: #{e.message}")
           end
       end
 
-      UI.message("Branch: #{version_name} | Commits in PR: #{commit_count}")
+      UI.message("Branch: #{version_name} | Changelog: #{changelog}")
 
       gradle(
         task: "assemble",
@@ -35,16 +78,10 @@ platform :android do
         }
       )
 
-      changelog_from_git_commits(
-        commits_count: commit_count,
-        pretty: "* %s (%an)",
-        merge_commit_filtering: "exclude_merges"
-      )
-
       release = firebase_app_distribution(
         app: ENV["APP_ID"],
         service_credentials_file: "firebase_distribution.json",
-        release_notes: lane_context[SharedValues::FL_CHANGELOG]
+        release_notes: changelog
       )
   end
 
