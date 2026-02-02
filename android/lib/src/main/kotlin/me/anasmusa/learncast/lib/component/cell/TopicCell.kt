@@ -52,7 +52,7 @@ fun TopicCell(
                 if (topic.coverImagePath != null) {
                     topic.coverImagePath!!.normalizeUrl()
                 } else {
-                    appConfig.mainLogo
+                    appConfig.mainLogoInt
                 },
             contentScale = ContentScale.Crop,
             contentDescription = null,

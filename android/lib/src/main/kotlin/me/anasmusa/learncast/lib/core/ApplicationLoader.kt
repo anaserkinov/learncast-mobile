@@ -26,7 +26,7 @@ abstract class ApplicationLoader : me.anasmusa.learncast.ApplicationLoader() {
             modules(getModules())
         }
 
-        val placeHolderImage = getDrawable(appConfig.mainLogo)!!.asImage(true)
+        val placeHolderImage = getDrawable(appConfig.mainLogoInt)!!.asImage(true)
         SingletonImageLoader.setSafe { context ->
             ImageLoader
                 .Builder(context)

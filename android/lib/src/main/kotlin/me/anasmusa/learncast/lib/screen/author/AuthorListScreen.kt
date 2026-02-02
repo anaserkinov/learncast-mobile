@@ -35,11 +35,11 @@ import me.anasmusa.learncast.data.model.Author
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SearchButton
 import me.anasmusa.learncast.lib.component.cell.AuthorCell
-import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.author.AuthorListIntent
 import me.anasmusa.learncast.ui.author.AuthorListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -74,14 +74,14 @@ private fun TopicListScreenPreview() {
 
 @Composable
 fun AuthorListScreen() {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
     val viewModel = koinViewModel<AuthorListViewModel>()
     val state by viewModel.state.collectAsState()
     val pagingState = state.authors.collectAsLazyPagingItems()
 
     _AuthorListScreen(
         onBackClicked = {
-            env.popBack()
+            navController.popBack()
         },
         isRefreshing = pagingState.loadState.refresh is LoadState.Loading,
         onRefresh = {
@@ -101,7 +101,7 @@ fun AuthorListScreen() {
         getAuthor = { pagingState[it] },
         appendLoading = pagingState.loadState.append is LoadState.Loading,
         onAuthorClicked = {
-            env.navigate(Screen.Author(it))
+            navController.navigate(Screen.Author(it))
         },
     )
 }

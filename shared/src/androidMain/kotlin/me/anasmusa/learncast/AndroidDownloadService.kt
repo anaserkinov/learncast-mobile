@@ -92,7 +92,7 @@ class AndroidDownloadService :
         DownloadNotificationHelper(this, "media-download")
             .buildProgressNotification(
                 this,
-                appConfig.transparentLogo,
+                appConfig.transparentLogoInt,
                 null,
                 null,
                 downloads,

@@ -37,3 +37,26 @@ in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and r
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+### SwiftUI-specific note for Flow-based state
+
+Some flows (for example, `lessons` in `HomeViewModel`) are exposed **outside of the state** instead of being stored directly in `HomeState`.
+
+```kotlin
+val lessons by lazy {
+    state.map { it.lessons }
+        .distinctUntilChanged()
+}
+```
+
+This pattern exists mainly for **SwiftUI interoperability**.
+
+When using `Flow<PagingData<T>>` inside state objects:
+
+* `Flow` is **not `Equatable`** on the Swift side
+* SwiftUI cannot reliably detect whether the value actually changed
+* This can cause **unnecessary re-renders** in `List` / `ForEach`
+
+By exposing such flows separately, we reduce redundant UI updates on iOS.
+
+> **Note:** This is not an issue on Android. In Android builds, this indirection is expected to be optimized away by **R8**, so it has no negative performance impact.

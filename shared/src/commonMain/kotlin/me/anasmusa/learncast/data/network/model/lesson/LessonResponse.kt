@@ -1,11 +1,11 @@
 package me.anasmusa.learncast.data.network.model.lesson
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import me.anasmusa.learncast.data.network.model.FileResponse
 import me.anasmusa.learncast.data.network.model.author.AuthorResponse
 import me.anasmusa.learncast.data.network.model.topic.TopicResponse
+import kotlin.time.Instant
 
 @Serializable
 class LessonResponse(

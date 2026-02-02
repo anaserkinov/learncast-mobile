@@ -16,10 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.lib.AppTheme
+import me.anasmusa.learncast.lib.theme.icon.SearchIcon
 
+@Preview
+@Composable
+private fun PrimaryButtonPreview(){
+    AppTheme {
+        PrimaryButton(
+            titleKey = Strings.SEARCH,
+            icon = SearchIcon
+        ) { }
+    }
+}
 
 @Composable
 fun PrimaryButton(
@@ -28,7 +42,7 @@ fun PrimaryButton(
     icon: ImageVector?,
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
-    paddingBetween: Dp = 8.dp,
+    spacing: Dp = 8.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit,
@@ -39,7 +53,7 @@ fun PrimaryButton(
         titleKey.string(),
         clip,
         padding,
-        paddingBetween,
+        spacing,
         backgroundColor,
         horizontalArrangement,
         onClick,
@@ -53,7 +67,7 @@ fun PrimaryButton(
     title: String,
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
-    paddingBetween: Dp = 8.dp,
+    spacing: Dp = 8.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit,
@@ -77,7 +91,7 @@ fun PrimaryButton(
             Icon(
                 modifier =
                     Modifier
-                        .padding(end = paddingBetween),
+                        .padding(end = spacing),
                 imageVector = icon,
                 contentDescription = null,
             )

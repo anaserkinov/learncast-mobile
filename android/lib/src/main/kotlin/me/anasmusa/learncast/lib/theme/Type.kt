@@ -1,5 +1,6 @@
 package me.anasmusa.learncast.lib.theme
 
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.Font
@@ -7,15 +8,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import me.anasmusa.learncast.lib.R
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MontserratTypography() =
     Typography().run {
         val fontFamily =
             FontFamily(
-                Font(R.font.montserrat_light, weight = FontWeight.Light),
                 Font(R.font.montserrat_regular, weight = FontWeight.Normal),
                 Font(R.font.montserrat_medium, weight = FontWeight.Medium),
-                Font(R.font.montserrat_semibold, weight = FontWeight.SemiBold),
                 Font(R.font.montserrat_bold, weight = FontWeight.Bold),
             )
 
@@ -35,5 +35,20 @@ fun MontserratTypography() =
             labelLarge = labelLarge.copy(fontFamily = fontFamily),
             labelMedium = labelMedium.copy(fontFamily = fontFamily),
             labelSmall = labelSmall.copy(fontFamily = fontFamily),
+            displayLargeEmphasized = displayLargeEmphasized.copy(fontFamily = fontFamily),
+            displayMediumEmphasized = displayMediumEmphasized.copy(fontFamily = fontFamily),
+            displaySmallEmphasized = displaySmallEmphasized.copy(fontFamily = fontFamily),
+            headlineLargeEmphasized = headlineLargeEmphasized.copy(fontFamily = fontFamily),
+            headlineMediumEmphasized = headlineMediumEmphasized.copy(fontFamily = fontFamily),
+            headlineSmallEmphasized = headlineSmallEmphasized.copy(fontFamily = fontFamily),
+            titleLargeEmphasized = titleLargeEmphasized.copy(fontFamily = fontFamily),
+            titleMediumEmphasized = titleMediumEmphasized.copy(fontFamily = fontFamily),
+            titleSmallEmphasized = titleSmallEmphasized.copy(fontFamily = fontFamily),
+            bodyLargeEmphasized = bodyLargeEmphasized.copy(fontFamily = fontFamily),
+            bodyMediumEmphasized = bodyMediumEmphasized.copy(fontFamily = fontFamily),
+            bodySmallEmphasized = bodySmallEmphasized.copy(fontFamily = fontFamily),
+            labelLargeEmphasized = labelLargeEmphasized.copy(fontFamily = fontFamily),
+            labelMediumEmphasized = labelMediumEmphasized.copy(fontFamily = fontFamily),
+            labelSmallEmphasized = labelSmallEmphasized.copy(fontFamily = fontFamily),
         )
     }

@@ -32,6 +32,8 @@ object Resource {
         currentLocale = locale
     }
 
+    fun String.string(): String = string(*emptyArray())
+
     fun String.string(vararg args: Any?): String {
         val source = strings[this] ?: return ""
         if (args.isEmpty()) return source

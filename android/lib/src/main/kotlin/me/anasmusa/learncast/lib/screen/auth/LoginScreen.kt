@@ -85,7 +85,7 @@ private fun _LoginScreen(
     login: (intent: LoginIntent) -> Unit = {},
     snackBarState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    var shoTelegramLogin by remember { mutableStateOf(false) }
+    var showTelegramLogin by remember { mutableStateOf(false) }
     val gradientStartY = LocalWindowInfo.current.containerSize.height * (-0.5f)
     val gradientEndY = LocalWindowInfo.current.containerSize.height * 0.5f
 
@@ -115,7 +115,7 @@ private fun _LoginScreen(
                     Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .weight(0.3f),
+                        .weight(0.4f),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -123,7 +123,7 @@ private fun _LoginScreen(
                     modifier =
                         Modifier
                             .size(200.dp),
-                    painter = painterResource(appConfig.transparentLogo),
+                    painter = painterResource(appConfig.transparentLogoInt),
                     contentDescription = null,
                 )
 
@@ -142,7 +142,7 @@ private fun _LoginScreen(
                         .padding(top = 72.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .weight(0.5f),
+                        .weight(0.6f),
             ) {
                 Text(
                     modifier =
@@ -163,7 +163,7 @@ private fun _LoginScreen(
                             Modifier
                                 .fillMaxWidth(),
                         onClick = {
-                            shoTelegramLogin = true
+                            showTelegramLogin = true
                         },
                     ) {
                         Image(
@@ -204,21 +204,24 @@ private fun _LoginScreen(
             }
         }
 
-        if (shoTelegramLogin) {
+        if (showTelegramLogin) {
             val sheetState =
                 rememberModalBottomSheetState(
                     skipPartiallyExpanded = true,
                 )
             ModalBottomSheet(
                 sheetState = sheetState,
-                onDismissRequest = { shoTelegramLogin = false },
+                onDismissRequest = { showTelegramLogin = false },
                 containerColor = Color.White,
             ) {
                 TelegramLoginScreen(
                     onGetResult = {
-                        shoTelegramLogin = false
+                        showTelegramLogin = false
                         login(LoginIntent.LoginWithTelegram(it))
                     },
+                    onCancel = {
+                        showTelegramLogin = false
+                    }
                 )
             }
         }

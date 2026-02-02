@@ -1,4 +1,4 @@
-package com.simplestarts.app.ui.theme.icons
+package me.anasmusa.learncast.lib.theme.icon
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

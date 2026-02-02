@@ -51,6 +51,7 @@ import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.lib.theme.icon.SearchIcon
 import me.anasmusa.learncast.Resource.quantityString
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.author.AuthorIntent
 import me.anasmusa.learncast.ui.author.AuthorViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -81,7 +82,7 @@ private fun AuthorScreenPreview() {
 
 @Composable
 fun AuthorScreen(author: Author) {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
     val viewModel = koinViewModel<AuthorViewModel>()
     val state by viewModel.state.collectAsState()
     val lessonPagingState = state.lessons.collectAsLazyPagingItems()
@@ -120,7 +121,7 @@ fun AuthorScreen(author: Author) {
                 }
             } else {
                 topicPagingState[it]?.let {
-                    env.navigate(Screen.Topic(it))
+                    navController.navigate(Screen.Topic(it))
                 }
             }
         },
@@ -143,6 +144,7 @@ private fun _AuthorScreen(
     onItemClicked: (index: Int) -> Unit,
 ) {
     val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -161,7 +163,7 @@ private fun _AuthorScreen(
                     ),
                 navigationIcon = {
                     IconButton(
-                        onClick = { env.popBack() },
+                        onClick = { navController.popBack() },
                     ) {
                         Icon(
                             imageVector = ArrowBackIcon,
@@ -184,7 +186,7 @@ private fun _AuthorScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            env.navigate(Screen.Search(author.id, null, selectedTabIndex))
+                            navController.navigate(Screen.Search(author.id, null, selectedTabIndex))
                         },
                     ) {
                         Icon(

@@ -37,11 +37,11 @@ import me.anasmusa.learncast.data.model.getSampleTopic
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SearchButton
 import me.anasmusa.learncast.lib.component.cell.TopicCell
-import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.topic.TopicListIntent
 import me.anasmusa.learncast.ui.topic.TopicListState
 import me.anasmusa.learncast.ui.topic.TopicListViewModel
@@ -73,14 +73,14 @@ private fun TopicListScreenPreview() {
 
 @Composable
 fun TopicListScreen() {
-    val env = LocalAppEnvironment.current
+    val navController = LocalNavController.current
     val viewModel = koinViewModel<TopicListViewModel>()
     val state by viewModel.state.collectAsState()
 
     _TopicListScreen(
         state = state,
         onBackClicked = {
-            env.popBack()
+            navController.popBack()
         },
         onQueryChanged = {
             viewModel.handle(
@@ -91,7 +91,7 @@ fun TopicListScreen() {
             )
         },
         onTopicClicked = {
-            env.navigate(Screen.Topic(it))
+            navController.navigate(Screen.Topic(it))
         },
     )
 }

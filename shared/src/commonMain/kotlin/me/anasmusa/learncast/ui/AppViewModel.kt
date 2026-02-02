@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.data.AppScope
+import me.anasmusa.learncast.data.AuthorizedUserScope
 import me.anasmusa.learncast.data.repository.abstraction.AppRepository
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
@@ -22,10 +23,10 @@ sealed interface AppIntent : BaseIntent {
     object Load : AppIntent
 }
 
-sealed interface AppEvent : BaseEvent {
-    object ShowHomeScreen : AppEvent
+sealed class AppEvent : BaseEvent {
+    object ShowHomeScreen : AppEvent()
 
-    object ShowLoginScreen : AppEvent
+    object ShowLoginScreen : AppEvent()
 }
 
 class AppViewModel(
@@ -69,6 +70,10 @@ class AppViewModel(
                         if (isLoggedIn) {
                             send(AppEvent.ShowHomeScreen)
                         } else {
+                            KoinPlatform
+                                .getKoin()
+                                .getScopeOrNull(AuthorizedUserScope.ID)
+                                ?.close()
                             send(AppEvent.ShowLoginScreen)
                         }
                     }

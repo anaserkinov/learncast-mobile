@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -26,6 +27,16 @@ import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.dayMonth
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.Lesson
+import me.anasmusa.learncast.data.model.getSampleLesson
+import me.anasmusa.learncast.lib.AppTheme
+
+@Preview
+@Composable
+private fun LessonCellPreview(){
+    AppTheme{
+        LessonCell(lesson = getSampleLesson()) { }
+    }
+}
 
 @Composable
 fun LessonCell(
@@ -51,7 +62,7 @@ fun LessonCell(
                 if (lesson.coverImagePath != null) {
                     lesson.coverImagePath!!.normalizeUrl()
                 } else {
-                    appConfig.mainLogo
+                    appConfig.mainLogoInt
                 },
             contentScale = ContentScale.Crop,
             contentDescription = null,
@@ -86,7 +97,7 @@ fun LessonCell(
             Text(
                 text =
                     if (lesson.topicTitle != null) {
-                        "${lesson.title} - ${lesson.topicTitle}"
+                        "${lesson.title} guftygguihojhigufxfdgchvjbkngcfhgvjhb- ${lesson.topicTitle}"
                     } else {
                         lesson.title
                     },

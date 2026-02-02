@@ -38,7 +38,7 @@ fun RowScope.QueueItemCell(
             if (queueItem.coverImagePath != null) {
                 queueItem.coverImagePath!!.normalizeUrl()
             } else {
-                appConfig.mainLogo
+                appConfig.mainLogoInt
             },
         contentScale = ContentScale.Crop,
         contentDescription = null,
