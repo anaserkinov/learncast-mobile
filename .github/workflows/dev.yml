@@ -28,7 +28,7 @@ jobs:
           gradle-version: '9.1.0'
 
       - name: Run lint
-        run: ./gradlew :android:app:lintRelease
+        run: ./gradlew :android:learncast:lintRelease
 
       - name: Run ktlintCheck
         run: ./gradlew ktlintCommonMainSourceSetCheck ktlintAndroidMainSourceSetCheck
@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lint.html
-          path: ./android/app/build/reports/lint-results-release.html
+          path: ./android/learncast/build/reports/lint-results-release.html
 
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
