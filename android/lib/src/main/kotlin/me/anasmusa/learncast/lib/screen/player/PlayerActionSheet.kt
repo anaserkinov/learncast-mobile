@@ -120,7 +120,7 @@ fun PlayerActionSheet(
                             DownloadState.COMPLETED -> Strings.REMOVE_DOWNLOAD.string()
                         },
                     clip = false,
-                    paddingBetween = 28.dp,
+                    spacing = 28.dp,
                     onClick = {
                         onDismissRequest()
                         when (downloadState) {
@@ -136,7 +136,7 @@ fun PlayerActionSheet(
                         icon = if (isCompleted) RemoveDone else DoneAll,
                         title = if (isCompleted) Strings.MARK_NOT_PLAYED.string() else Strings.MARK_COMPLETED.string(),
                         clip = false,
-                        paddingBetween = 28.dp,
+                        spacing = 28.dp,
                         onClick = {
                             onDismissRequest()
                             onCompletedClicked()
@@ -146,7 +146,7 @@ fun PlayerActionSheet(
                         icon = if (isFavourite) StarFilled else Star,
                         title = if (isFavourite) Strings.LESSON_IS_FAVOURITE.string() else Strings.ADD_FAVOURITE.string(),
                         clip = false,
-                        paddingBetween = 28.dp,
+                        spacing = 28.dp,
                         onClick = {
                             onDismissRequest()
                             onFavouriteClicked()
@@ -161,7 +161,7 @@ fun PlayerActionSheet(
                 SheetMenuButton(
                     icon = Delete,
                     title = Strings.DELETE.string(),
-                    paddingBetween = 28.dp,
+                    spacing = 28.dp,
                     onClick = {
                         onDismissRequest()
                         onDeleteClicked()

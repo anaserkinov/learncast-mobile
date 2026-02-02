@@ -43,6 +43,7 @@ fun PrimaryButton(
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
     spacing: Dp = 8.dp,
+    titleColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit,
@@ -54,6 +55,7 @@ fun PrimaryButton(
         clip,
         padding,
         spacing,
+        titleColor,
         backgroundColor,
         horizontalArrangement,
         onClick,
@@ -68,6 +70,7 @@ fun PrimaryButton(
     clip: Boolean = true,
     padding: PaddingValues = PaddingValues(12.dp),
     spacing: Dp = 8.dp,
+    titleColor: Color = MaterialTheme.colorScheme.onTertiaryContainer,
     backgroundColor: Color = MaterialTheme.colorScheme.tertiaryContainer,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
     onClick: () -> Unit,
@@ -101,6 +104,7 @@ fun PrimaryButton(
             text = title,
             maxLines = 1,
             style = MaterialTheme.typography.titleMedium,
+            color = titleColor
         )
     }
 }
