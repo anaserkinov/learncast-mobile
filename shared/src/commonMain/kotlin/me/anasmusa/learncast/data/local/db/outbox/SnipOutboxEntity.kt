@@ -17,7 +17,7 @@ import me.anasmusa.learncast.data.local.db.TableNames
         ),
     ],
 )
-class SnipOutboxEntity(
+data class SnipOutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val outboxId: Long,
     val clientSnipId: String,

@@ -11,7 +11,10 @@ import me.anasmusa.learncast.data.local.db.author.AuthorEntity
 import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonStateInput
+import me.anasmusa.learncast.data.local.db.outbox.LessonOutboxEntity
+import me.anasmusa.learncast.data.local.db.outbox.ListenOutboxEntity
 import me.anasmusa.learncast.data.local.db.outbox.OutboxEntity
+import me.anasmusa.learncast.data.local.db.outbox.SnipOutboxEntity
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
 import me.anasmusa.learncast.data.local.db.queue.QueueItemEntity
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
@@ -22,6 +25,7 @@ import me.anasmusa.learncast.data.model.OutboxStatus
 import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -233,33 +237,6 @@ object TestFixtures {
         }
     }
 
-    object Outbox {
-        fun createOutboxEntity(
-            id: Long,
-            referenceId: Long,
-            referenceUuid: String,
-            referenceType: ReferenceType,
-            actionType: ActionType,
-            createdAt: LocalDateTime,
-            updatedAt: LocalDateTime = createdAt,
-            lastTriedAt: LocalDateTime? = null,
-            status: OutboxStatus = OutboxStatus.PENDING
-        ): OutboxEntity {
-            return OutboxEntity(
-                id = id,
-                referenceId = referenceId,
-                referenceUuid = referenceUuid,
-                referenceType = referenceType,
-                actionType = actionType,
-                createdAt = createdAt,
-                updatedAt = updatedAt,
-                lastTriedAt = lastTriedAt,
-                status = status
-            )
-        }
-
-    }
-
     internal object Snip {
         fun createSnip(
             id: Long,
@@ -365,6 +342,84 @@ object TestFixtures {
                     title = "Queue Item $index"
                 )
             }
+        }
+    }
+
+    object Outbox {
+        fun createOutboxEntity(
+            id: Long,
+            referenceId: Long = 1,
+            referenceUuid: String = "uuid-1",
+            referenceType: ReferenceType = ReferenceType.LESSON,
+            actionType: ActionType = ActionType.UPDATE,
+            createdAt: LocalDateTime = LocalDateTime(2024, 1, 1, 0, 0, 0),
+            updatedAt: LocalDateTime = createdAt,
+            lastTriedAt: LocalDateTime? = null,
+            status: OutboxStatus = OutboxStatus.PENDING
+        ): OutboxEntity {
+            return OutboxEntity(
+                id = id,
+                referenceId = referenceId,
+                referenceUuid = referenceUuid,
+                referenceType = referenceType,
+                actionType = actionType,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                lastTriedAt = lastTriedAt,
+                status = status
+            )
+        }
+
+        fun createLessonOutbox(
+            id: Long,
+            outboxId: Long,
+            lessonId: Long = 1,
+            startedAt: LocalDateTime = LocalDateTime(2024, 1, 1, 10, 0, 0),
+            lastPositionMs: kotlin.time.Duration = 30.seconds,
+            status: UserProgressStatus? = UserProgressStatus.IN_PROGRESS,
+            completedAt: LocalDateTime? = null
+        ): LessonOutboxEntity {
+            return LessonOutboxEntity(
+                id = id,
+                outboxId = outboxId,
+                lessonId = lessonId,
+                startedAt = startedAt,
+                lastPositionMs = lastPositionMs,
+                status = status,
+                completedAt = completedAt
+            )
+        }
+
+        fun createSnipOutbox(
+            id: Long,
+            outboxId: Long,
+            clientSnipId: String = "snip-uuid-1",
+            lessonId: Long = 1,
+            startMs: Long = 1000,
+            endMs: Long = 5000,
+            note: String? = "Test note"
+        ): SnipOutboxEntity {
+            return SnipOutboxEntity(
+                id = id,
+                outboxId = outboxId,
+                clientSnipId = clientSnipId,
+                lessonId = lessonId,
+                startMs = startMs,
+                endMs = endMs,
+                note = note
+            )
+        }
+
+        fun createListenOutbox(
+            id: Long,
+            outboxId: Long,
+            sessionId: String = "session-123"
+        ): ListenOutboxEntity {
+            return ListenOutboxEntity(
+                id = id,
+                outboxId = outboxId,
+                sessionId = sessionId
+            )
         }
     }
 

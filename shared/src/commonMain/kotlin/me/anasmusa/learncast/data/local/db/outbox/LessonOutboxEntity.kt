@@ -20,7 +20,7 @@ import kotlin.time.Duration
         ),
     ],
 )
-class LessonOutboxEntity(
+data class LessonOutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val outboxId: Long,
     val lessonId: Long,
