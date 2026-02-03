@@ -36,7 +36,7 @@ jobs:
       - name: Upload lint report
         uses: actions/upload-artifact@v4
         with:
-          name: lint.html
+          name: lint_report
           path: ./android/learncast/build/reports/lint-results-release.html
 
   host-test:
