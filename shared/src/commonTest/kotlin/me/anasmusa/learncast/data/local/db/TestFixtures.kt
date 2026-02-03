@@ -12,6 +12,7 @@ import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonStateInput
 import me.anasmusa.learncast.data.local.db.outbox.OutboxEntity
+import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateEntity
 import me.anasmusa.learncast.data.local.db.queue.QueueItemEntity
 import me.anasmusa.learncast.data.local.db.snip.SnipEntity
 import me.anasmusa.learncast.data.local.db.topic.TopicEntity
@@ -364,6 +365,20 @@ object TestFixtures {
                     title = "Queue Item $index"
                 )
             }
+        }
+    }
+
+    object PagingState {
+        fun createPagingState(
+            resourceType: String,
+            queryKey: String,
+            lastDeletionSync: LocalDateTime = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        ): PagingStateEntity {
+            return PagingStateEntity(
+                resourceType = resourceType,
+                queryKey = queryKey,
+                lastDeletionSync = lastDeletionSync
+            )
         }
     }
 
