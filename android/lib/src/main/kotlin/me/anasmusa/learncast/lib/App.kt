@@ -383,11 +383,15 @@ fun AppTheme(content: @Composable () -> Unit) {
         CompositionLocalProvider(
             LocalContentColor provides Color.White,
         ) {
-            MaterialExpressiveTheme(
-                colorScheme = darkScheme,
-                typography = MontserratTypography(),
-                content = content,
-            )
+            val homeBackStack = rememberNavBackStack(Screen.Home)
+
+            ProvideNavController(homeBackStack) {
+                MaterialExpressiveTheme(
+                    colorScheme = darkScheme,
+                    typography = MontserratTypography(),
+                    content = content,
+                )
+            }
         }
     }
 }
