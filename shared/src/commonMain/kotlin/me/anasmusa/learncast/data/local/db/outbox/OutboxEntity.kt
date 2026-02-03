@@ -9,7 +9,7 @@ import me.anasmusa.learncast.data.model.OutboxStatus
 import me.anasmusa.learncast.data.model.ReferenceType
 
 @Entity(tableName = TableNames.OUTBOX)
-class OutboxEntity(
+data class OutboxEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val referenceId: Long,
     val referenceUuid: String,

@@ -13,8 +13,8 @@ platform :android do
 
       version_name = if is_pr
           branch_name = ENV["GITHUB_HEAD_REF"] || ""
-          branch_name.include?("/") ? branch_name.split("/").last : branch_name
-        else
+          branch_name.include?("/") ? branch_name.split("/").join("-") : branch_name
+      else
           "dev"
         end
 
