@@ -2,8 +2,6 @@ name: Linting and Testing
 
 on:
   push:
-    branches:
-      - '**'
     branches-ignore:
       - main
       - dev
