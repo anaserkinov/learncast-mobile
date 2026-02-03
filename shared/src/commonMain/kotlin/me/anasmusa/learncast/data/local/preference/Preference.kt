@@ -24,9 +24,5 @@ interface Preferences {
 
     fun getLang(): Flow<String?>
 
-    suspend fun setNightMode(enabled: Boolean)
-
-    fun isNightMode(): Flow<Boolean?>
-
     suspend fun clear()
 }

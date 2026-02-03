@@ -65,11 +65,14 @@ kotlin {
         }
     }
     androidComponents {
-        onVariants{
+        onVariants{ it ->
             it.hostTests.forEach {
-                it.value.configureTestTask {
-                    it.useJUnitPlatform()
-                    it.systemProperty("kotest.framework.config.fqn", "me.anasmusa.learncast.KotestProjectConfig")
+                it.value.configureTestTask { test ->
+                    test.useJUnitPlatform()
+                    test.systemProperty("kotest.framework.config.fqn", "me.anasmusa.learncast.KotestProjectConfig")
+                    test.filter {
+                        setExcludePatterns("*.db.*")
+                    }
                 }
             }
         }
@@ -164,6 +167,7 @@ kotlin {
         getByName("androidHostTest") {
             dependencies {
                 implementation(libs.kotest.junit5)
+                implementation(libs.coroutine.test)
             }
         }
         getByName("androidDeviceTest") {

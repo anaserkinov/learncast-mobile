@@ -1,15 +1,26 @@
 package me.anasmusa.learncast.data.local.db.lesson
 
+import io.kotest.core.annotation.Ignored
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import me.anasmusa.learncast.data.local.db.AppDatabase
+import me.anasmusa.learncast.data.local.db.TestFixtures.Download.createDownloadState
 import me.anasmusa.learncast.data.local.db.TestFixtures.Lesson.createLesson
 import me.anasmusa.learncast.data.local.db.TestFixtures.Lesson.createLessonStateInput
 import me.anasmusa.learncast.data.local.db.TestFixtures.Lesson.createLessons
+import me.anasmusa.learncast.data.local.db.TestFixtures.Outbox.createOutboxEntity
+import me.anasmusa.learncast.data.local.db.TestFixtures.Snip.createSnip
 import me.anasmusa.learncast.data.local.db.TestFixtures.loadList
+import me.anasmusa.learncast.data.local.db.download.DownloadDao
 import me.anasmusa.learncast.data.local.db.getInMemoryDatabase
+import me.anasmusa.learncast.data.local.db.outbox.LessonOutboxEntity
+import me.anasmusa.learncast.data.local.db.outbox.OutboxDao
+import me.anasmusa.learncast.data.local.db.snip.SnipDao
+import me.anasmusa.learncast.data.model.ActionType
+import me.anasmusa.learncast.data.model.DownloadState
 import me.anasmusa.learncast.data.model.QueryOrder
 import me.anasmusa.learncast.data.model.QuerySort
+import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -17,17 +28,22 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class LessonDaoTest {
     private lateinit var database: AppDatabase
     private lateinit var lessonDao: LessonDao
+    private lateinit var snipDao: SnipDao
+    private lateinit var outboxDao: OutboxDao
+    private lateinit var downloadDao: DownloadDao
 
     @BeforeTest
     fun setup() {
         database = getInMemoryDatabase()
         lessonDao = database.getLessonDao()
+        snipDao = database.getSnipDao()
+        outboxDao = database.getOutboxDao()
+        downloadDao = database.getDownloadDao()
     }
 
     @AfterTest
@@ -212,16 +228,16 @@ class LessonDaoTest {
     fun updateUserSnipCountShouldModifyCount() = runTest {
         // Given
         val lesson = createLesson(id = 1)
-        val state = createLessonStateInput(lessonId = 1, userSnipCount = 5)
+        val state = createLessonStateInput(lessonId = lesson.id)
         lessonDao.insert(listOf(lesson))
         lessonDao.upsertStates(listOf(state))
 
         // When
         lessonDao.updateUserSnipCount(lessonId = 1, count = 10)
 
-        // Then - Verify update succeeded (would need to query state to verify)
-        val result = lessonDao.getLessons(topicId = 1, authorId = 1)
-        assertEquals(1, result.size)
+        // Then - Verify update succeeded
+        val result = lessonDao.getUserSnipCount(lesson.id)
+        assertEquals(10, result)
     }
 
     @Test
@@ -854,5 +870,563 @@ class LessonDaoTest {
         val result = lessonDao.getLessons(topicId = 1, authorId = 1)
         assertEquals(1, result.size)
     }
+
+    // ========== Integration Tests: getUserSnipCount ==========
+
+    @Test
+    fun getUserSnipCountShouldReturnStateCountWhenNoSnips() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 5)
+
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        assertEquals(5, count)
+    }
+
+    @Test
+    fun getUserSnipCountShouldAddCreateActionsFromOutbox() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 5)
+
+        // Insert SNIPs for this lesson
+        val snips = listOf(
+            createSnip(id = 1, lessonId = 1, clientSnipId = "snip-uuid-1"),
+            createSnip(id = 2, lessonId = 1, clientSnipId = "snip-uuid-2")
+        )
+        snipDao.insert(snips)
+
+        // Insert CREATE actions in OUTBOX for these snips
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntries = listOf(
+            createOutboxEntity(
+                id = 1,
+                referenceId = 1,
+                referenceUuid = "snip-uuid-1",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.CREATE,
+                createdAt = now
+            ),
+            createOutboxEntity(
+                id = 2,
+                referenceId = 2,
+                referenceUuid = "snip-uuid-2",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.CREATE,
+                createdAt = now
+            )
+        )
+        outboxEntries.forEach { outboxDao.insert(it) }
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        // Initial count (5) + 2 CREATE actions = 7
+        assertEquals(7, count)
+    }
+
+    @Test
+    fun getUserSnipCountShouldSubtractDeleteActionsFromOutbox() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 10)
+
+
+        // Insert SNIPs for this lesson
+        val snips = listOf(
+            createSnip(id = 1, lessonId = 1, clientSnipId = "snip-uuid-1"),
+            createSnip(id = 2, lessonId = 1, clientSnipId = "snip-uuid-2")
+        )
+        snipDao.insert(snips)
+
+        // Insert DELETE actions in OUTBOX
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntries = listOf(
+            createOutboxEntity(
+                id = 1,
+                referenceId = 1,
+                referenceUuid = "snip-uuid-1",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.DELETE,
+                createdAt = now
+            ),
+            createOutboxEntity(
+                id = 2,
+                referenceId = 2,
+                referenceUuid = "snip-uuid-2",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.DELETE,
+                createdAt = now
+            )
+        )
+        outboxEntries.forEach { outboxDao.insert(it) }
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        // Initial count (10) - 2 DELETE actions = 8
+        assertEquals(8, count)
+    }
+
+    @Test
+    fun getUserSnipCountShouldHandleMixOfCreateAndDeleteActions() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 10)
+
+        // Insert SNIPs for this lesson
+        val snips = listOf(
+            createSnip(id = 1, lessonId = 1, clientSnipId = "snip-uuid-1"),
+            createSnip(id = 2, lessonId = 1, clientSnipId = "snip-uuid-2"),
+            createSnip(id = 3, lessonId = 1, clientSnipId = "snip-uuid-3"),
+            createSnip(id = 4, lessonId = 1, clientSnipId = "snip-uuid-4")
+        )
+        snipDao.insert(snips)
+
+        // Mix of CREATE and DELETE actions
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntries = listOf(
+            createOutboxEntity(
+                id = 1,
+                referenceId = 1,
+                referenceUuid = "snip-uuid-1",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.CREATE,
+                createdAt = now
+            ),
+            createOutboxEntity(
+                id = 2,
+                referenceId = 2,
+                referenceUuid = "snip-uuid-2",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.CREATE,
+                createdAt = now
+            ),
+            createOutboxEntity(
+                id = 3,
+                referenceId = 3,
+                referenceUuid = "snip-uuid-3",
+                referenceType = ReferenceType.SNIP,
+                actionType = ActionType.DELETE,
+                createdAt = now
+            )
+        )
+        outboxEntries.forEach { outboxDao.insert(it) }
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        // Initial count (10) + 2 CREATE - 1 DELETE = 11
+        assertEquals(11, count)
+    }
+
+    @Test
+    fun getUserSnipCountShouldIgnoreNonSnipOutboxEntries() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 5)
+
+        // Insert outbox entries with different referenceType (should be ignored)
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntries = listOf(
+            createOutboxEntity(
+                id = 1,
+                referenceId = 1,
+                referenceUuid = "lesson-uuid",
+                referenceType = ReferenceType.LESSON,
+                actionType = ActionType.CREATE,
+                createdAt = now
+            ),
+            createOutboxEntity(
+                id = 2,
+                referenceId = 1,
+                referenceUuid = "lesson-uuid-2",
+                referenceType = ReferenceType.LESSON,
+                actionType = ActionType.DELETE,
+                createdAt = now
+            )
+        )
+        outboxEntries.forEach { outboxDao.insert(it) }
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        // Should remain 5 (outbox entries for LESSON type are ignored)
+        assertEquals(5, count)
+    }
+
+    @Test
+    fun getUserSnipCountShouldHandleSnipsWithoutOutboxEntries() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(lessonId = lesson.id)
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+        lessonDao.updateUserSnipCount(lesson.id, 5)
+
+        // Insert SNIPs but no corresponding OUTBOX entries
+        val snips = listOf(
+            createSnip(id = 1, lessonId = 1, clientSnipId = "snip-uuid-1"),
+            createSnip(id = 2, lessonId = 1, clientSnipId = "snip-uuid-2")
+        )
+        snipDao.insert(snips)
+
+        // When
+        val count = lessonDao.getUserSnipCount(lessonId = 1)
+
+        // Then
+        // Should remain 5 (no outbox actions to add/subtract)
+        assertEquals(5, count)
+    }
+
+    // ========== Integration Tests: getLessons with OUTBOX ==========
+
+    @Test
+    fun getLessonsShouldShowFavouriteWhenOutboxHasFavouriteAction() = runTest {
+        // Given
+        val lessons = createLessons(1)
+        val states = listOf(
+            createLessonStateInput(lessonId = 1, isFavourite = false)
+        )
+        lessonDao.insert(lessons, states)
+
+        // Insert FAVOURITE action in OUTBOX
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntry = createOutboxEntity(
+            id = 1,
+            referenceId = 1,
+            referenceUuid = "lesson-uuid-1",
+            referenceType = ReferenceType.LESSON,
+            actionType = ActionType.FAVOURITE,
+            createdAt = now
+        )
+        outboxDao.insert(outboxEntry)
+
+        // When
+        val result = lessonDao.getLessons(
+            search = null,
+            authorId = null,
+            topicId = null,
+            isFavourite = null,
+            status = null,
+            isDownloaded = null,
+            sort = null,
+            order = null
+        ).loadList()
+
+        // Then
+        assertEquals(1, result.size)
+        assertTrue(result[0].state.isFavourite)
+    }
+
+    @Test
+    fun getLessonsShouldShowNotFavouriteWhenOutboxHasRemoveFavouriteAction() = runTest {
+        // Given
+        val lessons = createLessons(1)
+        val states = listOf(
+            createLessonStateInput(lessonId = 1, isFavourite = true)
+        )
+        lessonDao.insert(lessons, states)
+
+        // Insert REMOVE_FAVOURITE action in OUTBOX
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntry = createOutboxEntity(
+            id = 1,
+            referenceId = 1,
+            referenceUuid = "lesson-uuid-1",
+            referenceType = ReferenceType.LESSON,
+            actionType = ActionType.REMOVE_FAVOURITE,
+            createdAt = now
+        )
+        outboxDao.insert(outboxEntry)
+
+        // When
+        val result = lessonDao.getLessons(
+            search = null,
+            authorId = null,
+            topicId = null,
+            isFavourite = null,
+            status = null,
+            isDownloaded = null,
+            sort = null,
+            order = null
+        ).loadList()
+
+        // Then
+        assertEquals(1, result.size)
+        assertTrue(!result[0].state.isFavourite)
+    }
+
+    @Test
+    fun getLessonsShouldUseStateWhenNoOutboxAction() = runTest {
+        // Given
+        val lessons = createLessons(2)
+        val states = listOf(
+            createLessonStateInput(lessonId = 1, isFavourite = true),
+            createLessonStateInput(lessonId = 2, isFavourite = false)
+        )
+        lessonDao.insert(lessons, states)
+
+        // No OUTBOX entries
+
+        // When
+        val result = lessonDao.getLessons(
+            search = null,
+            authorId = null,
+            topicId = null,
+            isFavourite = null,
+            status = null,
+            isDownloaded = null,
+            sort = null,
+            order = null
+        ).loadList()
+
+        // Then
+        assertEquals(2, result.size)
+        assertTrue(result[0].state.isFavourite)
+        assertTrue(!result[1].state.isFavourite)
+    }
+
+    @Test
+    fun getLessonsShouldCoalesceProgressFromLessonOutbox() = runTest {
+        // Given
+        val lesson = createLesson(id = 1)
+        val state = createLessonStateInput(
+            lessonId = 1,
+            startedAt = LocalDateTime(2024, 1, 1, 10, 0, 0),
+            lastPositionMs = 30.seconds,
+            status = UserProgressStatus.IN_PROGRESS,
+            completedAt = null
+        )
+        lessonDao.insert(listOf(lesson))
+        lessonDao.upsertStates(listOf(state))
+
+        // Insert LESSON_OUTBOX with newer values
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntry = createOutboxEntity(
+            id = 1,
+            referenceId = 1,
+            referenceUuid = "lesson-uuid-1",
+            referenceType = ReferenceType.LESSON,
+            actionType = ActionType.UPDATE,
+            createdAt = now
+        )
+        val outboxId = outboxDao.insert(outboxEntry)
+
+        val lessonOutbox = LessonOutboxEntity(
+            id = 0,
+            outboxId = outboxId,
+            lessonId = 1,
+            startedAt = LocalDateTime(2024, 1, 2, 10, 0, 0),
+            lastPositionMs = 120.seconds,
+            status = UserProgressStatus.COMPLETED,
+            completedAt = LocalDateTime(2024, 1, 2, 11, 0, 0)
+        )
+        outboxDao.insert(lessonOutbox)
+
+        // When
+        val result = lessonDao.getLessons(
+            search = null,
+            authorId = null,
+            topicId = null,
+            isFavourite = null,
+            status = null,
+            isDownloaded = null,
+            sort = null,
+            order = null
+        ).loadList()
+
+        // Then - Should use LESSON_OUTBOX values via COALESCE
+        assertEquals(1, result.size)
+        assertEquals(120.seconds, result[0].state.lastPositionMs)
+        assertEquals(UserProgressStatus.COMPLETED, result[0].state.status)
+    }
+
+    // ========== Integration Tests: getDownloadedLessons ==========
+
+    @Test
+    fun getDownloadedLessonsShouldReturnLessonsWithDownloadState() = runTest {
+        // Given
+        val lessons = createLessons(2)
+        val states = lessons.map { createLessonStateInput(it.id) }
+        lessonDao.insert(lessons, states)
+
+        // Insert download states
+        val downloadStates = listOf(
+            createDownloadState(
+                id = 0,
+                referenceId = 1,
+                referenceUuid = "lesson-uuid-1",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.COMPLETED,
+                percentDownloaded = 100f
+            ),
+            createDownloadState(
+                id = 0,
+                referenceId = 2,
+                referenceUuid = "lesson-uuid-2",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.DOWNLOADING,
+                percentDownloaded = 50f
+            )
+        )
+        downloadStates.forEach { downloadDao.insert(it) }
+
+        // When
+        val result = lessonDao.getDownloadedLessons(
+            search = null,
+            isDownloaded = null
+        ).loadList()
+
+        // Then
+        assertEquals(2, result.size)
+        assertNotNull(result[0].downloadState)
+        assertNotNull(result[1].downloadState)
+    }
+
+    @Test
+    fun getDownloadedLessonsShouldExcludeRemovingState() = runTest {
+        // Given
+        val lessons = createLessons(2)
+        val states = lessons.map { createLessonStateInput(it.id) }
+        lessonDao.insert(lessons, states)
+
+        // Insert download states - one REMOVING
+        val downloadStates = listOf(
+            createDownloadState(
+                id = 0,
+                referenceId = 1,
+                referenceUuid = "lesson-uuid-1",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.COMPLETED,
+                percentDownloaded = 100f
+            ),
+            createDownloadState(
+                id = 0,
+                referenceId = 2,
+                referenceUuid = "lesson-uuid-2",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.REMOVING,
+                percentDownloaded = 0f
+            )
+        )
+        downloadStates.forEach { downloadDao.insert(it) }
+
+        // When
+        val result = lessonDao.getDownloadedLessons(
+            search = null,
+            isDownloaded = null
+        ).loadList()
+
+        // Then - Should exclude REMOVING state
+        assertEquals(1, result.size)
+        assertEquals(DownloadState.COMPLETED, result[0].downloadState)
+    }
+
+    @Test
+    fun getDownloadedLessonsShouldFilterBySearch() = runTest {
+        // Given
+        val lessons = listOf(
+            createLesson(id = 1, title = "Kotlin Basics"),
+            createLesson(id = 2, title = "Java Advanced")
+        )
+        val states = lessons.map { createLessonStateInput(it.id) }
+        lessonDao.insert(lessons, states)
+
+        // Insert download states
+        val downloadStates = listOf(
+            createDownloadState(
+                id = 0,
+                referenceId = 1,
+                referenceUuid = "lesson-uuid-1",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.COMPLETED
+            ),
+            createDownloadState(
+                id = 0,
+                referenceId = 2,
+                referenceUuid = "lesson-uuid-2",
+                referenceType = ReferenceType.LESSON,
+                state = DownloadState.COMPLETED
+            )
+        )
+        downloadStates.forEach { downloadDao.insert(it) }
+
+        // When
+        val result = lessonDao.getDownloadedLessons(
+            search = "Kotlin",
+            isDownloaded = null
+        ).loadList()
+
+        // Then
+        assertEquals(1, result.size)
+        assertEquals("Kotlin Basics", result[0].lesson.title)
+    }
+
+    @Test
+    fun getDownloadedLessonsShouldIncludeFavouriteFromOutbox() = runTest {
+        // Given
+        val lessons = createLessons(1)
+        val states = listOf(
+            createLessonStateInput(lessonId = 1, isFavourite = false)
+        )
+        lessonDao.insert(lessons, states)
+
+        // Insert download state
+        val downloadState = createDownloadState(
+            id = 0,
+            referenceId = 1,
+            referenceUuid = "lesson-uuid-1",
+            referenceType = ReferenceType.LESSON,
+            state = DownloadState.COMPLETED
+        )
+        downloadDao.insert(downloadState)
+
+        // Insert FAVOURITE action in OUTBOX
+        val now = LocalDateTime(2024, 1, 1, 0, 0, 0)
+        val outboxEntry = createOutboxEntity(
+            id = 1,
+            referenceId = 1,
+            referenceUuid = "lesson-uuid-1",
+            referenceType = ReferenceType.LESSON,
+            actionType = ActionType.FAVOURITE,
+            createdAt = now
+        )
+        outboxDao.insert(outboxEntry)
+
+        // When
+        val result = lessonDao.getDownloadedLessons(
+            search = null,
+            isDownloaded = null
+        ).loadList()
+
+        // Then
+        assertEquals(1, result.size)
+        assertTrue(result[0].state.isFavourite)
+    }
+
 
 }

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package me.anasmusa.learncast.core
 
 import kotlinx.datetime.LocalDate
@@ -18,13 +20,10 @@ fun nowInstant() = Clock.System.now()
 
 fun LocalDateTime.toUTCInstant(): Instant = toInstant(TimeZone.currentSystemDefault())
 
-@OptIn(ExperimentalTime::class)
 fun Instant.toDateTime(): LocalDateTime = toLocalDateTime(TimeZone.currentSystemDefault())
 
-@OptIn(ExperimentalTime::class)
 fun Instant.toDate(): LocalDate = toDateTime().date
 
-@OptIn(ExperimentalTime::class)
 fun Instant.toTime(): LocalTime = toDateTime().time
 
 private val monthYear =
