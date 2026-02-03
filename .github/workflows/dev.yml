@@ -89,6 +89,9 @@ jobs:
         with:
           gradle-version: '9.1.0'
 
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses
+
       - name: Run device tests
         run: ./gradlew :shared:allDevicesAndroidDeviceTest
 
