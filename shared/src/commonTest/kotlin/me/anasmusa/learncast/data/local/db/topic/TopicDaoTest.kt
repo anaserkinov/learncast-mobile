@@ -1,7 +1,6 @@
 package me.anasmusa.learncast.data.local.db.topic
 
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDateTime
 import me.anasmusa.learncast.data.local.db.AppDatabase
 import me.anasmusa.learncast.data.local.db.TestFixtures.Topic.createTopic
 import me.anasmusa.learncast.data.local.db.TestFixtures.Topic.createTopics
@@ -13,8 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.hours
 
 class TopicDaoTest {
     private lateinit var database: AppDatabase

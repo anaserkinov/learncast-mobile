@@ -77,7 +77,6 @@ class TopicServiceTest : BehaviorSpec({
 
                     // Verify first topic
                     response.data.items[0].apply {
-                        id shouldBe TOPIC_RESPONSE_1_ID
                         completedLessonCount shouldBe TOPIC_1_COMPLETED_LESSONS
 
                         topic.apply {
@@ -101,7 +100,6 @@ class TopicServiceTest : BehaviorSpec({
 
                     // Verify second topic
                     response.data.items[1].apply {
-                        id shouldBe TOPIC_RESPONSE_2_ID
                         completedLessonCount shouldBe TOPIC_2_COMPLETED_LESSONS
 
                         topic.apply {

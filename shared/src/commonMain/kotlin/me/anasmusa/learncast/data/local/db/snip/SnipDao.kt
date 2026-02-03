@@ -126,7 +126,7 @@ internal interface SnipDao {
                 query.deleteRange(query.length - 6, query.length)
             }
         } else {
-            query.append(" note LIKE ?")
+            query.append(" s.note LIKE ?")
             args.add("%${search.lowercase()}%")
         }
 
@@ -138,7 +138,7 @@ internal interface SnipDao {
                     "DESC"
                 }
             when (sort) {
-                QuerySort.CREATED_AT -> query.append(" ORDER BY createdAt $order, id $order")
+                QuerySort.CREATED_AT -> query.append(" ORDER BY s.createdAt $order, s.id $order")
                 else -> {}
             }
         }

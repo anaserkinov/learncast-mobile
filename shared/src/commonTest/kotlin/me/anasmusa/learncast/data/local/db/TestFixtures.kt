@@ -1,16 +1,28 @@
 package me.anasmusa.learncast.data.local.db
 
 import androidx.paging.PagingSource
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import me.anasmusa.learncast.core.toDateTime
+import me.anasmusa.learncast.core.toUTCInstant
 import me.anasmusa.learncast.data.local.db.author.AuthorEntity
 import me.anasmusa.learncast.data.local.db.download.DownloadStateEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonEntity
 import me.anasmusa.learncast.data.local.db.lesson.LessonStateInput
+import me.anasmusa.learncast.data.local.db.outbox.OutboxEntity
+import me.anasmusa.learncast.data.local.db.queue.QueueItemEntity
+import me.anasmusa.learncast.data.local.db.snip.SnipEntity
 import me.anasmusa.learncast.data.local.db.topic.TopicEntity
+import me.anasmusa.learncast.data.model.ActionType
 import me.anasmusa.learncast.data.model.DownloadState
+import me.anasmusa.learncast.data.model.OutboxStatus
 import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 object TestFixtures {
 
@@ -79,12 +91,10 @@ object TestFixtures {
             lessonCount: Long = 10,
             totalDuration: kotlin.time.Duration = 60.minutes,
             completedLessonCount: Long = 0,
-            topicId: Long = id,
             createdAt: LocalDateTime = LocalDateTime(2024, 1, 1, 0, 0, 0),
         ): TopicEntity {
             return TopicEntity(
                 id = id,
-                topicId = topicId,
                 title = title,
                 description = description,
                 coverImagePath = coverImagePath,
@@ -180,18 +190,21 @@ object TestFixtures {
             )
         }
 
+        @OptIn(ExperimentalTime::class)
         fun createLessons(
             count: Int,
             topicId: Long = 1,
             authorId: Long = 1
         ): List<LessonEntity> {
+            val baseDate = LocalDateTime(2024, 1, 1, 0, 0, 0).toUTCInstant()
+
             return (1..count).map { index ->
                 createLesson(
                     id = index.toLong(),
                     title = "Lesson $index",
                     topicId = topicId,
                     authorId = authorId,
-                    createdAt = LocalDateTime(2024, 1, index, 0, 0, 0)
+                    createdAt = baseDate.plus(index, DateTimeUnit.DAY, TimeZone.UTC).toDateTime()
                 )
             }
         }
@@ -200,7 +213,6 @@ object TestFixtures {
             lessonId: Long,
             listenCount: Long = 0,
             snipCount: Long = 0,
-            userSnipCount: Long = 0,
             isFavourite: Boolean = false,
             startedAt: LocalDateTime? = null,
             lastPositionMs: kotlin.time.Duration? = null,
@@ -217,6 +229,141 @@ object TestFixtures {
                 status = status,
                 completedAt = completedAt,
             )
+        }
+    }
+
+    object Outbox {
+        fun createOutboxEntity(
+            id: Long,
+            referenceId: Long,
+            referenceUuid: String,
+            referenceType: ReferenceType,
+            actionType: ActionType,
+            createdAt: LocalDateTime,
+            updatedAt: LocalDateTime = createdAt,
+            lastTriedAt: LocalDateTime? = null,
+            status: OutboxStatus = OutboxStatus.PENDING
+        ): OutboxEntity {
+            return OutboxEntity(
+                id = id,
+                referenceId = referenceId,
+                referenceUuid = referenceUuid,
+                referenceType = referenceType,
+                actionType = actionType,
+                createdAt = createdAt,
+                updatedAt = updatedAt,
+                lastTriedAt = lastTriedAt,
+                status = status
+            )
+        }
+
+    }
+
+    internal object Snip {
+        fun createSnip(
+            id: Long,
+            clientSnipId: String,
+            startMs: Long = 1000,
+            endMs: Long = 5000,
+            note: String? = "Test snip note",
+            createdAt: LocalDateTime = LocalDateTime(2024, 1, 1, 0, 0, 0),
+            lessonId: Long = 1,
+            title: String = "Lesson $lessonId",
+            description: String? = "Description",
+            coverImagePath: String? = "/image.jpg",
+            authorId: Long = 1,
+            authorName: String = "Author 1",
+            topicId: Long? = 1,
+            topicTitle: String? = "Topic 1",
+            audioPath: String = "/audio.mp3",
+            audioSize: Long = 1024000,
+            audioDuration: kotlin.time.Duration = 60.minutes
+        ): SnipEntity {
+            return SnipEntity(
+                clientSnipId = clientSnipId,
+                id = id,
+                startMs = startMs,
+                endMs = endMs,
+                note = note,
+                createdAt = createdAt,
+                lessonId = lessonId,
+                title = title,
+                description = description,
+                coverImagePath = coverImagePath,
+                authorId = authorId,
+                authorName = authorName,
+                topicId = topicId,
+                topicTitle = topicTitle,
+                audioPath = audioPath,
+                audioSize = audioSize,
+                audioDuration = audioDuration
+            )
+        }
+
+
+        fun createSnips(count: Int): List<SnipEntity> {
+            return (1..count).map { index ->
+                createSnip(
+                    clientSnipId = "snip-$index",
+                    id = index.toLong(),
+                    note = "Note $index"
+                )
+            }
+        }
+
+    }
+
+    object Queue {
+        fun createQueueItem(
+            id: Long,
+            order: Int,
+            referenceId: Long = 1,
+            referenceUuid: String = "ref-uuid-$order",
+            referenceType: ReferenceType = ReferenceType.LESSON,
+            startMs: Long? = null,
+            endMs: Long? = null,
+            lessonId: Long = 1,
+            title: String = "Queue Item $order",
+            description: String? = "Description",
+            coverImagePath: String? = "/image.jpg",
+            authorId: Long = 1,
+            authorName: String = "Author 1",
+            topicId: Long? = 1,
+            topicTitle: String? = "Topic 1",
+            audioPath: String = "/audio.mp3",
+            audioSize: Long = 1024000,
+            audioDuration: kotlin.time.Duration = 60.minutes
+        ): QueueItemEntity {
+            return QueueItemEntity(
+                id = id,
+                order = order,
+                referenceId = referenceId,
+                referenceUuid = referenceUuid,
+                referenceType = referenceType,
+                startMs = startMs,
+                endMs = endMs,
+                lessonId = lessonId,
+                title = title,
+                description = description,
+                coverImagePath = coverImagePath,
+                authorId = authorId,
+                authorName = authorName,
+                topicId = topicId,
+                topicTitle = topicTitle,
+                audioPath = audioPath,
+                audioSize = audioSize,
+                audioDuration = audioDuration
+            )
+        }
+
+        fun createQueueItems(count: Int): List<QueueItemEntity> {
+            return (0 until count).map { index ->
+                createQueueItem(
+                    id = 0,
+                    order = index,
+                    title = "Queue Item $index"
+                )
+            }
         }
     }
 
