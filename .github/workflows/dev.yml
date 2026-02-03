@@ -36,6 +36,7 @@ jobs:
         run: ./gradlew ktlintCommonMainSourceSetCheck ktlintAndroidMainSourceSetCheck
 
       - name: Upload lint report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lint_report
@@ -64,6 +65,7 @@ jobs:
         run: ./gradlew :shared:testAndroidHostTest
 
       - name: Upload host test report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: host_test_report
@@ -103,6 +105,7 @@ jobs:
         run: ./gradlew :shared:allDevicesAndroidDeviceTest
 
       - name: Upload device test report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: device_test_report

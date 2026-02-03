@@ -162,8 +162,7 @@ class AuthorDaoTest {
 
         // Then
         assertEquals(5, result.size)
-        authors.sortedWith(compareByDescending<AuthorEntity> { it.lessonCount }.thenByDescending { it.id })
-        authors.sortedByDescending { it.lessonCount }.forEachIndexed { index, entity ->
+        authors.sortedWith(compareByDescending<AuthorEntity> { it.lessonCount }.thenByDescending { it.id }).forEachIndexed { index, entity ->
             assertEquals(entity.id, result[index].id)
         }
     }
