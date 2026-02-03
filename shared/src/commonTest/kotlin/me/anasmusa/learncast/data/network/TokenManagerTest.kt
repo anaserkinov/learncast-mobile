@@ -364,9 +364,6 @@ class TokenManagerTest : BehaviorSpec({
             override fun getUser(): Flow<PreferenceData.User?> = throw NotImplementedError()
             override suspend fun setLang(lang: String) = throw NotImplementedError()
             override fun getLang(): Flow<String?> = throw NotImplementedError()
-            override suspend fun setNightMode(enabled: Boolean) = throw NotImplementedError()
-            override fun isNightMode(): Flow<Boolean?> = throw NotImplementedError()
-
         }
 
         // Fake AuthRepository for Testing

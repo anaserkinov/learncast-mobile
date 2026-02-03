@@ -242,14 +242,12 @@ object TestFixtures {
         )
 
         fun topicResponse1() = TopicResponse(
-            id = TOPIC_RESPONSE_1_ID,
             topic = topic1(),
             author = Authors.author1(),
             completedLessonCount = TOPIC_1_COMPLETED_LESSONS,
         )
 
         fun topicResponse2() = TopicResponse(
-            id = TOPIC_RESPONSE_2_ID,
             topic = topic2(),
             author = Authors.author2(),
             completedLessonCount = TOPIC_2_COMPLETED_LESSONS,
