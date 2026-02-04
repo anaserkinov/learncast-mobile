@@ -1,0 +1,91 @@
+name: Build and Distribute APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - hotfix/**
+  pull_request:
+    branches: [dev]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Run Lint Checks
+        uses: ./.github/actions/lint-check
+
+  host-test:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Run Host Tests
+        uses: ./.github/actions/host-test
+
+  device-test:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: [lint, host-test]
+    strategy:
+      matrix:
+        api-level: [30]
+
+    steps:
+      - name: Setup Project
+        uses: ./.github/actions/setup-project
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls /dev/kvm
+
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Run device tests
+        run: ./gradlew :shared:pixel2api30AndroidDeviceTest
+
+      - name: Upload device test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: device_test_report_${{ matrix.api-level }}
+          path: ./shared/build/reports/androidTests/managedDevice/androidmain/allDevices/
+
+      - name: Print disk space usage
+        if: failure()
+        run: df -h
+
+  deploy-firebase:
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: [device-test]
+
+    steps:
+      - name: Setup Project
+        uses: ./.github/actions/setup-project
+
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.10
+          bundler-cache: true
+
+      - name: Decode Service Account Key JSON File
+        uses: timheuer/base64-to-file@v1
+        id: service_account_json_file
+        with:
+          fileName: "firebase_distribution.json"
+          fileDir: "./"
+          encodedString: ${{ secrets.FIREBASE_DISTRIBUTION_ACCESS_KEY }}
+
+      - name: Distribute a new build to Firebase
+        run: bundle exec fastlane distribute
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
