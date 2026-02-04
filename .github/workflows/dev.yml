@@ -77,7 +77,7 @@ jobs:
     needs: [lint, host-test]
     strategy:
       matrix:
-        device-name: [ "pixel2api30" ]
+        api-level: [30]
 
     steps:
       - name: Checkout Repository
@@ -101,25 +101,24 @@ jobs:
         with:
           gradle-version: '9.1.0'
 
-      - name: AVD cache
+      - name: Cache Android system images
         uses: actions/cache@v5
-        id: avd-cache
         with:
-          path: /root/.android/avd/*
-          key: avd-${{ matrix.device-name }}
+          path: ${{ env.ANDROID_SDK_ROOT }}/system-images
+          key: system-images-${{ runner.os }}-${{ matrix.api-level }}
 
       - name: Accept Android SDK licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Run device tests
-        run: ./gradlew :shared:${{matrix.device-name}}AndroidDeviceTest
+        run: ./gradlew :shared:pixel2api30AndroidDeviceTest
 
       - name: Upload device test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: device_test_report_${{matrix.device-name}}
-          path: ./shared/build/reports/androidTests/managedDevice/androidmain/${{matrix.device-name}}/
+          name: device_test_report_${{ matrix.api-level }}
+          path: ./shared/build/reports/androidTests/managedDevice/androidmain/api-${{ matrix.api-level }}/
 
       - name: Print disk space usage
         if: failure()
