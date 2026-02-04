@@ -36,6 +36,8 @@ platform :android do
                   http.request(request)
               end
 
+              UI.error("GitHub API returned #{response.code}: #{response.body}")
+
               if response.code == "200"
                   commits = JSON.parse(response.body)
 

@@ -75,6 +75,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     needs: [lint, host-test]
+    strategy:
+      matrix:
+        device-name: [ "pixel2api30" ]
 
     steps:
       - name: Checkout Repository
@@ -98,18 +101,29 @@ jobs:
         with:
           gradle-version: '9.1.0'
 
+      - name: AVD cache
+        uses: actions/cache@v5
+        id: avd-cache
+        with:
+          path: ~/.android/avd/*
+          key: avd-${{ matrix.device-name }}
+
       - name: Accept Android SDK licenses
         run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
       - name: Run device tests
-        run: ./gradlew :shared:allDevicesAndroidDeviceTest
+        run: ./gradlew :shared:${{matrix.device-name}}AndroidDeviceTest
 
       - name: Upload device test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: device_test_report
-          path: ./shared/build/reports/androidTests/managedDevice/androidMain/allDevices/
+          name: device_test_report_${{matrix.device-name}}
+          path: ./shared/build/reports/androidTests/managedDevice/androidmain/${{matrix.device-name}}/
+
+      - name: Print disk space usage
+        if: failure()
+        run: df -h
 
   deploy-firebase:
     runs-on: ubuntu-latest
