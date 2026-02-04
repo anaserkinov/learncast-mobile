@@ -1,12 +1,9 @@
 name: 'Setup Project'
-description: 'Checkout repository and setup JDK and Gradle'
+description: 'Setup JDK and Gradle'
 
 runs:
   using: 'composite'
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-
     - name: Setup JDK 17
       uses: actions/setup-java@v4
       with:
