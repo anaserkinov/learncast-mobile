@@ -36,6 +36,7 @@ import kotlinx.datetime.LocalDateTime
 import me.anasmusa.learncast.core.nowLocalDateTime
 import me.anasmusa.learncast.data.DownloadCacheScope
 import me.anasmusa.learncast.data.PlaybackCacheScope
+import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
@@ -102,7 +103,7 @@ class PlaybackService :
                         MediaSession.MediaItemsWithStartPosition(
                             mediaItems,
                             0,
-                            queuedItems.getOrNull(0)?.lastPositionMs?.inWholeMilliseconds ?: 0L,
+                            queuedItems.getOrNull(0)?.lastPositionMs ?: 0L,
                         ),
                     )
                 }
@@ -229,10 +230,10 @@ class PlaybackService :
                         if (mediaItem != null && mediaItemId.value != mediaItem.mediaId) {
                             scope.launch {
                                 val queueItem = queueRepository.getById(mediaItem.mediaId.toLong()) ?: return@launch
-                                withContext(Dispatchers.Main) {
-                                    if (queueItem.id == player.currentMediaItem?.mediaId?.toLong()) {
-                                        queueItem.lastPositionMs?.inWholeMilliseconds?.let {
-                                            player.seekTo(it)
+                                if (queueItem.referenceType == ReferenceType.LESSON) {
+                                    withContext(Dispatchers.Main) {
+                                        if (queueItem.id == player.currentMediaItem?.mediaId?.toLong()) {
+                                            player.seekTo(queueItem.lastPositionMs)
                                         }
                                     }
                                 }

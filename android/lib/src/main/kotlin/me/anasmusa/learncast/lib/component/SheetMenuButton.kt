@@ -62,6 +62,6 @@ fun SheetMenuWhiteButton(
         horizontalArrangement = horizontalArrangement,
         backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
         onClick = onClick,
-        titleColor = MaterialTheme.colorScheme.background,
+        titleColor = MaterialTheme.colorScheme.onSecondaryContainer,
     )
 }

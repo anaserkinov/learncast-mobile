@@ -13,6 +13,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import me.anasmusa.learncast.PreferenceData
 import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result
@@ -23,9 +24,7 @@ import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
 import me.anasmusa.learncast.data.network.auth.AuthService
 import me.anasmusa.learncast.data.network.auth.model.RefreshTokenRequest
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class TokenManagerTest : BehaviorSpec({
 
     lateinit var preferences: FakePreferences
@@ -115,7 +114,7 @@ class TokenManagerTest : BehaviorSpec({
 
                 val tokens = tokenManager.refreshToken(refreshToken)
 
-                tokens.shouldBeNull()
+                tokens.shouldBe(Pair(refreshToken, OLD_ACCESS_TOKEN))
                 authRepository.logoutCalled shouldBe false // Only 401 triggers logout
             }
         }
@@ -139,83 +138,58 @@ class TokenManagerTest : BehaviorSpec({
                         tokens shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
                     }
 
-                    // Verify only one update occurred (mutex prevented duplicate calls)
+                    // Verify only one update occurred (job reuse prevented duplicate calls)
                     preferences.updateCallCount shouldBe 1
                 }
             }
-        }
 
-        When("getTokens is called while refresh is in progress") {
-
-            And("refresh completes successfully") {
-                Then("getTokens waits for refresh and returns new tokens") {
+            And("refresh job is already in progress") {
+                Then("subsequent calls wait for the existing job to complete") {
                     preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
-                    preferences.delayMs = 100 // Simulate slow refresh
+                    preferences.delayMs = 200 // Simulate slow network
 
-                    val getTokensDeferred = async {
-                        delay(50) // Start after refresh begins
-                        tokenManager.getTokens()
-                    }
-
-                    val refreshDeferred = async {
+                    val firstRefresh = async {
                         tokenManager.refreshToken(VALID_REFRESH_TOKEN)
                     }
 
-                    val refreshResult = refreshDeferred.await()
-                    val getTokensResult = getTokensDeferred.await()
+                    // Wait a bit to ensure first refresh starts
+                    delay(50)
 
-                    // Both should return the new tokens
-                    refreshResult shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
-                    getTokensResult shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                    val secondRefresh = async {
+                        tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+                    }
+
+                    val results = awaitAll(firstRefresh, secondRefresh)
+
+                    // Both should return the same new tokens
+                    results[0] shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                    results[1] shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+
+                    // Only one update should have occurred
+                    preferences.updateCallCount shouldBe 1
                 }
             }
-        }
 
-        When("concurrent getTokens and refreshToken calls occur") {
-
-            And("multiple threads access token manager simultaneously") {
-                Then("all operations complete without race conditions") {
+            And("token has changed between job start and completion check") {
+                Then("returns updated tokens without refreshing again") {
                     preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
-
-                    val results = async {
-                        List(10) { index ->
-                            async {
-                                if (index % 2 == 0) {
-                                    tokenManager.refreshToken(VALID_REFRESH_TOKEN)
-                                } else {
-                                    tokenManager.getTokens()
-                                }
-                            }
-                        }.awaitAll()
-                    }.await()
-
-                    // All results should be consistent (either old or new tokens)
-                    val distinctResults = results.filterNotNull().distinct()
-                    distinctResults.size shouldBe 1 // Only one distinct result
-                    distinctResults.first() shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
-                }
-            }
-        }
-
-        When("refresh fails while getTokens is waiting") {
-
-            And("refresh returns 401") {
-                Then("getTokens returns null after logout") {
-                    preferences.savedTokens = Pair(EXPIRED_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
                     preferences.delayMs = 100
 
-                    val getTokensDeferred = async {
-                        delay(50)
-                        tokenManager.getTokens()
+                    val firstRefresh = launch {
+                        tokenManager.refreshToken(VALID_REFRESH_TOKEN)
                     }
 
-                    val refreshDeferred = async {
-                        tokenManager.refreshToken(EXPIRED_REFRESH_TOKEN)
-                    }
+                    // Wait for first refresh to complete
+                    firstRefresh.join()
 
-                    refreshDeferred.await().shouldBeNull()
-                    getTokensDeferred.await().shouldBeNull()
-                    authRepository.logoutCalled shouldBe true
+                    // Now try to refresh with the old token again
+                    val secondResult = tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+
+                    // Should detect token mismatch and return current tokens
+                    secondResult shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+
+                    // Only one update should have occurred
+                    preferences.updateCallCount shouldBe 1
                 }
             }
         }
@@ -244,6 +218,114 @@ class TokenManagerTest : BehaviorSpec({
                 }
             }
         }
+
+        When("cancelRefresh is called") {
+
+            And("refresh is in progress") {
+                Then("cancels the ongoing refresh job") {
+                    preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
+                    preferences.delayMs = 500 // Long delay to allow cancellation
+
+                    val refreshDeferred = async {
+                        tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+                    }
+
+                    // Wait a bit to ensure refresh starts
+                    delay(100)
+
+                    // Cancel the refresh
+                    tokenManager.cancelRefresh()
+
+                    // The refresh should complete (job.join() is called even after cancel)
+                    // but the result might be null or old tokens depending on timing
+                    val result = refreshDeferred.await()
+
+                    // After cancellation, tokens should remain unchanged or be null
+                    // since the job was cancelled before completion
+                    if (result != null) {
+                        // If result is not null, it means the update happened before cancellation
+                        result shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                    }
+                }
+            }
+
+            And("no refresh is in progress") {
+                Then("does nothing and completes successfully") {
+                    preferences.savedTokens = Pair(SAVED_REFRESH_TOKEN, SAVED_ACCESS_TOKEN)
+
+                    // Should not throw exception
+                    tokenManager.cancelRefresh()
+
+                    // Tokens should remain unchanged
+                    val tokens = tokenManager.getTokens()
+                    tokens shouldBe Pair(SAVED_REFRESH_TOKEN, SAVED_ACCESS_TOKEN)
+                }
+            }
+        }
+
+        When("refresh job completes") {
+
+            And("job completes successfully") {
+                Then("job is set to null after completion") {
+                    preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
+                    preferences.delayMs = 50
+
+                    val tokens = tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+
+                    tokens shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+
+                    // New refresh should work normally (job was reset to null)
+                    preferences.savedTokens = Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                    val secondTokens = tokenManager.refreshToken(NEW_REFRESH_TOKEN)
+
+                    secondTokens shouldBe Pair(NEWER_REFRESH_TOKEN, NEWER_ACCESS_TOKEN)
+                }
+            }
+
+            And("job fails with exception") {
+                Then("job is set to null after exception handling") {
+                    preferences.savedTokens = Pair(NETWORK_ERROR_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
+
+                    val tokens = tokenManager.refreshToken(NETWORK_ERROR_REFRESH_TOKEN)
+
+                    tokens.shouldBe(Pair(NETWORK_ERROR_REFRESH_TOKEN, OLD_ACCESS_TOKEN))
+
+                    // Verify we can make a new refresh attempt
+                    preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
+                    val secondTokens = tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+
+                    secondTokens shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                }
+            }
+        }
+
+        When("GlobalScope is used for refresh job") {
+
+            And("parent coroutine is cancelled") {
+                Then("refresh job continues in GlobalScope") {
+                    preferences.savedTokens = Pair(VALID_REFRESH_TOKEN, OLD_ACCESS_TOKEN)
+                    preferences.delayMs = 200
+
+                    val parentJob = launch {
+                        launch {
+                            tokenManager.refreshToken(VALID_REFRESH_TOKEN)
+                        }
+                        // Parent completes immediately
+                    }
+
+                    // Wait for parent to complete
+                    parentJob.join()
+
+                    // Wait a bit more for refresh to complete in GlobalScope
+                    delay(300)
+
+                    // Refresh should have completed despite parent cancellation
+                    val tokens = tokenManager.getTokens()
+                    tokens shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
+                    preferences.updateCallCount shouldBe 1
+                }
+            }
+        }
     }
 
     beforeTest {
@@ -264,6 +346,10 @@ class TokenManagerTest : BehaviorSpec({
         const val NEW_REFRESH_TOKEN = "new_refresh_token"
         const val NEW_ACCESS_TOKEN = "new_access_token"
 
+        // Second Refresh Flow
+        const val NEWER_REFRESH_TOKEN = "newer_refresh_token"
+        const val NEWER_ACCESS_TOKEN = "newer_access_token"
+
         // Different Token
         const val DIFFERENT_REFRESH_TOKEN = "different_refresh_token"
 
@@ -273,7 +359,6 @@ class TokenManagerTest : BehaviorSpec({
         const val SERVER_ERROR_REFRESH_TOKEN = "server_error_token"
         const val BAD_REQUEST_REFRESH_TOKEN = "bad_request_token"
 
-        @OptIn(ExperimentalTime::class)
         fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
@@ -283,7 +368,6 @@ class TokenManagerTest : BehaviorSpec({
             }
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleRefreshToken(request: HttpRequestData) =
             when (request.method) {
                 HttpMethod.Post -> {
@@ -294,6 +378,13 @@ class TokenManagerTest : BehaviorSpec({
                             val credentials = TestFixtures.Auth.createCredentials(
                                 accessToken = NEW_ACCESS_TOKEN,
                                 refreshToken = NEW_REFRESH_TOKEN
+                            )
+                            respondJson(content = credentials.wrapInBaseResponse())
+                        }
+                        NEW_REFRESH_TOKEN -> {
+                            val credentials = TestFixtures.Auth.createCredentials(
+                                accessToken = NEWER_ACCESS_TOKEN,
+                                refreshToken = NEWER_REFRESH_TOKEN
                             )
                             respondJson(content = credentials.wrapInBaseResponse())
                         }

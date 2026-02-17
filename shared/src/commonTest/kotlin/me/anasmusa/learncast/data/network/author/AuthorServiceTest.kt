@@ -37,10 +37,8 @@ import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import me.anasmusa.learncast.data.network.createTestHttpClient
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 class AuthorServiceTest : BehaviorSpec({
 
     val service = AuthorService(createHttpClient())
@@ -169,7 +167,6 @@ class AuthorServiceTest : BehaviorSpec({
     }
 }) {
     companion object {
-        @OptIn(ExperimentalTime::class)
         fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
@@ -180,7 +177,6 @@ class AuthorServiceTest : BehaviorSpec({
             }
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handlePageRequest(request: HttpRequestData) =
             when (request.method) {
                 HttpMethod.Get -> {
@@ -206,7 +202,6 @@ class AuthorServiceTest : BehaviorSpec({
                 else -> throw NotImplementedError("Method not supported: ${request.method}")
             }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleDeletedRequest(request: HttpRequestData) =
             when (request.method) {
                 HttpMethod.Get -> {

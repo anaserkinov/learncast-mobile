@@ -1,9 +1,18 @@
 package me.anasmusa.learncast.core
 
+import androidx.paging.PagingData
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 import kotlinx.io.IOException
+import me.anasmusa.learncast.core.paging.ListPagingState
 import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.network.common.model.BaseResponse
 import org.koin.core.scope.Scope
@@ -35,6 +44,44 @@ suspend fun Exception.toResult(): Result.Fail {
     }
 }
 
-fun String.normalizeUrl() = "${appConfig.apiBaseUrl}/v1/file/$this"
+fun String.normalizeUrl() = "${appConfig.apiBaseUrl}v1/file/$this"
 
 inline fun <reified T : Any> Scope.getOrCreateScope(scopeId: ScopeID): Scope = getKoin().getOrCreateScope<T>(scopeId)
+
+fun <R, T : Any> Flow<R>.collectAsPagingState(
+    scope: CoroutineScope,
+    selector: R.() -> Flow<PagingData<T>>,
+): Lazy<Flow<ListPagingState<T>>> {
+    return object : Lazy<Flow<ListPagingState<T>>> {
+        private var job: Job? = null
+
+        private var flow: Flow<ListPagingState<T>>? = null
+
+        override val value: Flow<ListPagingState<T>>
+            get(): Flow<ListPagingState<T>> {
+                if (flow == null) {
+                    flow =
+                        this@collectAsPagingState
+                            .map { it.selector() }
+                            .distinctUntilChanged()
+                            .mapLatest {
+                                val pagingState = ListPagingState(it)
+                                job?.cancel()
+                                job =
+                                    scope.launch {
+                                        launch {
+                                            pagingState.collectLoadState()
+                                        }
+                                        launch {
+                                            pagingState.collectPagingData()
+                                        }
+                                    }
+                                pagingState
+                            }
+                }
+                return flow!!
+            }
+
+        override fun isInitialized(): Boolean = flow != null
+    }
+}

@@ -61,7 +61,7 @@ import me.anasmusa.learncast.lib.core.formatTime
 import me.anasmusa.learncast.lib.theme.icon.Close
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
 import me.anasmusa.learncast.lib.theme.icon.Stop
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.snip.SnipEdiIntent
 import me.anasmusa.learncast.ui.snip.SnipEditEvent
 import me.anasmusa.learncast.ui.snip.SnipEditState

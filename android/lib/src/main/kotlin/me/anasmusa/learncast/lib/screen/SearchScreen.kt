@@ -44,8 +44,9 @@ import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.nav.LocalNavController
+import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.ui.SearchIntent
 import me.anasmusa.learncast.ui.SearchState
 import me.anasmusa.learncast.ui.SearchViewModel
@@ -60,7 +61,6 @@ fun SearchScreenPreview() {
             withTab = true,
             onQueryChanged = {},
             onTabSelected = {},
-            openTopic = {},
             addToQueue = {},
         )
     }
@@ -89,9 +89,8 @@ fun SearchScreen(
         onTabSelected = {
             viewModel.handle(SearchIntent.SelectTab(it))
         },
-        openTopic = {
-        },
         addToQueue = {
+            viewModel.handle(SearchIntent.AddToQueue(it))
         },
     )
 }
@@ -103,7 +102,6 @@ private fun _SearchScreen(
     withTab: Boolean,
     onQueryChanged: (value: String) -> Unit,
     onTabSelected: (index: Int) -> Unit,
-    openTopic: (Topic) -> Unit,
     addToQueue: (Lesson) -> Unit,
 ) {
     val navController = LocalNavController.current
@@ -221,7 +219,9 @@ private fun _SearchScreen(
                             TopicCell(
                                 topic = any as Topic,
                                 onClick = {
-                                    openTopic(any)
+                                    navController.navigate(
+                                        Screen.Topic(any)
+                                    )
                                 },
                             )
                         }

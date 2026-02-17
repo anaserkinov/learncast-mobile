@@ -1,24 +1,17 @@
 package me.anasmusa.learncast.core
 
-import me.anasmusa.learncast.core.google.GoogleAuthManager
-import me.anasmusa.learncast.core.google.createGoogleAuthManager
 import me.anasmusa.learncast.core.notification.NotificationManager
 import me.anasmusa.learncast.core.notification.createNotificationManager
-import me.anasmusa.learncast.data.AppScope
-import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
+import org.koin.core.module.Module
 import org.koin.dsl.module
+
+internal expect fun Module.platformModule()
 
 internal fun coreModule() =
     module {
-        factory<GoogleAuthManager> {
-            createGoogleAuthManager()
-        }
+        platformModule()
 
         factory<NotificationManager> {
             createNotificationManager()
-        }
-
-        factory<PlayerRepository> {
-            getOrCreateScope<AppScope>(AppScope.ID).get()
         }
     }

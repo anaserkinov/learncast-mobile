@@ -118,7 +118,7 @@ private class AndroidPlayerController(
         controllerFuture?.get()?.let { controller ->
             controller.playWhenReady = true
             controller.addMediaItem(0, item.toMediaItem(context))
-            controller.seekTo(0, item.lastPositionMs?.inWholeMilliseconds ?: 0L)
+            controller.seekTo(0, item.lastPositionMs)
             controller.prepare()
         }
     }
@@ -130,7 +130,7 @@ private class AndroidPlayerController(
         controllerFuture?.get()?.let { controller ->
             controller.playWhenReady = true
             controller.moveMediaItem(currentOrder, 0)
-            controller.seekTo(0, 0L)
+            controller.seekTo(0, item.lastPositionMs)
             controller.prepare()
         }
     }
@@ -138,7 +138,7 @@ private class AndroidPlayerController(
     override fun replaceFirst(item: QueueItem) {
         controllerFuture?.get()?.let { controller ->
             controller.replaceMediaItem(0, item.toMediaItem(context))
-            controller.seekTo(0L)
+            controller.seekTo(item.lastPositionMs)
         }
     }
 
@@ -207,9 +207,7 @@ private class AndroidPlayerController(
         from: Int,
         to: Int,
     ) {
-        controllerFuture?.get()?.let {
-            it.moveMediaItem(from, to)
-        }
+        controllerFuture?.get()?.moveMediaItem(from, to)
     }
 
     override fun remove(index: Int) {
@@ -236,24 +234,22 @@ private class AndroidPlayerController(
 
     override suspend fun stopService() {
         isStopped = true
-        controllerFuture?.let {
-            it.get().let { controller ->
-                withContext(Dispatchers.Main) {
-                    wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
-                        controller.playWhenReady ||
-                        controller.isPlaying
-                    controller.playWhenReady = false
-                    controller.pause()
-                    controller.sendCustomCommand(
-                        SessionCommand("destroy_player", Bundle.EMPTY),
-                        Bundle.EMPTY,
-                    )
-                }
-                delay(500)
-            }
+        controllerFuture?.get()?.let { controller ->
             withContext(Dispatchers.Main) {
-                it.get().release()
-                MediaController.releaseFuture(it)
+                wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
+                    controller.playWhenReady ||
+                    controller.isPlaying
+                controller.playWhenReady = false
+                controller.pause()
+                controller.sendCustomCommand(
+                    SessionCommand("destroy_player", Bundle.EMPTY),
+                    Bundle.EMPTY,
+                )
+            }
+            delay(500)
+            withContext(Dispatchers.Main) {
+                controller.release()
+                MediaController.releaseFuture(controllerFuture!!)
             }
             controllerFuture = null
         }

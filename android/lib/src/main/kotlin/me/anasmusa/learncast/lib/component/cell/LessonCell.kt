@@ -97,7 +97,7 @@ fun LessonCell(
             Text(
                 text =
                     if (lesson.topicTitle != null) {
-                        "${lesson.title} guftygguihojhigufxfdgchvjbkngcfhgvjhb- ${lesson.topicTitle}"
+                        "${lesson.title} - ${lesson.topicTitle}"
                     } else {
                         lesson.title
                     },

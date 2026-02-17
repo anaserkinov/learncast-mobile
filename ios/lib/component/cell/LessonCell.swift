@@ -5,8 +5,8 @@
 //  Created by Anas Erkinjonov on 22/01/26.
 //
 
-import Kingfisher
-import Shared
+internal import Kingfisher
+internal import Shared
 import SwiftUI
 
 struct LessonCell: View {
@@ -16,22 +16,16 @@ struct LessonCell: View {
     var body: some View {
         Button(action: onClick) {
             HStack(alignment: .center, spacing: 8) {
-                if let coverImagePath = lesson.coverImagePath,
-                    let url = URL(string: UtilsKt.normalizeUrl(coverImagePath))
-                {
-                    KFImage(url)
-                        .resizable()
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .frame(width: 80, height: 80)
-                        .padding(.trailing, 8)
-                } else {
-                    Image("MainLogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .padding(.trailing, 8)
-                }
+                KFImage(URL(string: lesson.coverImagePath?.normalizeUrl() ?? ""))
+                    .placeholder {
+                        Image("MainLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
+                    .resizable()
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .frame(width: 80, height: 80)
+                    .padding(.trailing, 8)
                 VStack(alignment: .leading) {
                     Text(lesson.authorName)
                         .font(Typography.bodyMedium)
@@ -46,7 +40,7 @@ struct LessonCell: View {
                     .lineLimit(2)
 
                     Text(
-                        "\(lesson.createdAt.dayMonth()) · \(lesson.audioDuration)"
+                        "\(lesson.createdAt.dayMonth()) · \(lesson.audioDuration.formatTimeFromDuration())"
                     )
                     .font(Typography.bodyMedium)
                     .opacity(0.7)

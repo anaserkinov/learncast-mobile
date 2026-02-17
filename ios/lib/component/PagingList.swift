@@ -5,27 +5,30 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: View, Footer: View>:
     View
 {
 
-    private let pagingState: ListPagingState<T>
+    @State
+    private var pagingState = ObservablePagingState<T>()
+
+    private let flow: SkieSwiftFlow<ListPagingState<T>>
     private let cell: (T?) -> Content
-    private let id: KeyPath<ListPagingState<T>.Element, ID>
+    private let id: KeyPath<Array<T>.Element?, ID>
     private let header: (() -> Header)?
     private let footer: (() -> Footer)?
 
     init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
+        flow: SkieSwiftFlow<ListPagingState<T>>,
+        id: KeyPath<Array<T>.Element?, ID>,
         header: (() -> Header)? = nil,
         footer: (() -> Footer)? = nil,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
+        @ViewBuilder cell: @escaping (Array<T>.Element?) -> Content
     ) {
-        self.pagingState = pagingState
+        self.flow = flow
         self.id = id
         self.header = header
         self.footer = footer
@@ -42,7 +45,7 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
             }
 
             ForEach(
-                pagingState,
+                pagingState.list,
                 id: id
             ) { item in
                 cell(item)
@@ -65,41 +68,30 @@ struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: 
         }
         .listStyle(.plain)
         .refreshable {
-            pagingState.refresh()
+            await pagingState.refresh()
         }
-    }
-
-}
-
-#Preview {
-    PreviewRoot {
-        let pagingState = ListPagingState<Lesson>()
-        pagingState.update(flow: getLessonSamplePagingData(count: 2))
-        return PagingList(
-            pagingState: pagingState,
-            id: \.?.id
-        ) { lesson in
-            if let lesson {
-                LessonCell(lesson: lesson) {
-                    // handle click
+        .task {
+            var task: Task<(), any Error>? = nil
+            for await state in flow {
+                task?.cancel()
+                task = Task {
+                    await pagingState.collect(state: state)
                 }
-            } else {
-                EmptyView()
             }
+            task?.cancel()
         }
-        .background(AppEnvironment().backgroundGradient())
-        .listStyle(PlainListStyle())
     }
+
 }
 
 extension PagingList where Header == EmptyView, Footer == EmptyView {
     init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
+        flow: SkieSwiftFlow<ListPagingState<T>>,
+        id: KeyPath<Array<T>.Element?, ID>,
+        @ViewBuilder cell: @escaping (Array<T>.Element?) -> Content
     ) {
         self.init(
-            pagingState: pagingState,
+            flow: flow,
             id: id,
             header: nil,
             footer: nil,
@@ -110,13 +102,13 @@ extension PagingList where Header == EmptyView, Footer == EmptyView {
 
 extension PagingList where Footer == EmptyView {
     init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
+        flow: SkieSwiftFlow<ListPagingState<T>>,
+        id: KeyPath<Array<T>.Element?, ID>,
         header: @escaping () -> Header,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
+        @ViewBuilder cell: @escaping (Array<T>.Element?) -> Content
     ) {
         self.init(
-            pagingState: pagingState,
+            flow: flow,
             id: id,
             header: header,
             footer: nil,

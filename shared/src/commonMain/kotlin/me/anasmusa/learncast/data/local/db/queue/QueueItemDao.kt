@@ -36,6 +36,9 @@ internal interface QueueItemDao {
         return insert(item)
     }
 
+    @Query("SELECT COUNT(id) FROM ${TableNames.QUEUE_ITEM}")
+    fun observeQueuedCount(): Flow<Int>
+
     @Query("SELECT lessonId FROM ${TableNames.QUEUE_ITEM} WHERE id = :queueItemId AND referenceType = 'LESSON'")
     suspend fun getLessonId(queueItemId: Long): Long?
 

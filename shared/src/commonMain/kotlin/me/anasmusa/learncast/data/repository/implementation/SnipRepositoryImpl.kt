@@ -5,9 +5,9 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.nowLocalDateTime
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.local.db.lesson.LessonDao
 import me.anasmusa.learncast.data.local.db.outbox.OutboxDao

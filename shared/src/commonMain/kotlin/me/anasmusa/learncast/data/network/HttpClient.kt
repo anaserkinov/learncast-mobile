@@ -1,6 +1,5 @@
 package me.anasmusa.learncast.data.network
 
-import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
@@ -16,16 +15,13 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import me.anasmusa.learncast.core.InstantSerializer
 import me.anasmusa.learncast.core.appConfig
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 expect fun createHttpClient(
     block: HttpClientConfig<*>.() -> Unit,
 ): HttpClient
 
-@OptIn(ExperimentalTime::class)
 internal fun HttpClientConfig<*>.configure(
     getTokenManager: () -> TokenManager,
     setExplicitNulls: Boolean = true,
@@ -37,7 +33,7 @@ internal fun HttpClientConfig<*>.configure(
         logger =
             object : Logger {
                 override fun log(message: String) {
-                    Napier.v(message)
+//                    Napier.v(message)
                 }
             }
     }

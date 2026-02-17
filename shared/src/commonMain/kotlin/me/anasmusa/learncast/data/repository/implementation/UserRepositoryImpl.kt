@@ -2,8 +2,8 @@ package me.anasmusa.learncast.data.repository.implementation
 
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.take
-import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result

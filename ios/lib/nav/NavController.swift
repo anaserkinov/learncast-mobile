@@ -24,14 +24,3 @@ public class NavController {
         backStack.removeAll()
     }
 }
-
-private struct NavControllerKey: EnvironmentKey {
-    static var defaultValue: NavController = NavController()
-}
-
-extension EnvironmentValues {
-    public var navController: NavController {
-        get { self[NavControllerKey.self] }
-        set { self[NavControllerKey.self] = newValue }
-    }
-}

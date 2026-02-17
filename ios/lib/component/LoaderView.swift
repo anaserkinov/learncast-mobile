@@ -5,13 +5,6 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-//
-//  LoaderView.swift
-//  iosApp
-//
-//  Created by Anas Erkinjonov on 31/01/26.
-//
-
 import SwiftUI
 
 struct LoaderView: View {
@@ -24,11 +17,6 @@ struct LoaderView: View {
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                 .scaleEffect(1.5)
                 .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color(.systemBackground))
-                        .shadow(radius: 10)
-                )
         }
     }
 }

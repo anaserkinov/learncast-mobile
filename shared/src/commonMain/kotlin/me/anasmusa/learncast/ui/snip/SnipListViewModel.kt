@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.Snip
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
@@ -22,6 +23,7 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class SnipListState(
     val searchQuery: String? = null,
@@ -49,6 +51,8 @@ class SnipListViewModel(
 ) : BaseViewModel<SnipListState, SnipListIntent, SnipListEvent>() {
     final override val state: StateFlow<SnipListState>
         field = MutableStateFlow(SnipListState())
+
+    val snips by state.collectAsPagingState(viewModelScope) { snips }
 
     init {
         state

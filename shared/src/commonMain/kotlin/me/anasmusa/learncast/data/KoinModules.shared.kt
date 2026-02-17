@@ -6,6 +6,7 @@ import me.anasmusa.learncast.data.network.networkModule
 import me.anasmusa.learncast.data.repository.abstraction.AppRepository
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.AuthorRepository
+import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.data.repository.abstraction.LessonRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
@@ -17,6 +18,7 @@ import me.anasmusa.learncast.data.repository.abstraction.UserRepository
 import me.anasmusa.learncast.data.repository.implementation.AppRepositoryImpl
 import me.anasmusa.learncast.data.repository.implementation.AuthRepositoryImpl
 import me.anasmusa.learncast.data.repository.implementation.AuthorRepositoryImpl
+import me.anasmusa.learncast.data.repository.implementation.DownloadRepositoryImpl
 import me.anasmusa.learncast.data.repository.implementation.LessonRepositoryImpl
 import me.anasmusa.learncast.data.repository.implementation.PlayerRepositoryImpl
 import me.anasmusa.learncast.data.repository.implementation.QueueRepositoryImpl
@@ -29,11 +31,19 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 object AppScope {
-    const val ID = "app-ui-scope"
+    const val ID = "app-ui"
 }
 
 object AuthorizedUserScope {
-    const val ID = "authorized-user-scope"
+    const val ID = "authorized-user"
+}
+
+object PlaybackCacheScope {
+    const val ID = "playback-cache"
+}
+
+object DownloadCacheScope {
+    const val ID = "download-cache"
 }
 
 internal expect fun Module.platformModule()
@@ -123,9 +133,16 @@ internal fun dataModule() =
             )
         }
 
+        factory<DownloadRepository> {
+            DownloadRepositoryImpl(
+                get(),
+                get(),
+            )
+        }
+
         scope<AppScope> {
             scoped<PlayerRepository> {
-                PlayerRepositoryImpl(get())
+                PlayerRepositoryImpl(get(), get())
             }
         }
         factory<PlayerRepository> {

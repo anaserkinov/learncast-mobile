@@ -5,13 +5,6 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-//
-//  SnackbarModifier.swift
-//  iosApp
-//
-//  Created by Anas Erkinjonov on 31/01/26.
-//
-
 import SwiftUI
 
 struct SnackbarModifier: ViewModifier {

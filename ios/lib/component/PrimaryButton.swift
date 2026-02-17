@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 29/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 extension PrimaryButton {
@@ -15,8 +15,10 @@ extension PrimaryButton {
         clip: Bool = true,
         padding: EdgeInsets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12),
         spacing: CGFloat = 8,
+        titleColor: Color = Colors.onTertiaryContainer,
         backgroundColor: Color = Colors.tertiaryContainer,
         horizontalAlignment: HorizontalAlignment = .leading,
+        height: CGFloat = 48,
         onClick: @escaping () -> Void
     ) {
         self.init(
@@ -25,8 +27,10 @@ extension PrimaryButton {
             clip: clip,
             padding: padding,
             spacing: spacing,
+            titleColor: titleColor,
             backgroundColor: backgroundColor,
             horizontalAlignment: horizontalAlignment,
+            height: height,
             onClick: onClick
         )
     }
@@ -38,8 +42,10 @@ struct PrimaryButton: View {
     let clip: Bool
     let padding: EdgeInsets
     let spacing: CGFloat
+    let titleColor: Color
     let backgroundColor: Color
     let horizontalAlignment: HorizontalAlignment
+    let height: CGFloat
     let onClick: () -> Void
 
     init(
@@ -48,8 +54,10 @@ struct PrimaryButton: View {
         clip: Bool = true,
         padding: EdgeInsets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12),
         spacing: CGFloat = 8,
-        backgroundColor: Color = Color(Colors.tertiaryContainer),
+        titleColor: Color = Colors.onTertiaryContainer,
+        backgroundColor: Color = Colors.tertiaryContainer,
         horizontalAlignment: HorizontalAlignment = .leading,
+        height: CGFloat = 48,
         onClick: @escaping () -> Void
     ) {
         self.title = title
@@ -57,8 +65,10 @@ struct PrimaryButton: View {
         self.clip = clip
         self.padding = padding
         self.spacing = spacing
+        self.titleColor = titleColor
         self.backgroundColor = backgroundColor
         self.horizontalAlignment = horizontalAlignment
+        self.height = height
         self.onClick = onClick
     }
 
@@ -73,16 +83,15 @@ struct PrimaryButton: View {
                 Text(title)
                     .lineLimit(1)
                     .font(Typography.titleMedium)
+                    .foregroundStyle(titleColor)
             }
             .padding(padding)
-            .frame(maxWidth: .infinity, alignment: alignment)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
             .background(backgroundColor)
         }
         .tint(Colors.onTertiaryContainer)
-        .applyIf(clip) { view in
-            view.clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
+        .buttonStyle(RippleButtonStyle(clip: clip))
+        .frame(height: height)
     }
 
     private var alignment: Alignment {
@@ -96,6 +105,17 @@ struct PrimaryButton: View {
         default:
             return .leading
         }
+    }
+}
+
+struct RippleButtonStyle: ButtonStyle {
+    let clip: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .clipShape(RoundedRectangle(cornerRadius: configuration.isPressed || clip ? 8 : 0))
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 

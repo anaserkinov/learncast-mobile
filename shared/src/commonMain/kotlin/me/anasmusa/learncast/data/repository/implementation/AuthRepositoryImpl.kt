@@ -6,19 +6,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.PreferenceData
-import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.google.GoogleAuthManager
 import me.anasmusa.learncast.core.notification.NotificationManager
+import me.anasmusa.learncast.core.player.PlayerController
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.core.toResult
+import me.anasmusa.learncast.data.AuthorizedUserScope
 import me.anasmusa.learncast.data.local.db.DBConnection
 import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result
+import me.anasmusa.learncast.data.network.TokenManager
 import me.anasmusa.learncast.data.network.auth.AuthService
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.LoginResponse
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.mp.KoinPlatform
 
 internal class AuthRepositoryImpl(
     private val authService: AuthService,
@@ -27,7 +33,10 @@ internal class AuthRepositoryImpl(
     private val googleAuthManager: GoogleAuthManager,
     private val notificationManager: NotificationManager,
     private val dbConnection: DBConnection,
-) : AuthRepository {
+) : AuthRepository,
+    KoinComponent {
+    private val tokenManager by inject<TokenManager>()
+
     private suspend fun handleResponse(response: LoginResponse) {
         preference.updateUser(
             PreferenceData.User(
@@ -79,6 +88,13 @@ internal class AuthRepositoryImpl(
     override suspend fun logout() =
         withContext(Dispatchers.IO) {
             try {
+                KoinPlatform
+                    .getKoin()
+                    .let { koin ->
+                        koin.get<PlayerController>().destroy()
+                        koin.getScopeOrNull(AuthorizedUserScope.ID)?.close()
+                    }
+                tokenManager.cancelRefresh()
                 try {
                     authService.logout()
                 } catch (e: Exception) {

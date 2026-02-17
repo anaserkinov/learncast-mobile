@@ -82,6 +82,5 @@ expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
 
 fun getAppDatabase(): AppDatabase =
     getDatabaseBuilder()
-        .fallbackToDestructiveMigration(true)
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()

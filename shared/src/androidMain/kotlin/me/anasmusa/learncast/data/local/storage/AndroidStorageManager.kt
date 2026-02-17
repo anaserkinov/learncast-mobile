@@ -12,6 +12,8 @@ import me.anasmusa.learncast.data.DownloadCacheScope
 import me.anasmusa.learncast.data.PlaybackCacheScope
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import org.koin.core.Koin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.qualifier.named
 import org.koin.mp.KoinPlatform
 import java.io.File
@@ -20,8 +22,9 @@ import java.io.File
 class AndroidStorageManager(
     private val context: Context,
     private val koin: Koin,
-) : StorageManager {
-    private val databaseProvider = koin.get<DatabaseProvider>()
+) : StorageManager,
+    KoinComponent {
+    private val databaseProvider by inject<DatabaseProvider>()
 
     override suspend fun getCacheSize(): Float =
         (
@@ -48,10 +51,8 @@ class AndroidStorageManager(
         clearHttpCaches()
     }
 
-    private suspend fun clearHttpCaches() {
-        val cacheFolder = context.externalCacheDir ?: return
-        File(cacheFolder, "http").deleteRecursively()
-        koin.get<CachingCacheStorage>().clearMap()
+    private fun clearHttpCaches() {
+        koin.get<CachingCacheStorage>().clear()
     }
 
     override suspend fun clearDownloads() {

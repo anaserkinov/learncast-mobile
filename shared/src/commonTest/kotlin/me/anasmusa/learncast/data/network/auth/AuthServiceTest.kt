@@ -35,9 +35,7 @@ import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.RefreshTokenRequest
 import me.anasmusa.learncast.data.network.createTestHttpClient
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class AuthServiceTest : BehaviorSpec({
 
     val client = createHttpClient()
@@ -144,7 +142,6 @@ class AuthServiceTest : BehaviorSpec({
     }
 }) {
     companion object {
-        @OptIn(ExperimentalTime::class)
         fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
@@ -156,7 +153,6 @@ class AuthServiceTest : BehaviorSpec({
             }
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleSignIn(request: io.ktor.client.request.HttpRequestData) =
             when (request.method) {
                 HttpMethod.Post -> {
@@ -178,7 +174,6 @@ class AuthServiceTest : BehaviorSpec({
                 else -> throw NotImplementedError("Method not supported: ${request.method}")
             }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleRefreshToken(request: io.ktor.client.request.HttpRequestData) =
             when (request.method) {
                 HttpMethod.Post -> {
@@ -203,7 +198,6 @@ class AuthServiceTest : BehaviorSpec({
                 else -> throw NotImplementedError("Method not supported: ${request.method}")
             }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleLogout(request: io.ktor.client.request.HttpRequestData) =
             when (request.method) {
                 HttpMethod.Post -> {

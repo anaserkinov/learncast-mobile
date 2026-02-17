@@ -4,9 +4,7 @@ import androidx.sqlite.SQLiteStatement
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 internal fun SQLiteStatement.bind(data: List<Any?>) {
     data.forEachIndexed { index, entry ->
         val index = index + 1

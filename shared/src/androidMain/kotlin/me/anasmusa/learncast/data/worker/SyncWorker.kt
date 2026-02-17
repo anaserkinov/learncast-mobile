@@ -12,8 +12,8 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -58,19 +58,11 @@ class SyncWorker(
     override suspend fun getForegroundInfo(): ForegroundInfo =
         ForegroundInfo(
             1,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Notification
-                    .Builder(context, "sync-worker")
-                    .setContentTitle(Strings.SYNC_NOTIFICATION_TITLE.string())
-                    .setContentText(Strings.SYNC_NOTIFICATION_MESSAGE.string())
-                    .build()
-            } else {
-                Notification
-                    .Builder(context)
-                    .setContentTitle(Strings.SYNC_NOTIFICATION_TITLE.string())
-                    .setContentText(Strings.SYNC_NOTIFICATION_MESSAGE.string())
-                    .build()
-            },
+            Notification
+                .Builder(context, "sync-worker")
+                .setContentTitle(Strings.SYNC_NOTIFICATION_TITLE.string())
+                .setContentText(Strings.SYNC_NOTIFICATION_MESSAGE.string())
+                .build(),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
             } else {

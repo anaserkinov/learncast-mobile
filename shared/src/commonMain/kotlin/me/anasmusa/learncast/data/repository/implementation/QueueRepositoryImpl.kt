@@ -29,6 +29,8 @@ internal class QueueRepositoryImpl(
             .observeWithStateById(id)
             .map { it?.toUI() }
 
+    override fun observeQueuedCount(): Flow<Int> = queueItemDao.observeQueuedCount()
+
     override suspend fun getLessonId(queueItemId: Long): Long? =
         try {
             queueItemDao.getLessonId(queueItemId)
