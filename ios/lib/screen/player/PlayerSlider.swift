@@ -12,17 +12,21 @@ struct PlayerSlider: View {
     let total: Int64
     let onValueChangeFinished: (Int64) -> Void
 
-    @State private var isDragging = false
+    @State private var draggingState = -1
     @State private var dragValue: Int64 = 0
     @State private var currentValue: Int64 = 0
 
     // Computed property for the current display value
     private var displayValue: Int64 {
-        isDragging ? dragValue : currentValue
+        draggingState == 1 ? dragValue : currentValue
     }
 
     private var cornerRadius: CGFloat {
-        isDragging ? 8 : 4
+        draggingState == 1 ? 8 : 4
+    }
+
+    private var isDragging: Bool {
+        draggingState == 1
     }
 
     var body: some View {
@@ -55,8 +59,8 @@ struct PlayerSlider: View {
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { gesture in
-                        if !isDragging {
-                            isDragging = true
+                        if draggingState < 1 {
+                            draggingState = 1
                             HapticFeedback.light()
                         }
 
@@ -65,8 +69,8 @@ struct PlayerSlider: View {
                         dragValue = Int64(ratio * CGFloat(total))
                     }
                     .onEnded { _ in
-                        currentValue = dragValue  // Update our state first
-                        isDragging = false
+                        draggingState = 0
+                        currentValue = dragValue
                         onValueChangeFinished(dragValue)
                         HapticFeedback.medium()
                     }
@@ -78,7 +82,8 @@ struct PlayerSlider: View {
             currentValue = value
         }
         .onChange(of: value) { _, newValue in
-            if !isDragging && (currentValue != dragValue || abs(newValue - currentValue) < 3000) {
+            if draggingState == 0 && abs(newValue - currentValue) < 3000 || draggingState == -1 {
+                draggingState = -1
                 currentValue = newValue
             }
         }

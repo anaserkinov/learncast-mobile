@@ -148,7 +148,7 @@ struct PlayerScreen: View {
                         }
                     }
                     .sheet(isPresented: $showActionSheet) {
-                        if let currentPlaying = viewModel.state.currentPlaying {
+                        if let currentPlaying = state.currentPlaying {
                             PlayerActionSheet(
                                 isSnip: currentPlaying.referenceType == .snip,
                                 downloadState: currentPlaying.downloadState,
@@ -267,12 +267,13 @@ struct PlayerScreen: View {
             Spacer(minLength: 16)
 
             PlayerSlider(
-                value: viewModel.state.currentPositionMs,
+                value: state.currentPositionMs,
                 total: currentPlaying.duration.millis(),
                 onValueChangeFinished: { value in
                     viewModel.handle(intent: PlayerIntentSeekTo(value: value))
                 }
             )
+            .id(currentPlaying.id)
             .padding(.horizontal, 20)
 
             Spacer(minLength: 24)
@@ -381,11 +382,11 @@ struct PlayerScreen: View {
                                 .fill(Color.white.opacity(0.2))
                                 .frame(width: 48, height: 48)
 
-                            if viewModel.state.snipCount == -1 {
+                            if state.snipCount == -1 {
                                 ProgressView()
                                     .tint(.white)
                             } else {
-                                Text(viewModel.state.snipCount <= 99 ? "\(viewModel.state.snipCount)" : "99+")
+                                Text(state.snipCount <= 99 ? "\(state.snipCount)" : "99+")
                                     .font(Typography.titleLarge)
                                     .foregroundStyle(.white)
                             }
@@ -430,14 +431,14 @@ struct PlayerScreen: View {
                     .overlay(Color.black.opacity(0.3))
                     .blendMode(.sourceAtop)
 
-                if viewModel.state.playbackState == STATE_LOADING {
+                if state.playbackState == STATE_LOADING {
                     ProgressView()
                         .tint(.white)
                 } else {
                     Button(action: {
                         viewModel.handle(intent: PlayerIntentTogglePlaybackState())
                     }) {
-                        Image(systemName: viewModel.state.playbackState == STATE_PAUSED ? "play.fill" : "pause.fill")
+                        Image(systemName: state.playbackState == STATE_PAUSED ? "play.fill" : "pause.fill")
                             .font(.system(size: 20))
                             .frame(width: 28, height: 28)
                     }

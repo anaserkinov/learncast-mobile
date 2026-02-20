@@ -27,8 +27,15 @@ struct MarqueeView<Content>: View where Content: View {
                         .background(
                             GeometryReader { contentGeometry in
                                 Color.clear
-                                    .onAppear {
-                                        contentWidth = contentGeometry.size.width
+                                    .onChange(of: contentGeometry.size.width, initial: true) { oldValue, newValue in
+                                        contentWidth = newValue
+                                        if shouldScroll {
+                                            withAnimation(.linear(duration: 35.0).repeatForever(autoreverses: false)) {
+                                                offset = -(contentWidth + 32)
+                                            }
+                                        } else {
+                                            offset = 0
+                                        }
                                     }
                             }
                         )
@@ -38,22 +45,16 @@ struct MarqueeView<Content>: View where Content: View {
                         content()
                     }
                 }
+                .id(shouldScroll)
                 .frame(minWidth: geometry.size.width, alignment: shouldScroll ? .leading : .center)
                 .offset(x: offset)
-                .onAppear {
-                    containerWidth = geometry.size.width - 64
-
-                    // Only animate if content is wider than container
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        if shouldScroll {
-                            withAnimation(.linear(duration: 35.0).repeatForever(autoreverses: false)) {
-                                offset = -(contentWidth + 32)
-                            }
-                        }
+                .onChange(
+                    of: geometry.size.width, initial: true,
+                    { oldValue, newValue in
+                        containerWidth = geometry.size.width - 64
                     }
-                }
-                .onChange(of: contentWidth) { oldValue, newValue in
-                    // Update animation when content changes
+                )
+                .onChange(of: shouldScroll, initial: true) { oldValue, newValue in
                     if shouldScroll {
                         withAnimation(.linear(duration: 35.0).repeatForever(autoreverses: false)) {
                             offset = -(contentWidth + 32)
