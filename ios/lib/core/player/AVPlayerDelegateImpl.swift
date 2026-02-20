@@ -31,6 +31,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
 
     private var cancellables = Set<AnyCancellable>()
     private var timeControlCancellable: AnyCancellable? = nil
+    private var interruptionCancellable: AnyCancellable? = nil
 
     private var timeObserverToken: Any? = nil
     private var callback: (any AVPlayerCallback)? = nil
@@ -64,6 +65,29 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
         }
 
+        interruptionCancellable = NotificationCenter.default.publisher(for: AVAudioSession.interruptionNotification)
+            .sink { notification in
+                guard let typeValue = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+                    let type = AVAudioSession.InterruptionType(rawValue: typeValue)
+                else { return }
+
+                switch type {
+                case .began:
+                    // Phone call, Siri, another app took audio focus
+                    self.pause()
+
+                case .ended:
+                    guard let optionsValue = notification.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt else { return }
+                    let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+                    if options.contains(.shouldResume) {
+                        self.play()
+                    }
+
+                @unknown default:
+                    break
+                }
+            }
+
         do {
             try session.setCategory(
                 .playback,
@@ -73,6 +97,44 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             print("🔊 Audio session category set to playback")
         } catch {
             print("❌ Failed to set audio session category: \(error)")
+        }
+
+        let commandCenter = MPRemoteCommandCenter.shared()
+
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { [weak self] _ in
+            self?.play()
+            return .success
+        }
+
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { [weak self] _ in
+            self?.pause()
+            return .success
+        }
+
+        commandCenter.skipBackwardCommand.isEnabled = true
+        commandCenter.skipBackwardCommand.preferredIntervals = [10]
+        commandCenter.skipBackwardCommand.addTarget { [weak self] _ in
+            if let playerD = self {
+                let time = playerD.player.currentTime().seconds
+                if time != .infinity && time != .nan {
+                    playerD.seekTo(positionMs: Int64((time - 10) * 1000))
+                }
+            }
+            return .success
+        }
+
+        commandCenter.skipForwardCommand.isEnabled = true
+        commandCenter.skipForwardCommand.preferredIntervals = [30]
+        commandCenter.skipForwardCommand.addTarget { [weak self] _ in
+            if let playerD = self {
+                let time = playerD.player.currentTime().seconds
+                if time != .infinity && time != .nan {
+                    playerD.seekTo(positionMs: Int64((time + 30) * 1000))
+                }
+            }
+            return .success
         }
     }
 
@@ -145,7 +207,6 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
 
     func play() {
         if let currentItem = currentItem() {
-            // Check if player is ready
             guard player.status == .readyToPlay else {
                 return
             }
@@ -153,6 +214,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             if updateNowPlayingInfo(item: currentItem) {
                 isPaused = false
                 player.play()
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
             }
         }
     }
@@ -160,6 +222,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
     func pause() {
         isPaused = true
         player.pause()
+        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0.0
     }
 
     func reload() {
@@ -294,6 +357,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
         player.replaceCurrentItem(with: nil)
         callback = nil
         timeControlCancellable?.cancel()
+        interruptionCancellable?.cancel()
     }
 
     private func replaceItem(
@@ -398,8 +462,12 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
         let time = CMTime(seconds: seconds, preferredTimescale: 1000)
         requestedSeekTime = time
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { finished in
-            if finished && self.playWhenReadyValue && !self.isPaused {
-                self.player.play()
+            if finished {
+                MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = time.seconds
+
+                if self.playWhenReadyValue && !self.isPaused {
+                    self.player.play()
+                }
             }
         }
     }
@@ -441,8 +509,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
 
             info[MPMediaItemPropertyTitle] = item.title
             info[MPMediaItemPropertyArtist] = item.subTitle
-            info[MPMediaItemPropertyPlaybackDuration] = TimeInterval(item.duration) / 1000
-            info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = TimeInterval(item.lastPositionMs) / 1000
+            info[MPMediaItemPropertyPlaybackDuration] = TimeInterval(item.duration.millis()) / 1000
             info[MPNowPlayingInfoPropertyPlaybackRate] = 1.0
 
             info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
@@ -455,11 +522,8 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
                 loadArtwork(url: coverImagePath.normalizeUrl()) { image in
                     let currentItem = self.currentIndex == -1 || self.currentIndex >= self.queue.count ? nil : self.queue[self.currentIndex]
                     if currentItem?.id == item.id, let image = image {
-                        info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(
-                            boundsSize: image.size,
-                            requestHandler: { size in
-                                image
-                            })
+                        info[MPMediaItemPropertyArtwork] =
+                            MPMediaItemArtwork(boundsSize: image.size) { _ in image }
                     }
                 }
             }
