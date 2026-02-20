@@ -94,9 +94,9 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
                 mode: .default,
                 options: []
             )
-            print("🔊 Audio session category set to playback")
+            logi(message: "🔊 Audio session category set to playback")
         } catch {
-            print("❌ Failed to set audio session category: \(error)")
+            loge(message: "❌ Failed to set audio session category: \(error)")
         }
 
         let commandCenter = MPRemoteCommandCenter.shared()
@@ -417,13 +417,6 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
                 }
             }.store(in: &cancellables)
 
-        playerItem.publisher(for: \.error)
-            .sink { error in
-                if let error = error {
-                    print("❌ AVPlayerItem error: \(error)")
-                }
-            }.store(in: &cancellables)
-
         NotificationCenter.default.publisher(for: AVPlayerItem.didPlayToEndTimeNotification, object: playerItem)
             .sink { notification in
                 if self.currentIndex == self.queue.count - 1 {
@@ -518,17 +511,16 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
                     self.defaultImage
                 })
 
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+
             if let coverImagePath = item.coverImagePath {
                 loadArtwork(url: coverImagePath.normalizeUrl()) { image in
                     let currentItem = self.currentIndex == -1 || self.currentIndex >= self.queue.count ? nil : self.queue[self.currentIndex]
                     if currentItem?.id == item.id, let image = image {
-                        info[MPMediaItemPropertyArtwork] =
-                            MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+                        MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
                     }
                 }
             }
-
-            MPNowPlayingInfoCenter.default().nowPlayingInfo = info
 
             return true
         } catch {

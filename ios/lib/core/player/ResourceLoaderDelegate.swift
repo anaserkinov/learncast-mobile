@@ -68,20 +68,20 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         _ resourceLoader: AVAssetResourceLoader,
         shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest
     ) -> Bool {
-        print("🔵 [ResourceLoader] New loading request")
-        print("   URL: \(loadingRequest.request.url?.absoluteString ?? "nil")")
+        logi(message: "🔵 [ResourceLoader] New loading request")
+        logd(message: "   URL: \(loadingRequest.request.url?.absoluteString ?? "nil")")
 
         queue.sync {
             pendingRequests.insert(loadingRequest)
         }
 
         if loadingRequest.contentInformationRequest != nil {
-            print("   📋 Content info requested")
+            logd(message: "   📋 Content info requested")
             if let dataRequest = loadingRequest.dataRequest {
-                print("   📦 Data requested: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
+                logd(message: "   📦 Data requested: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
             }
         } else if let dataRequest = loadingRequest.dataRequest {
-            print("   📦 Data only: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
+            logd(message: "   📦 Data only: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
         }
 
         Task {
@@ -95,9 +95,9 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         _ resourceLoader: AVAssetResourceLoader,
         didCancel loadingRequest: AVAssetResourceLoadingRequest
     ) {
-        print("🟡 [ResourceLoader] Request cancelled")
+        logw(message: "🟡 [ResourceLoader] Request cancelled")
         if let dataRequest = loadingRequest.dataRequest {
-            print("   Range: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
+            logd(message: "   Range: offset=\(dataRequest.requestedOffset), length=\(dataRequest.requestedLength)")
         }
 
         queue.sync {
@@ -122,11 +122,11 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             // Finish successfully
             if !loadingRequest.isCancelled {
                 loadingRequest.finishLoading()
-                print("✅ [ResourceLoader] Request completed successfully")
+                logi(message: "✅ [ResourceLoader] Request completed successfully")
             }
 
         } catch {
-            print("❌ [ResourceLoader] Request failed: \(error.localizedDescription)")
+            loge(message: "❌ [ResourceLoader] Request failed: \(error.localizedDescription)")
             if !loadingRequest.isCancelled {
                 loadingRequest.finishLoading(with: error)
             }
@@ -149,7 +149,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             let cachedContentLength = contentLength
         {
 
-            print("📋 [ResourceLoader] Using memory-cached content info")
+            logd(message: "📋 [ResourceLoader] Using memory-cached content info")
             contentInfo.contentType = cachedContentType
             contentInfo.contentLength = cachedContentLength
             contentInfo.isByteRangeAccessSupported = true
@@ -159,7 +159,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         // Check if we have metadata in storage (even from partial download/cache)
         if let metadata = try? await storageManager.getMetadata(forKey: cacheKey) {
 
-            print("📋 [ResourceLoader] Using storage metadata")
+            logd(message: "📋 [ResourceLoader] Using storage metadata")
             contentInfo.contentType = metadata.contentType
             contentInfo.contentLength = metadata.contentLength
             contentInfo.isByteRangeAccessSupported = true
@@ -176,7 +176,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
     private func fetchContentInformationFromRemote(
         for loadingRequest: AVAssetResourceLoadingRequest
     ) async throws {
-        print("📋 [ResourceLoader] Fetching content metadata from remote...")
+        logd(message: "📋 [ResourceLoader] Fetching content metadata from remote...")
 
         let urlToLoad = try await getPresignedURL()
 
@@ -195,7 +195,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
 
         // Handle auth errors
         if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
-            print("🔄 [ResourceLoader] Auth failed, refreshing presigned URL...")
+            logw(message: "🔄 [ResourceLoader] Auth failed, refreshing presigned URL...")
             self.presignedURL = nil
             presignedURLTask?.cancel()
             presignedURLTask = nil
@@ -245,7 +245,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         let type = response.mimeType ?? "audio/mpeg"
         contentInfo.contentType = type
         self.contentType = type
-        print("   ✓ Content-Type: \(type)")
+        logd(message: "   ✓ Content-Type: \(type)")
 
         // Get content length - try Content-Range first, then Content-Length
         var length: Int64 = 0
@@ -257,7 +257,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             contentInfo.contentLength = totalLength
             self.contentLength = totalLength
             length = totalLength
-            print("   ✓ Content-Length (from Range): \(totalLength)")
+            logd(message: "   ✓ Content-Length (from Range): \(totalLength)")
         }
         // Fall back to Content-Length header
         else if let contentLengthString = response.value(forHTTPHeaderField: "Content-Length"),
@@ -266,9 +266,9 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             contentInfo.contentLength = parsedLength
             self.contentLength = parsedLength
             length = parsedLength
-            print("   ✓ Content-Length: \(parsedLength)")
+            logd(message: "   ✓ Content-Length: \(parsedLength)")
         } else {
-            print("   ⚠️ No Content-Length or Content-Range header")
+            logw(message: "   ⚠️ No Content-Length or Content-Range header")
         }
 
         // Store metadata in storage for future use
@@ -287,7 +287,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
 
         // CRITICAL: Mark as byte-range accessible
         contentInfo.isByteRangeAccessSupported = true
-        print("   ✓ Byte-range access: true")
+        logd(message: "   ✓ Byte-range access: true")
     }
 
     private func parseContentLengthFromRange(_ contentRange: String) -> Int64? {
@@ -314,9 +314,9 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         let requestedLength = dataRequest.requestedLength
         let currentOffset = dataRequest.currentOffset
 
-        print("📦 [ResourceLoader] Processing data request...")
-        print("   Requested: \(requestedOffset) - \(requestedOffset + Int64(requestedLength) - 1)")
-        print("   Current offset: \(currentOffset)")
+        logd(message: "📦 [ResourceLoader] Processing data request...")
+        logd(message: "   Requested: \(requestedOffset) - \(requestedOffset + Int64(requestedLength) - 1)")
+        logd(message: "   Current offset: \(currentOffset)")
 
         // Calculate actual range to fetch
         let startOffset = currentOffset
@@ -327,7 +327,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         let segments: [DataSegment]
 
         if let downloaded = try await storageManager.getDownload(forKey: cacheKey) {
-            print("   📥 Complete download available")
+            logd(message: "   📥 Complete download available")
             segments = [
                 DataSegment(
                     source: .download(
@@ -344,7 +344,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
                 forKey: cacheKey,
                 intersecting: requestRange
             )
-            print("   💾 Stored ranges: \(cacheSpans.count)")
+            logd(message: "   💾 Stored ranges: \(cacheSpans.count)")
 
             // Calculate segments
             segments = RangeCalculator.mergeSegments(
@@ -353,17 +353,19 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             )
         }
 
-        print("   📊 Segments to process: \(segments.count)")
-        for (index, segment) in segments.enumerated() {
-            switch segment.source {
-            case .download:
-                print("      \(index): Download(\(segment.requestedStart)-\(segment.requestedEnd))")
-            case .cache:
-                print("      \(index): Cache(\(segment.requestedStart)-\(segment.requestedEnd))")
-            case .remote(let start, let end):
-                print("      \(index): Remote(\(start)-\(end))")
+        logd(message: "   📊 Segments to process: \(segments.count)")
+        #if DEBUG
+            for (index, segment) in segments.enumerated() {
+                switch segment.source {
+                case .download:
+                    logv(message: "      \(index): Download(\(segment.requestedStart)-\(segment.requestedEnd))")
+                case .cache:
+                    logv(message: "      \(index): Cache(\(segment.requestedStart)-\(segment.requestedEnd))")
+                case .remote(let start, let end):
+                    logv(message: "      \(index): Remote(\(start)-\(end))")
+                }
             }
-        }
+        #endif
 
         // Stream segments
         try await streamSegments(
@@ -390,7 +392,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         for segment in segments {
             // Check for cancellation
             if loadingRequest.isCancelled {
-                print("🟡 [ResourceLoader] Request cancelled during segment streaming")
+                logw(message: "🟡 [ResourceLoader] Request cancelled during segment streaming")
                 throw CancellationError()
             }
 
@@ -433,7 +435,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             }
         }
 
-        print("✅ [ResourceLoader] All segments streamed: \(totalBytesSent) bytes total")
+        logi(message: "✅ [ResourceLoader] All segments streamed: \(totalBytesSent) bytes total")
     }
 
     // MARK: - Stream from Storage
@@ -446,7 +448,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         loadingRequest: AVAssetResourceLoadingRequest,
         totalBytesSent: inout Int64
     ) async throws {
-        print("   💾 Streaming from storage: offset=\(offset), length=\(length)")
+        logd(message: "   💾 Streaming from storage: offset=\(offset), length=\(length)")
 
         let chunkSize: Int64 = 256 * 1024  // 256KB chunks
         var remainingLength = length
@@ -455,7 +457,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         while remainingLength > 0 {
             // Check for cancellation
             if loadingRequest.isCancelled {
-                print("🟡 [ResourceLoader] Cancelled during storage streaming")
+                logw(message: "🟡 [ResourceLoader] Cancelled during storage streaming")
                 throw CancellationError()
             }
 
@@ -474,7 +476,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             remainingLength -= Int64(data.count)
             currentOffset += Int64(data.count)
 
-            print("      ↗️ Sent chunk from storage: \(data.count) bytes")
+            logv(message: "      ↗️ Sent chunk from storage: \(data.count) bytes")
         }
     }
 
@@ -487,7 +489,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         loadingRequest: AVAssetResourceLoadingRequest,
         totalBytesSent: inout Int64
     ) async throws {
-        print("   🌐 Streaming from remote: \(startOffset)-\(endOffset)")
+        logd(message: "   🌐 Streaming from remote: \(startOffset)-\(endOffset)")
 
         let urlToLoad = try await getPresignedURL()
 
@@ -502,7 +504,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
 
         // Handle auth errors
         if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
-            print("🔄 [ResourceLoader] Auth failed during remote streaming, refreshing URL...")
+            logw(message: "🔄 [ResourceLoader] Auth failed during remote streaming, refreshing URL...")
             self.presignedURL = nil
             presignedURLTask?.cancel()
             presignedURLTask = nil
@@ -553,7 +555,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         for try await byte in asyncBytes {
             // Check for cancellation
             if loadingRequest.isCancelled {
-                print("🟡 [ResourceLoader] Cancelled during remote streaming")
+                logw(message: "🟡 [ResourceLoader] Cancelled during remote streaming")
 
                 // Save partial buffer to cache before cancelling
                 cacheBuffer.append(buffer)
@@ -563,7 +565,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
                         data: cacheBuffer,
                         range: startOffset..<(startOffset + Int64(cacheBuffer.count))
                     )
-                    print("      💾 Cached chunk: \(cacheBuffer.count) bytes")
+                    logv(message: "      💾 Cached chunk: \(cacheBuffer.count) bytes")
                 }
 
                 throw CancellationError()
@@ -577,7 +579,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
                 totalBytesSent += Int64(buffer.count)
                 cacheBuffer.append(buffer)
 
-                print("      ↗️ Sent chunk: \(buffer.count) bytes")
+                logv(message: "      ↗️ Sent chunk: \(buffer.count) bytes")
 
                 buffer.removeAll(keepingCapacity: true)
             }
@@ -588,7 +590,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             dataRequest.respond(with: buffer)
             totalBytesSent += Int64(buffer.count)
             cacheBuffer.append(buffer)
-            print("      ↗️ Sent final chunk: \(buffer.count) bytes")
+            logv(message: "      ↗️ Sent final chunk: \(buffer.count) bytes")
         }
 
         try? await storageManager.saveCacheSpan(
@@ -628,7 +630,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
     }
 
     private func fetchPresignedURL(from url: URL, isRetry: Bool = false) async throws -> URL {
-        print("🔗 [ResourceLoader] Fetching presigned URL...")
+        logi(message: "🔗 [ResourceLoader] Fetching presigned URL...")
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -648,7 +650,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
 
         // Handle 401 - refresh token and retry once
         if httpResponse.statusCode == 401 && !isRetry && tokens != nil {
-            print("🔄 [ResourceLoader] Token expired, refreshing...")
+            logw(message: "🔄 [ResourceLoader] Token expired, refreshing...")
             tokenProvider.refreshTokens(refreshToken: tokens!.first! as String)
             return try await fetchPresignedURL(from: url, isRetry: true)
         }
@@ -658,7 +660,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
             let locationString = httpResponse.value(forHTTPHeaderField: "Location"),
             let presignedURL = URL(string: locationString)
         {
-            print("✅ [ResourceLoader] Got presigned URL")
+            logi(message: "✅ [ResourceLoader] Got presigned URL")
             return presignedURL
         }
 
@@ -672,7 +674,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
     // MARK: - Cleanup
 
     func invalidate() {
-        print("🧹 [ResourceLoader] Invalidating loader")
+        logi(message: "🧹 [ResourceLoader] Invalidating loader")
 
         queue.sync {
             for request in pendingRequests {
@@ -689,7 +691,7 @@ class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
     }
 
     deinit {
-        print("♻️ [ResourceLoader] Deallocating")
+        logi(message: "♻️ [ResourceLoader] Deallocating")
         invalidate()
     }
 

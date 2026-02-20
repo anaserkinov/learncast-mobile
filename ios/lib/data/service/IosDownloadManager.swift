@@ -26,31 +26,6 @@ private struct DownloadItem {
     var isRetryingAuth: Bool = false
 }
 
-// MARK: - Live Activity Attributes
-public struct DownloadActivityAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        public var progress: Double
-        public var downloadedCount: Int
-        public var totalCount: Int
-        public var currentFileName: String
-        public var state: String  // "downloading", "paused", "completed", "failed"
-
-        public init(progress: Double, downloadedCount: Int, totalCount: Int, currentFileName: String, state: String) {
-            self.progress = progress
-            self.downloadedCount = downloadedCount
-            self.totalCount = totalCount
-            self.currentFileName = currentFileName
-            self.state = state
-        }
-    }
-
-    public var appName: String
-
-    public init(appName: String) {
-        self.appName = appName
-    }
-}
-
 // MARK: - iOS Download Service
 class IosDownloadManager: NSObject, DownloadManager {
 
@@ -170,7 +145,6 @@ class IosDownloadManager: NSObject, DownloadManager {
             )
         }
 
-        updateLiveActivity()
         processQueue()
     }
 
@@ -217,7 +191,6 @@ class IosDownloadManager: NSObject, DownloadManager {
             }
         }
 
-        updateLiveActivity()
         processQueue()
     }
 
@@ -280,8 +253,6 @@ class IosDownloadManager: NSObject, DownloadManager {
         }
 
         task.resume()
-
-        updateLiveActivity()
     }
 
     private func retryDownloadWithRefreshedToken(downloadId: Int64) {
@@ -289,7 +260,7 @@ class IosDownloadManager: NSObject, DownloadManager {
             !downloadItem.isRetryingAuth,
             downloadItem.retryCount < maxRetryAttempts
         else {
-            print("Cannot retry download \(downloadId): max retries reached or already retrying")
+            logw(message: "⚠️ [DownloadManager] Cannot retry download \(downloadId): max retries reached or already retrying")
             handleDownloadError(
                 downloadId: downloadId,
                 error: NSError(
@@ -305,7 +276,7 @@ class IosDownloadManager: NSObject, DownloadManager {
         downloadItem.retryCount += 1
         activeDownloads[downloadId] = downloadItem
 
-        print("Retrying download \(downloadId) with token refresh (attempt \(downloadItem.retryCount))")
+        logi(message: "🔄 [DownloadManager] Retrying download \(downloadId) with token refresh (attempt \(downloadItem.retryCount))")
 
         Task {
             // Refresh the token
@@ -346,7 +317,7 @@ class IosDownloadManager: NSObject, DownloadManager {
         guard var downloadItem = activeDownloads[downloadId],
             downloadItem.retryCount < maxRetryAttempts
         else {
-            print("Cannot retry download \(downloadId): max retries reached")
+            logw(message: "⚠️ [DownloadManager] Cannot retry download \(downloadId): max retries reached")
             handleDownloadError(
                 downloadId: downloadId,
                 error: NSError(
@@ -364,7 +335,7 @@ class IosDownloadManager: NSObject, DownloadManager {
         activeDownloads[downloadId] = downloadItem
         currentDownloadCount = max(0, currentDownloadCount - 1)
 
-        print("Retrying download \(downloadId) to get new presigned URL (attempt \(downloadItem.retryCount))")
+        logi(message: "🔄 [DownloadManager] Retrying download \(downloadId) to get new presigned URL (attempt \(downloadItem.retryCount))")
 
         executeDownload(downloadItem)
     }
@@ -380,32 +351,6 @@ class IosDownloadManager: NSObject, DownloadManager {
 
     private func getDownloadId(for task: URLSessionTask) -> Int64? {
         return taskIdToDownloadId[task.taskIdentifier]
-    }
-
-    private func updateLiveActivity() {
-        let activeDownloadsList = activeDownloads.values.filter {
-            $0.state == .downloading
-        }
-
-        guard !activeDownloadsList.isEmpty else {
-            //            liveActivityManager.endActivity()
-            return
-        }
-
-        //        let totalProgress = activeDownloadsList.reduce(0.0) {
-        //            $0 + $1.progress
-        //        } / Float(activeDownloadsList.count)
-        //        let currentDownload = activeDownloadsList.first
-
-        //        liveActivityManager.updateActivity(
-        //            progress: Double(totalProgress) / 100.0,  // Convert to 0-1 range
-        //            downloadedCount: activeDownloads.values.filter {
-        //                $0.state == .completed
-        //            }.count,
-        //            totalCount: activeDownloads.count,
-        //            currentFileName: currentDownload?.title ?? "Unknown",
-        //            state: "downloading"
-        //        )
     }
 }
 
@@ -471,16 +416,11 @@ extension IosDownloadManager: URLSessionDownloadDelegate {
             let hasMoreDownloads = activeDownloads.values.contains {
                 $0.state == .downloading
             }
-            if hasMoreDownloads {
-                updateLiveActivity()
-            } else {
-                //                liveActivityManager.endActivity(withCompletion: downloadItem.title)
-            }
 
             processQueue()
 
         } catch {
-            print("Error moving downloaded file: \(error.localizedDescription)")
+            loge(message: "❌ [DownloadManager] Error moving downloaded file: \(error.localizedDescription)")
             handleDownloadError(downloadId: downloadId, error: error)
         }
     }
@@ -510,8 +450,6 @@ extension IosDownloadManager: URLSessionDownloadDelegate {
                 percentDownloaded: progress
             )
         }
-
-        updateLiveActivity()
     }
 
     // Called when download is resumed
@@ -547,16 +485,7 @@ extension IosDownloadManager: URLSessionDownloadDelegate {
             )
         }
 
-        //        liveActivityManager.updateActivity(
-        //            progress: Double(downloadItem.progress) / 100.0,  // Convert to 0-1 range
-        //            downloadedCount: 0,
-        //            totalCount: activeDownloads.count,
-        //            currentFileName: downloadItem.title,
-        //            state: "failed"
-        //        )
-
         processQueue()
-        updateLiveActivity()
     }
 }
 
@@ -577,7 +506,7 @@ extension IosDownloadManager: URLSessionTaskDelegate {
 
         // Check if this is a 307 redirect (getting presigned URL)
         if response.statusCode == 307 {
-            print("Received 307 redirect for download \(downloadId)")
+            logd(message: "🔀 [DownloadManager] Received 307 redirect for download \(downloadId)")
 
             // Store the presigned URL
             if var downloadItem = activeDownloads[downloadId] {
@@ -622,13 +551,13 @@ extension IosDownloadManager: URLSessionTaskDelegate {
         if let response = task.response as? HTTPURLResponse, let downloadItem = activeDownloads[downloadId], response.statusCode == 401 || response.statusCode == 403 {
             // Handle 401 on initial request (getting presigned URL)
             if downloadItem.presignedUrl == nil {
-                print("Received 401 on initial request for download \(downloadId)")
+                logw(message: "🔐 [DownloadManager] Received 401 on initial request for download \(downloadId)")
                 retryDownloadWithRefreshedToken(downloadId: downloadId)
                 return
             }
 
             if downloadItem.presignedUrl != nil {
-                print("Received 401-403 on presigned URL for download \(downloadId)")
+                logw(message: "🔐 [DownloadManager] Received 401-403 on presigned URL for download \(downloadId)")
                 retryDownloadWithNewPresignedUrl(downloadId: downloadId)
                 return
             }
@@ -638,7 +567,7 @@ extension IosDownloadManager: URLSessionTaskDelegate {
         taskIdToDownloadId.removeValue(forKey: task.taskIdentifier)
 
         // Handle the error
-        print("Download \(downloadId) completed with error: \(error.localizedDescription)")
+        loge(message: "❌ [DownloadManager] Download \(downloadId) completed with error: \(error.localizedDescription)")
         handleDownloadError(downloadId: downloadId, error: error)
     }
 }
@@ -686,7 +615,7 @@ class DownloadLiveActivityManager {
                         pushType: nil
                     )
                 } catch {
-                    print("Error starting Live Activity: \(error.localizedDescription)")
+                    loge(message: "❌ [DownloadManager] Error starting Live Activity: \(error.localizedDescription)")
                 }
             }
         }

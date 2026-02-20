@@ -8,9 +8,12 @@ import me.anasmusa.learncast.data.network.TokenProvider
 import org.koin.mp.KoinPlatform
 
 object Initializer {
-    fun initApp() {
+    fun initApp(debug: Boolean) {
+        if (debug) {
+            Napier.base(DebugAntilog())
+        }
+
         KoinUtils.initKoin()
-        Napier.base(DebugAntilog())
 
         downloadManagerFactory.invoke().let {
             it.setTokenProvider(

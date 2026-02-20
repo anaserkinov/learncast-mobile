@@ -232,7 +232,7 @@ class StorageManager {
         if freedBytes < bytesToFree {
             // Still over limit after evicting oldest entries
             // This might happen if a single new entry is too large
-            print("⚠️ [Storage] Warning: Could not free enough space. Freed: \(freedBytes), Needed: \(bytesToFree)")
+            logw(message: "⚠️ [Storage] Warning: Could not free enough space. Freed: \(freedBytes), Needed: \(bytesToFree)")
         }
     }
 }

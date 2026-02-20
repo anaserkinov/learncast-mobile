@@ -23,7 +23,11 @@ public class AppInitializer {
             IosDownloadManager.shared
         }
 
-        Initializer.shared.doInitApp()
+        #if DEBUG
+            Initializer.shared.doInitApp(debug: true)
+        #else
+            Initializer.shared.doInitApp(debug: false)
+        #endif
     }
 
     public static func handle(url: URL) -> Bool {
