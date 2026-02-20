@@ -225,7 +225,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
 
     private func getCurrentPositionInternal() -> Int64 {
         let currentTime = player.currentTime()
-        return currentTime == .invalid ? 0 : Int64(currentTime.seconds * 1000)
+        return currentTime == .invalid || currentTime.seconds == .infinity || currentTime.seconds == .nan ? 0 : Int64(currentTime.seconds * 1000)
     }
 
     func getCurrentItemIndex() -> Int32 {

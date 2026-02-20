@@ -47,111 +47,88 @@ struct QueueScreen: View {
                 .padding(.top, 8)
 
                 // Queue List
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        // Currently Playing Item
-                        if let currentPlaying = viewModel.state.currentPlaying {
-                            SwipeDragBox(
-                                id: currentPlaying.id,
-                                swipeWidth: 96,
-                                swipingId: $swipingId,
-                                onRemove: {
-                                    swipingId = -1
-                                    viewModel.handle(intent: QueueIntentRemove(id: currentPlaying.id))
-                                }
-                            ) {
-                                HStack(spacing: 8) {
-                                    QueueItemCell(
-                                        queueItem: currentPlaying,
-                                        paddingTop: 0,
-                                        onClick: nil
-                                    )
-                                }
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 8)
-                                .background(
-                                    ZStack {
-                                        // Background color
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(backgroundColors.last?.opacity(0.5) ?? Color.clear)
-
-                                        // Progress overlay
-                                        GeometryReader { geometry in
-                                            let progress = CGFloat(viewModel.state.currentPositionMs) / CGFloat(currentPlaying.duration.millis())
-                                            Rectangle()
-                                                .fill(Color.white.opacity(0.15))
-                                                .frame(width: geometry.size.width * progress)
-                                        }
-                                    }
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                .contentShape(Rectangle())
-                            }
-                            .padding(.horizontal, 12)
-                        }
-
-                        // Playing Next Header
-                        HStack {
-                            Text(Strings.shared.PLAYING_NEXT.string())
-                                .font(Typography.headlineSmall)
-                                .foregroundColor(.white)
-
-                            Spacer()
-
-                            Button {
-                                viewModel.handle(intent: QueueIntentClear())
-                            } label: {
-                                Text(Strings.shared.CLEAR.string())
-                                    .font(Typography.headlineSmall)
-                                    .foregroundColor(.white)
-                            }
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-
-                        // Queue Items with Drag & Drop
-
-                        let queuedItems = (viewModel.state.queuedItems as? [QueueItem]) ?? []
-                        ForEach(queuedItems, id: \.id) { item in
-                            SwipeDragBox(
-                                id: item.id,
-                                swipeWidth: 96,
-                                swipingId: $swipingId,
-                                onRemove: {
-                                    viewModel.handle(intent: QueueIntentRemove(id: item.id))
-                                }
-                            ) {
+                List {
+                    if let currentPlaying = viewModel.state.currentPlaying {
+                        ForEach([currentPlaying]) { item in
+                            HStack(spacing: 8) {
                                 QueueItemCell(
-                                    queueItem: item,
+                                    queueItem: currentPlaying,
                                     paddingTop: 0,
-                                    onClick: nil
-                                )
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedItem = item
-                            }
-                            .onDrag {
-                                self.draggedItem = item
-                                return NSItemProvider(object: String(item.id) as NSString)
-                            }
-                            .onDrop(
-                                of: [.text],
-                                delegate: QueueDropDelegate(
-                                    item: item,
-                                    items: queuedItems,
-                                    draggedItem: $draggedItem,
-                                    onMove: { from, to in
-                                        viewModel.handle(intent: QueueIntentMove(from: Int32(from), to: Int32(to)))
+                                    onClick: {
+
                                     }
                                 )
+                            }
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 8)
+                            .background(
+                                ZStack {
+                                    // Background color
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(backgroundColors.last?.opacity(0.5) ?? Color.clear)
+
+                                    // Progress overlay
+                                    GeometryReader { geometry in
+                                        let progress = CGFloat(viewModel.state.currentPositionMs) / CGFloat(currentPlaying.duration.millis())
+                                        Rectangle()
+                                            .fill(Color.white.opacity(0.15))
+                                            .frame(width: geometry.size.width * progress)
+                                    }
+                                }
                             )
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .contentShape(Rectangle())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        }
+                        .onDelete { indexSet in
+                            viewModel.handle(intent: QueueIntentRemove(id: currentPlaying.id))
                         }
                     }
+
+                    // Playing Next Header
+                    HStack {
+                        Text(Strings.shared.PLAYING_NEXT.string())
+                            .font(Typography.headlineSmall)
+                            .foregroundColor(.white)
+
+                        Spacer()
+
+                        Button {
+                            viewModel.handle(intent: QueueIntentClear())
+                        } label: {
+                            Text(Strings.shared.CLEAR.string())
+                                .font(Typography.headlineSmall)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+
+                    let queuedItems = (viewModel.state.queuedItems as? [QueueItem]) ?? []
+                    ForEach(queuedItems) { item in
+                        QueueItemCell(
+                            queueItem: item,
+                            paddingTop: 0,
+                            onClick: {
+                                selectedItem = item
+                            }
+                        )
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        .contentShape(.dragPreview, Rectangle())
+                    }
+                    .onDelete { indexSet in
+                        viewModel.handle(intent: QueueIntentRemove(id: queuedItems[indexSet.first!].id))
+                    }
+                    .onMove { fromSet, to in
+                        viewModel.handle(intent: QueueIntentMove(from: Int32(fromSet.first!), to: Int32(to)))
+                    }
                 }
+                .listStyle(.plain)
                 .padding(.top, 8)
 
                 // Bottom Player
