@@ -62,33 +62,24 @@ struct SearchScreen: View {
             if viewModel.state.selectedTab == 0 {
                 // Lessons List
                 PagingList(
-                    flow: viewModel.viewModel.lessons,
-                    id: \.?.id
+                    flow: viewModel.viewModel.lessons
                 ) { lesson in
-                    if let lesson {
-                        LessonCell(lesson: lesson) {
-                            viewModel.handle(intent: SearchIntentAddToQueue(lesson: lesson))
-                        }
-                    } else {
-                        EmptyView()
+                    LessonCell(lesson: lesson) {
+                        viewModel.handle(intent: SearchIntentAddToQueue(lesson: lesson))
                     }
                 }
             } else {
                 // Topics List
                 PagingList(
-                    flow: viewModel.viewModel.topics,
-                    id: \.?.id
+                    flow: viewModel.viewModel.topics
                 ) { topic in
-                    if let topic {
-                        TopicCell(topic: topic) {
-                            navController.navigate(screen: .topic(topic: topic))
-                        }
-                    } else {
-                        EmptyView()
+                    TopicCell(topic: topic) {
+                        navController.navigate(screen: .topic(topic: topic))
                     }
                 }
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
         .navigationBarTitleDisplayMode(.inline)
         .task {

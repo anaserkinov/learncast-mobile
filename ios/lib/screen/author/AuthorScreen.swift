@@ -46,8 +46,7 @@ struct AuthorScreen: View {
                 if viewModel.state.selectedTabIndex == 0 {
                     // Lessons Tab
                     PagingList(
-                        flow: viewModel.viewModel.lessons,
-                        id: \.?.id
+                        flow: viewModel.viewModel.lessons
                     ) { (lesson: Lesson?) in
                         if let lesson {
                             LessonCell(lesson: lesson) {
@@ -60,8 +59,7 @@ struct AuthorScreen: View {
                 } else {
                     // Topics Tab
                     PagingList(
-                        flow: viewModel.viewModel.topics,
-                        id: \.?.id
+                        flow: viewModel.viewModel.topics
                     ) { (topic: Topic?) in
                         if let topic {
                             TopicCell(topic: topic) {

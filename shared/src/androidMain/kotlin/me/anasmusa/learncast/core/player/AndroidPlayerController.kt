@@ -48,64 +48,67 @@ private class AndroidPlayerController(
 
     private fun addListener(initial: Boolean) {
         controllerFuture?.addListener({
-            controllerFuture?.get()?.let { controller ->
-                if (initial) {
-                    currentQueueItemId.value = controller.currentMediaItem?.mediaId?.toLong()
-                    playbackState.value =
-                        if (controller.playbackState == Player.STATE_BUFFERING) {
-                            STATE_LOADING
-                        } else if (controller.isPlaying) {
-                            STATE_PLAYING
-                        } else {
-                            STATE_PAUSED
-                        }
-                }
+            try {
+                controllerFuture?.get()?.let { controller ->
+                    if (initial) {
+                        currentQueueItemId.value = controller.currentMediaItem?.mediaId?.toLong()
+                        playbackState.value =
+                            if (controller.playbackState == Player.STATE_BUFFERING) {
+                                STATE_LOADING
+                            } else if (controller.isPlaying) {
+                                STATE_PLAYING
+                            } else {
+                                STATE_PAUSED
+                            }
+                    }
 
-                controller.addListener(
-                    object : Player.Listener {
-                        override fun onEvents(
-                            player: Player,
-                            events: Player.Events,
-                        ) {
-                            super.onEvents(player, events)
-                            if (isStopped) return
-                            when {
-                                events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) -> {
-                                    playbackState.value =
-                                        if (player.playbackState == Player.STATE_BUFFERING) {
-                                            STATE_LOADING
-                                        } else if (player.isPlaying) {
-                                            STATE_PLAYING
-                                        } else {
-                                            STATE_PAUSED
-                                        }
-                                }
+                    controller.addListener(
+                        object : Player.Listener {
+                            override fun onEvents(
+                                player: Player,
+                                events: Player.Events,
+                            ) {
+                                super.onEvents(player, events)
+                                if (isStopped) return
+                                when {
+                                    events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) -> {
+                                        playbackState.value =
+                                            if (player.playbackState == Player.STATE_BUFFERING) {
+                                                STATE_LOADING
+                                            } else if (player.isPlaying) {
+                                                STATE_PLAYING
+                                            } else {
+                                                STATE_PAUSED
+                                            }
+                                    }
 
-                                events.contains(Player.EVENT_IS_PLAYING_CHANGED) -> {
-                                    playbackState.value =
-                                        if (player.isPlaying) {
-                                            STATE_PLAYING
-                                        } else {
-                                            STATE_PAUSED
-                                        }
+                                    events.contains(Player.EVENT_IS_PLAYING_CHANGED) -> {
+                                        playbackState.value =
+                                            if (player.isPlaying) {
+                                                STATE_PLAYING
+                                            } else {
+                                                STATE_PAUSED
+                                            }
+                                    }
                                 }
                             }
-                        }
 
-                        /**
-                         * onEvents(Player.EVENT_MEDIA_ITEM_TRANSITION) won't be called when the last media item
-                         * in playlist removed !!! That's why i'm using the method instead
-                         */
-                        override fun onMediaItemTransition(
-                            mediaItem: MediaItem?,
-                            reason: Int,
-                        ) {
-                            super.onMediaItemTransition(mediaItem, reason)
-                            if (isStopped) return
-                            currentQueueItemId.value = mediaItem?.mediaId?.toLong()
-                        }
-                    },
-                )
+                            /**
+                             * onEvents(Player.EVENT_MEDIA_ITEM_TRANSITION) won't be called when the last media item
+                             * in playlist removed !!! That's why i'm using the method instead
+                             */
+                            override fun onMediaItemTransition(
+                                mediaItem: MediaItem?,
+                                reason: Int,
+                            ) {
+                                super.onMediaItemTransition(mediaItem, reason)
+                                if (isStopped) return
+                                currentQueueItemId.value = mediaItem?.mediaId?.toLong()
+                            }
+                        },
+                    )
+                }
+            } catch (e: Exception) {
             }
         }, MoreExecutors.directExecutor())
     }

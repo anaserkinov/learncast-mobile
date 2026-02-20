@@ -18,7 +18,6 @@ struct HomeScreen: View {
     var body: some View {
         PagingList(
             flow: viewModel.viewModel.lessons,
-            id: \.?.id,
             header: {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 12) {
@@ -75,14 +74,11 @@ struct HomeScreen: View {
                 }
             }
         ) { lesson in
-            if let lesson {
-                LessonCell(lesson: lesson) {
-                    viewModel.handle(intent: HomeIntentAddToQueue(lesson: lesson))
-                }
-            } else {
-                EmptyView()
+            LessonCell(lesson: lesson) {
+                viewModel.handle(intent: HomeIntentAddToQueue(lesson: lesson))
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
         .navigationTitle(Strings.shared.HOME.string())
         .navigationBarTitleDisplayMode(.large)

@@ -23,6 +23,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
     private var lastDispatchedPlaybackState: PlaybackState? = nil
     private var lastDispatchedIsPlaying = false
     private var playInBackground = true
+    private var isPaused = false
 
     private let defaultImage = UIImage(named: "MainLogo")!
     private let storageManager = StorageManager()
@@ -43,6 +44,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             .sink { timeControlStatus in
                 let isPlaying = timeControlStatus == .playing
                 if self.lastDispatchedIsPlaying != isPlaying {
+                    self.isPaused = !isPlaying
                     self.callback?.onIsPlayingChanged(isPlaying: isPlaying)
                     self.lastDispatchedIsPlaying = isPlaying
                 }
@@ -149,19 +151,27 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             }
 
             if updateNowPlayingInfo(item: currentItem) {
+                isPaused = false
                 player.play()
             }
         }
     }
 
     func pause() {
+        isPaused = true
         player.pause()
     }
 
     func reload() {
         player.replaceCurrentItem(with: createAVPlayerItem(item: queue[currentIndex]))
         if let time = requestedSeekTime {
-            player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: { finished in })
+            player.seek(
+                to: time, toleranceBefore: .zero, toleranceAfter: .zero,
+                completionHandler: { finished in
+                    if finished && self.playWhenReadyValue && !self.isPaused {
+                        self.player.play()
+                    }
+                })
         }
     }
 
@@ -292,6 +302,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
         seekTo positionMs: Int64,
         reason: ItemTransitionReason
     ) {
+        isPaused = false
         cancellables.removeAll()
         let currentPostionMs = getCurrentPosition()
         if let item = newItem {
@@ -387,7 +398,7 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
         let time = CMTime(seconds: seconds, preferredTimescale: 1000)
         requestedSeekTime = time
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { finished in
-            if finished && self.playWhenReadyValue {
+            if finished && self.playWhenReadyValue && !self.isPaused {
                 self.player.play()
             }
         }

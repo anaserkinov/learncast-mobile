@@ -74,7 +74,7 @@ struct ProfileScreen: View {
                         showLogoutConfirm = true
                     }
                     .padding(.horizontal, 16)
-                    .padding(.bottom, viewModel.state.isQueueEmpty ? 8 : 80)
+                    .padding(.bottom, viewModel.state.isQueueEmpty ? 8 : Utils.bottomPadding)
                 }
                 .background(env.backgroundGradient())
             }

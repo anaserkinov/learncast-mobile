@@ -18,7 +18,6 @@ struct SnipListScreen: View {
     var body: some View {
         PagingList(
             flow: viewModel.viewModel.snips,
-            id: \.?.id,
             header: {
                 VStack(alignment: .leading, spacing: 0) {
                     SearchButton(
@@ -39,14 +38,11 @@ struct SnipListScreen: View {
                 }
             }
         ) { snip in
-            if let snip {
-                SnipCell(snip: snip) {
-                    viewModel.handle(intent: SnipListIntentAddToQueue(snip: snip))
-                }
-            } else {
-                EmptyView()
+            SnipCell(snip: snip) {
+                viewModel.handle(intent: SnipListIntentAddToQueue(snip: snip))
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
         .navigationTitle(Strings.shared.SNIPS.string())
         .navigationBarTitleDisplayMode(.large)

@@ -228,6 +228,7 @@ struct PlayerScreen: View {
                         .frame(width: 44, height: 44)
                 }
             }
+            .padding(.horizontal, 12)
 
             Spacer(minLength: 12)
 
@@ -241,6 +242,7 @@ struct PlayerScreen: View {
                 .frame(width: min(screenWidth * 0.7, 400), height: min(screenWidth * 0.7, 400))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+                .padding(.horizontal, 12)
 
             Spacer(minLength: 16)
 
@@ -271,7 +273,7 @@ struct PlayerScreen: View {
                     viewModel.handle(intent: PlayerIntentSeekTo(value: value))
                 }
             )
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 20)
 
             Spacer(minLength: 24)
 
@@ -344,6 +346,7 @@ struct PlayerScreen: View {
                 .padding(.trailing, 8)
 
             }
+            .padding(.horizontal, 12)
 
             Spacer(minLength: 48)
 
@@ -392,10 +395,10 @@ struct PlayerScreen: View {
                     .padding(.trailing, 8)
                 }
             }
+            .padding(.horizontal, 12)
 
         }
         .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, 12)
         .opacity(1.0 - ratio / 0.8)
     }
 

@@ -1,5 +1,6 @@
 package me.anasmusa.learncast.data.network
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.HttpTimeout
@@ -33,7 +34,7 @@ internal fun HttpClientConfig<*>.configure(
         logger =
             object : Logger {
                 override fun log(message: String) {
-//                    Napier.v(message)
+                    Napier.v(message)
                 }
             }
     }

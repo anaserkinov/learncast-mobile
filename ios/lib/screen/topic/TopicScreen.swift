@@ -21,7 +21,6 @@ struct TopicScreen: View {
         ZStack {
             PagingList(
                 flow: viewModel.viewModel.lessons,
-                id: \.?.id,
                 header: {
                     VStack(alignment: .leading, spacing: 0) {
                         // Play All and Search buttons

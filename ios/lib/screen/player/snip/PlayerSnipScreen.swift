@@ -46,7 +46,6 @@ struct PlayerSnipScreen: View {
                 // Snips List
                 PagingList(
                     flow: viewModel.viewModel.snips,
-                    id: \.?.id
                 ) { (snip: Snip?) in
                     if let snip {
                         SnipCell(snip: snip) {

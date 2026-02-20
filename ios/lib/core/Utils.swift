@@ -8,6 +8,10 @@
 internal import Shared
 import SwiftUI
 
+class Utils {
+    static let bottomPadding: CGFloat = PlayerConstants.collapsedHeight + 16
+}
+
 extension View {
     @ViewBuilder
     func applyIf<Content: View>(

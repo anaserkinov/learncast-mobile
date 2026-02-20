@@ -86,7 +86,6 @@ public struct AppView: View {
                 }
 
                 PlayerScreen(viewModel: playerViewModel)
-                    .zIndex(1)
             }
         }
         .environment(\.env, env)

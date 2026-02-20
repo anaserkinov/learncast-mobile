@@ -1,4 +1,4 @@
-package me.anasmusa.learncast.data.paging
+package me.anasmusa.learncast.core.paging
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager

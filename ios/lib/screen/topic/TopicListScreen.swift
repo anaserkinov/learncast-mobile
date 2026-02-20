@@ -18,7 +18,6 @@ struct TopicListScreen: View {
     var body: some View {
         PagingList(
             flow: viewModel.viewModel.topics,
-            id: \.self,
             header: {
                 SearchButton(
                     searchQuery: viewModel.binding(
@@ -45,6 +44,7 @@ struct TopicListScreen: View {
                 EmptyView()
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
         .navigationTitle(Strings.shared.TOPICS.string())
         .navigationBarTitleDisplayMode(.inline)

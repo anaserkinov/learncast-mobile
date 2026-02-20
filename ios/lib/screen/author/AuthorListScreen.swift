@@ -18,7 +18,6 @@ struct AuthorListScreen: View {
     var body: some View {
         PagingList(
             flow: viewModel.viewModel.authors,
-            id: \.self,
             header: {
                 SearchButton(
                     searchQuery: viewModel.binding(
@@ -37,14 +36,11 @@ struct AuthorListScreen: View {
                 .padding(.vertical, 8)
             }
         ) { author in
-            if let author {
-                AuthorCell(author: author) {
-                    navController.navigate(screen: .author(author: author))
-                }
-            } else {
-                EmptyView()
+            AuthorCell(author: author) {
+                navController.navigate(screen: .author(author: author))
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
         .navigationTitle(Strings.shared.AUTHORS.string())
         .navigationBarTitleDisplayMode(.inline)

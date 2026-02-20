@@ -11,11 +11,11 @@ internal import Shared
 import SwiftUI
 
 @Observable
-class ObservablePagingState<T: AnyObject> {
+class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
 
     private var pagingState: ListPagingState<T>? = nil
 
-    var list = [T]()
+    var range: Range<Int> = 0..<0
     var loadState: Paging_commonCombinedLoadStates = Paging_commonCombinedLoadStates(
         refresh: InitialLoadStates.refresh,
         prepend: InitialLoadStates.prepend,
@@ -33,14 +33,13 @@ class ObservablePagingState<T: AnyObject> {
     }
 
     subscript(index: Int) -> T? {
+        return pagingState!.peek(index: Int32(index))
+    }
+
+    func notify(index: Int) {
         if let state = pagingState {
             state.get(index: Int32(index))
         }
-        return list[index]
-    }
-
-    func peek(index: Int) -> T? {
-        list[index]
     }
 
     func refresh() async {
@@ -72,10 +71,7 @@ class ObservablePagingState<T: AnyObject> {
 
     private func collectList(pagingState: ListPagingState<T>) async {
         for await list in pagingState.itemSnapshotList {
-            self.list = list.map { any in
-                any as! T
-            }
+            range = 0..<list.count
         }
     }
-
 }
