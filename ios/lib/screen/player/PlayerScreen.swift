@@ -428,6 +428,7 @@ struct PlayerScreen: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .frame(width: 55, height: 55)
                     .overlay(Color.black.opacity(0.3))
                     .blendMode(.sourceAtop)
 

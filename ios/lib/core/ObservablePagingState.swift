@@ -10,6 +10,7 @@ import Foundation
 internal import Shared
 import SwiftUI
 
+@MainActor
 @Observable
 class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
 
@@ -33,7 +34,7 @@ class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
     }
 
     subscript(index: Int) -> T? {
-        return pagingState!.peek(index: Int32(index))
+        return pagingState?.peek(index: Int32(index))
     }
 
     func notify(index: Int) {

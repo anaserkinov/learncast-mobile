@@ -33,7 +33,6 @@ class IosDownloadManager: NSObject, DownloadManager {
     static let shared = IosDownloadManager()
 
     private var urlSession: URLSession!
-    private let liveActivityManager = DownloadLiveActivityManager()
     private let fileManager = FileManager.default
     private let downloadDao: DownloadDao = inject()
     private let metadataIndex: MetadataIndex = inject()
@@ -569,79 +568,5 @@ extension IosDownloadManager: URLSessionTaskDelegate {
         // Handle the error
         loge(message: "❌ [DownloadManager] Download \(downloadId) completed with error: \(error.localizedDescription)")
         handleDownloadError(downloadId: downloadId, error: error)
-    }
-}
-
-// MARK: - Download Live Activity Manager
-class DownloadLiveActivityManager {
-    private var currentActivity: Activity<DownloadActivityAttributes>?
-
-    func updateActivity(
-        progress: Double,
-        downloadedCount: Int,
-        totalCount: Int,
-        currentFileName: String,
-        state: String
-    ) {
-        Task {
-            let contentState = DownloadActivityAttributes.ContentState(
-                progress: progress,
-                downloadedCount: downloadedCount,
-                totalCount: totalCount,
-                currentFileName: currentFileName,
-                state: state
-            )
-
-            if let activity = currentActivity {
-                // Update existing activity
-                await activity.update(
-                    ActivityContent(
-                        state: contentState,
-                        staleDate: Date().addingTimeInterval(60)
-                    )
-                )
-            } else {
-                // Start new activity
-                let attributes = DownloadActivityAttributes(appName: appConfig.appName)
-                let content = ActivityContent(
-                    state: contentState,
-                    staleDate: Date().addingTimeInterval(60)
-                )
-
-                do {
-                    currentActivity = try Activity.request(
-                        attributes: attributes,
-                        content: content,
-                        pushType: nil
-                    )
-                } catch {
-                    loge(message: "❌ [DownloadManager] Error starting Live Activity: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-
-    func endActivity(withCompletion fileName: String? = nil) {
-        Task {
-            guard let activity = currentActivity else { return }
-
-            let finalState = DownloadActivityAttributes.ContentState(
-                progress: 1.0,
-                downloadedCount: 0,
-                totalCount: 0,
-                currentFileName: fileName ?? "All downloads complete",
-                state: "completed"
-            )
-
-            await activity.end(
-                ActivityContent(
-                    state: finalState,
-                    staleDate: Date()
-                ),
-                dismissalPolicy: .after(.now + 3)
-            )
-
-            currentActivity = nil
-        }
     }
 }

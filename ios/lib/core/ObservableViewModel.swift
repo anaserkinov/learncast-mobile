@@ -33,6 +33,7 @@ extension ObservableViewModel {
     }
 }
 
+@MainActor
 @Observable
 class ObservableViewModel<
     State: BaseState, Intent: BaseIntent, Event: BaseEvent, VM: BaseViewModel<State, Intent, Event>

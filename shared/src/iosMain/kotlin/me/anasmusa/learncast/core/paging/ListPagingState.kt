@@ -62,7 +62,7 @@ actual class ListPagingState<T : Any> actual constructor(
      */
     operator fun get(index: Int): T? {
         pagingDataPresenter[index] // this registers the value load
-        return itemSnapshotList.value[index]
+        return peek(index)
     }
 
     fun getCurrentSnapshot(): ItemSnapshotList<T> = itemSnapshotList.value
@@ -74,7 +74,14 @@ actual class ListPagingState<T : Any> actual constructor(
      * @param index Index of the presented item to return, including placeholders.
      * @return The presented item at position [index], `null` if it is a placeholder
      */
-    fun peek(index: Int): T? = itemSnapshotList.value[index]
+    fun peek(index: Int): T? {
+        val list = itemSnapshotList.value
+        return if (index in list.placeholdersBefore until (list.placeholdersBefore + list.items.size)) {
+            list.items[index - list.placeholdersBefore]
+        } else {
+            null
+        }
+    }
 
     /**
      * Retry any failed load requests that would result in a [LoadState.Error] update to this

@@ -375,6 +375,12 @@ class AVPlayerDelegateImpl: AVPlayerDelegate {
             }
 
             let avPlayerItem = createAVPlayerItem(item: item)
+            dispatchUpdate(
+                queueItem: newItem,
+                playerItem: avPlayerItem,
+                status: .unknown,
+                timeControlStatus: .waitingToPlayAtSpecifiedRate
+            )
             addItemObservers(queueItem: item, playerItem: avPlayerItem)
             player.replaceCurrentItem(with: avPlayerItem)
 
