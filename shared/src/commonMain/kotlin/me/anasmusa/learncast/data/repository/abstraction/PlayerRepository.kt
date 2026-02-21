@@ -40,11 +40,11 @@ interface PlayerRepository {
         id: Long,
     )
 
-    fun clearQueue(completely: Boolean)
+    suspend fun clearQueue(completely: Boolean)
 
     suspend fun stopService()
 
-    fun restoreService()
+    suspend fun startService(playWhenReady: Boolean?)
 
     fun destroy()
 }

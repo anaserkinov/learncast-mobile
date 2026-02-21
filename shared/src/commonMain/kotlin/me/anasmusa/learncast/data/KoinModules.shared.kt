@@ -69,6 +69,7 @@ internal fun dataModule() =
                 get(),
                 get(),
                 get(),
+                get(),
             )
         }
         factory<TopicRepository> {

@@ -91,7 +91,7 @@ class TopicViewModel(
             if (queueItems.isNotEmpty()) {
                 playerRepository.setToQueue(queueItems, true)
             }
-            state.update { it.copy(isLoading = true) }
+            state.update { it.copy(isLoading = false) }
         }
     }
 

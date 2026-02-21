@@ -11,7 +11,6 @@ import me.anasmusa.learncast.PreferenceData
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.google.GoogleAuthManager
 import me.anasmusa.learncast.core.notification.NotificationManager
-import me.anasmusa.learncast.core.player.PlayerController
 import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.AuthorizedUserScope
@@ -23,15 +22,16 @@ import me.anasmusa.learncast.data.network.auth.AuthService
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.LoginResponse
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
+import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.mp.KoinPlatform
 
 internal class AuthRepositoryImpl(
     private val authService: AuthService,
     private val preference: Preferences,
     private val storageRepository: StorageRepository,
+    private val playerRepository: PlayerRepository,
     private val googleAuthManager: GoogleAuthManager,
     private val notificationManager: NotificationManager,
     private val dbConnection: DBConnection,
@@ -52,6 +52,7 @@ internal class AuthRepositoryImpl(
         )
         preference.updateToken(response.credentials.refreshToken, response.credentials.accessToken)
         notificationManager.subscribe()
+        playerRepository.startService(false)
     }
 
     override suspend fun loginWithTelegram(hash: String): Result<Unit> {
@@ -90,12 +91,10 @@ internal class AuthRepositoryImpl(
     override suspend fun logout() =
         withContext(Dispatchers.IO) {
             try {
-                KoinPlatform
-                    .getKoin()
-                    .let { koin ->
-                        koin.get<PlayerController>().destroy()
-                        koin.getScopeOrNull(AuthorizedUserScope.ID)?.close()
-                    }
+                playerRepository.clearQueue(true)
+                playerRepository.stopService()
+                getKoin().getScopeOrNull(AuthorizedUserScope.ID)?.close()
+
                 tokenManager.cancelRefresh()
                 preference.getToken().take(1).first()?.second?.let { accessToken ->
                     try {

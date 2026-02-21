@@ -11,10 +11,8 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
@@ -28,41 +26,28 @@ import kotlin.math.min
 private class AndroidPlayerController(
     private val context: Context,
 ) : PlayerController {
-    private var controllerFuture: ListenableFuture<MediaController>? =
-        MediaController
-            .Builder(
-                context,
-                SessionToken(context, ComponentName(context, PlaybackService::class.java)),
-            ).buildAsync()
-
+    private var controllerFuture: ListenableFuture<MediaController>? = null
     override val currentQueueItemId = MutableStateFlow<Long?>(null)
-    override val playbackState = MutableStateFlow(STATE_LOADING)
+    override val playbackState = MutableStateFlow(STATE_PAUSED)
 
     private var wasPlaying = false
     private var isStopped = false
     private var lastReturnedPositionMs: Long = 0L
 
-    init {
-        addListener(true)
-    }
-
-    private fun addListener(initial: Boolean) {
+    private fun addListener() {
         controllerFuture?.addListener({
             try {
-                controllerFuture?.get()?.let { controller ->
-                    if (initial) {
-                        currentQueueItemId.value = controller.currentMediaItem?.mediaId?.toLong()
-                        playbackState.value =
-                            if (controller.playbackState == Player.STATE_BUFFERING) {
-                                STATE_LOADING
-                            } else if (controller.isPlaying) {
-                                STATE_PLAYING
-                            } else {
-                                STATE_PAUSED
-                            }
-                    }
-
-                    controller.addListener(
+                controllerFuture?.get()?.let {
+                    currentQueueItemId.value = it.currentMediaItem?.mediaId?.toLong()
+                    playbackState.value =
+                        if (it.playbackState == Player.STATE_BUFFERING) {
+                            STATE_LOADING
+                        } else if (it.isPlaying) {
+                            STATE_PLAYING
+                        } else {
+                            STATE_PAUSED
+                        }
+                    it.addListener(
                         object : Player.Listener {
                             override fun onEvents(
                                 player: Player,
@@ -238,27 +223,25 @@ private class AndroidPlayerController(
     override suspend fun stopService() {
         isStopped = true
         controllerFuture?.get()?.let { controller ->
-            withContext(Dispatchers.Main) {
-                wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
-                    controller.playWhenReady ||
-                    controller.isPlaying
-                controller.playWhenReady = false
-                controller.pause()
-                controller.sendCustomCommand(
-                    SessionCommand("destroy_player", Bundle.EMPTY),
-                    Bundle.EMPTY,
-                )
-            }
+            wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
+                controller.playWhenReady ||
+                controller.isPlaying
+            controller.playWhenReady = false
+            controller.pause()
+            controller.sendCustomCommand(
+                SessionCommand("destroy_player", Bundle.EMPTY),
+                Bundle.EMPTY,
+            )
+
             delay(500)
-            withContext(Dispatchers.Main) {
-                controller.release()
-                MediaController.releaseFuture(controllerFuture!!)
-            }
+
+            controller.release()
+            MediaController.releaseFuture(controllerFuture!!)
             controllerFuture = null
         }
     }
 
-    override fun restoreService() {
+    override fun startService() {
         isStopped = false
         controllerFuture =
             MediaController
@@ -266,11 +249,11 @@ private class AndroidPlayerController(
                     context,
                     SessionToken(context, ComponentName(context, PlaybackService::class.java)),
                 ).buildAsync()
-        addListener(false)
+        addListener()
     }
 
     override fun destroy() {
-        isStopped = false
+        isStopped = true
         controllerFuture?.let {
             MediaController.releaseFuture(it)
         }

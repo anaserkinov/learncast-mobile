@@ -384,13 +384,14 @@ private class IOSPlayerController :
         playerDelegate = null
     }
 
-    override fun restoreService() {
+    override fun startService() {
         isStopped = false
         playerDelegate = AVPlayerDelegate.factory.invoke()
         setup()
     }
 
     override fun destroy() {
+        isStopped = true
         playerDelegate?.release()
         playerDelegate = null
     }

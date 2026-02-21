@@ -48,7 +48,7 @@ internal interface PlayerController {
 
     suspend fun stopService()
 
-    fun restoreService()
+    fun startService()
 
     fun destroy()
 }

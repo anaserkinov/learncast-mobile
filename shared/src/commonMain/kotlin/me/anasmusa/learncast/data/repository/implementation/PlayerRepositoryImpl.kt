@@ -173,18 +173,23 @@ internal class PlayerRepositoryImpl(
         scope.launch { queueRepository.remove(id) }
     }
 
-    override fun clearQueue(completely: Boolean) {
-        player.clearQueue(completely)
-        scope.launch { queueRepository.clear(completely) }
-    }
+    override suspend fun clearQueue(completely: Boolean): Unit =
+        withContext(Dispatchers.Main) {
+            player.clearQueue(completely)
+            scope.launch { queueRepository.clear(completely) }
+        }
 
-    override suspend fun stopService() {
-        player.stopService()
-    }
+    override suspend fun stopService() =
+        withContext(Dispatchers.Main) {
+            player.stopService()
+        }
 
-    override fun restoreService() {
-        player.restoreService()
-    }
+    override suspend fun startService(playWhenReady: Boolean?) =
+        withContext(Dispatchers.Main) {
+            player.startService()
+            val queuedItems = queueRepository.getQueuedItems()
+            setToQueue(items = queuedItems, playWhenReady = playWhenReady)
+        }
 
     override fun destroy() {
         if (isAndroid()) player.destroy()
