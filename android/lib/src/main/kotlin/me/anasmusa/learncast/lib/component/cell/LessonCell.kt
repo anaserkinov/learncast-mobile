@@ -92,12 +92,13 @@ fun LessonCell(
                             .alpha(0.7f),
                     text = lesson.authorName,
                     style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1
                 )
             }
             Text(
                 text =
                     if (lesson.topicTitle != null) {
-                        "${lesson.title} guftygguihojhigufxfdgchvjbkngcfhgvjhb- ${lesson.topicTitle}"
+                        "${lesson.title} - ${lesson.topicTitle}"
                     } else {
                         lesson.title
                     },

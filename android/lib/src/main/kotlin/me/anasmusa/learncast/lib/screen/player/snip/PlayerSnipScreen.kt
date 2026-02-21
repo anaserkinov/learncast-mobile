@@ -3,8 +3,10 @@ package me.anasmusa.learncast.lib.screen.player.snip
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -44,14 +46,12 @@ import me.anasmusa.learncast.lib.component.cell.SnipCell
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.screen.player.BottomPlayer
 import me.anasmusa.learncast.lib.theme.icon.Close
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipIntent
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipState
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun PlayerSnipScreenPreview() {
@@ -135,6 +135,10 @@ private fun _PlayerSnipScreen(
                         ),
                     ).padding(it),
         ) {
+            Spacer(
+                modifier = Modifier
+                    .height(12.dp)
+            )
             Box(
                 modifier =
                     Modifier

@@ -8,6 +8,8 @@ interface QueueRepository {
 
     fun observe(id: Long): Flow<QueueItem?>
 
+    fun observeQueuedCount(): Flow<Int>
+
     suspend fun getLessonId(queueItemId: Long): Long?
 
     suspend fun addToQueue(queueItem: QueueItem): Triple<QueueItem, Int, Int>?

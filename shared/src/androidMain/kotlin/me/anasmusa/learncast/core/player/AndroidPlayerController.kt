@@ -11,10 +11,8 @@ import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
@@ -28,84 +26,74 @@ import kotlin.math.min
 private class AndroidPlayerController(
     private val context: Context,
 ) : PlayerController {
-    private var controllerFuture: ListenableFuture<MediaController>? =
-        MediaController
-            .Builder(
-                context,
-                SessionToken(context, ComponentName(context, PlaybackService::class.java)),
-            ).buildAsync()
-
+    private var controllerFuture: ListenableFuture<MediaController>? = null
     override val currentQueueItemId = MutableStateFlow<Long?>(null)
-    override val playbackState = MutableStateFlow(STATE_LOADING)
+    override val playbackState = MutableStateFlow(STATE_PAUSED)
 
     private var wasPlaying = false
     private var isStopped = false
     private var lastReturnedPositionMs: Long = 0L
 
-    init {
-        addListener(true)
-    }
-
-    private fun addListener(initial: Boolean) {
+    private fun addListener() {
         controllerFuture?.addListener({
-            controllerFuture?.get()?.let { controller ->
-                if (initial) {
-                    currentQueueItemId.value = controller.currentMediaItem?.mediaId?.toLong()
+            try {
+                controllerFuture?.get()?.let {
+                    currentQueueItemId.value = it.currentMediaItem?.mediaId?.toLong()
                     playbackState.value =
-                        if (controller.playbackState == Player.STATE_BUFFERING) {
+                        if (it.playbackState == Player.STATE_BUFFERING) {
                             STATE_LOADING
-                        } else if (controller.isPlaying) {
+                        } else if (it.isPlaying) {
                             STATE_PLAYING
                         } else {
                             STATE_PAUSED
                         }
-                }
+                    it.addListener(
+                        object : Player.Listener {
+                            override fun onEvents(
+                                player: Player,
+                                events: Player.Events,
+                            ) {
+                                super.onEvents(player, events)
+                                if (isStopped) return
+                                when {
+                                    events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) -> {
+                                        playbackState.value =
+                                            if (player.playbackState == Player.STATE_BUFFERING) {
+                                                STATE_LOADING
+                                            } else if (player.isPlaying) {
+                                                STATE_PLAYING
+                                            } else {
+                                                STATE_PAUSED
+                                            }
+                                    }
 
-                controller.addListener(
-                    object : Player.Listener {
-                        override fun onEvents(
-                            player: Player,
-                            events: Player.Events,
-                        ) {
-                            super.onEvents(player, events)
-                            if (isStopped) return
-                            when {
-                                events.contains(Player.EVENT_PLAYBACK_STATE_CHANGED) -> {
-                                    playbackState.value =
-                                        if (player.playbackState == Player.STATE_BUFFERING) {
-                                            STATE_LOADING
-                                        } else if (player.isPlaying) {
-                                            STATE_PLAYING
-                                        } else {
-                                            STATE_PAUSED
-                                        }
-                                }
-
-                                events.contains(Player.EVENT_IS_PLAYING_CHANGED) -> {
-                                    playbackState.value =
-                                        if (player.isPlaying) {
-                                            STATE_PLAYING
-                                        } else {
-                                            STATE_PAUSED
-                                        }
+                                    events.contains(Player.EVENT_IS_PLAYING_CHANGED) -> {
+                                        playbackState.value =
+                                            if (player.isPlaying) {
+                                                STATE_PLAYING
+                                            } else {
+                                                STATE_PAUSED
+                                            }
+                                    }
                                 }
                             }
-                        }
 
-                        /**
-                         * onEvents(Player.EVENT_MEDIA_ITEM_TRANSITION) won't be called when the last media item
-                         * in playlist removed !!! That's why i'm using the method instead
-                         */
-                        override fun onMediaItemTransition(
-                            mediaItem: MediaItem?,
-                            reason: Int,
-                        ) {
-                            super.onMediaItemTransition(mediaItem, reason)
-                            if (isStopped) return
-                            currentQueueItemId.value = mediaItem?.mediaId?.toLong()
-                        }
-                    },
-                )
+                            /**
+                             * onEvents(Player.EVENT_MEDIA_ITEM_TRANSITION) won't be called when the last media item
+                             * in playlist removed !!! That's why i'm using the method instead
+                             */
+                            override fun onMediaItemTransition(
+                                mediaItem: MediaItem?,
+                                reason: Int,
+                            ) {
+                                super.onMediaItemTransition(mediaItem, reason)
+                                if (isStopped) return
+                                currentQueueItemId.value = mediaItem?.mediaId?.toLong()
+                            }
+                        },
+                    )
+                }
+            } catch (e: Exception) {
             }
         }, MoreExecutors.directExecutor())
     }
@@ -118,7 +106,7 @@ private class AndroidPlayerController(
         controllerFuture?.get()?.let { controller ->
             controller.playWhenReady = true
             controller.addMediaItem(0, item.toMediaItem(context))
-            controller.seekTo(0, item.lastPositionMs?.inWholeMilliseconds ?: 0L)
+            controller.seekTo(0, item.lastPositionMs)
             controller.prepare()
         }
     }
@@ -130,7 +118,7 @@ private class AndroidPlayerController(
         controllerFuture?.get()?.let { controller ->
             controller.playWhenReady = true
             controller.moveMediaItem(currentOrder, 0)
-            controller.seekTo(0, 0L)
+            controller.seekTo(0, item.lastPositionMs)
             controller.prepare()
         }
     }
@@ -138,7 +126,7 @@ private class AndroidPlayerController(
     override fun replaceFirst(item: QueueItem) {
         controllerFuture?.get()?.let { controller ->
             controller.replaceMediaItem(0, item.toMediaItem(context))
-            controller.seekTo(0L)
+            controller.seekTo(item.lastPositionMs)
         }
     }
 
@@ -207,9 +195,7 @@ private class AndroidPlayerController(
         from: Int,
         to: Int,
     ) {
-        controllerFuture?.get()?.let {
-            it.moveMediaItem(from, to)
-        }
+        controllerFuture?.get()?.moveMediaItem(from, to)
     }
 
     override fun remove(index: Int) {
@@ -236,30 +222,26 @@ private class AndroidPlayerController(
 
     override suspend fun stopService() {
         isStopped = true
-        controllerFuture?.let {
-            it.get().let { controller ->
-                withContext(Dispatchers.Main) {
-                    wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
-                        controller.playWhenReady ||
-                        controller.isPlaying
-                    controller.playWhenReady = false
-                    controller.pause()
-                    controller.sendCustomCommand(
-                        SessionCommand("destroy_player", Bundle.EMPTY),
-                        Bundle.EMPTY,
-                    )
-                }
-                delay(500)
-            }
-            withContext(Dispatchers.Main) {
-                it.get().release()
-                MediaController.releaseFuture(it)
-            }
+        controllerFuture?.get()?.let { controller ->
+            wasPlaying = controller.playbackState == MediaController.STATE_BUFFERING &&
+                controller.playWhenReady ||
+                controller.isPlaying
+            controller.playWhenReady = false
+            controller.pause()
+            controller.sendCustomCommand(
+                SessionCommand("destroy_player", Bundle.EMPTY),
+                Bundle.EMPTY,
+            )
+
+            delay(500)
+
+            controller.release()
+            MediaController.releaseFuture(controllerFuture!!)
             controllerFuture = null
         }
     }
 
-    override fun restoreService() {
+    override fun startService() {
         isStopped = false
         controllerFuture =
             MediaController
@@ -267,11 +249,11 @@ private class AndroidPlayerController(
                     context,
                     SessionToken(context, ComponentName(context, PlaybackService::class.java)),
                 ).buildAsync()
-        addListener(false)
+        addListener()
     }
 
     override fun destroy() {
-        isStopped = false
+        isStopped = true
         controllerFuture?.let {
             MediaController.releaseFuture(it)
         }

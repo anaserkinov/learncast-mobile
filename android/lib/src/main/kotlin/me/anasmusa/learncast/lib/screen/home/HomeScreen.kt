@@ -39,7 +39,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.flowOf
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.data.model.Filters
 import me.anasmusa.learncast.data.model.Lesson
@@ -59,9 +59,7 @@ import me.anasmusa.learncast.ui.home.HomeIntent
 import me.anasmusa.learncast.ui.home.HomeState
 import me.anasmusa.learncast.ui.home.HomeViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun HomeScreenPreview() {

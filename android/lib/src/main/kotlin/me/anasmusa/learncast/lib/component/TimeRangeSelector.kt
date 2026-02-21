@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.core.formatTime
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
@@ -85,7 +85,7 @@ fun TimeRangeSelectorPreview() {
         TimeRangeSelector(
             state = state,
             color = MaterialTheme.colorScheme.secondary,
-            currentPosition = 100,
+            currentPosition = 5,
         )
     }
 }
@@ -203,12 +203,13 @@ fun TimeRangeSelector(
                             radius = 2.dp.toPx(),
                             center =
                                 Offset(
-                                    x = currentPosition * size.width / state.total,
-                                    y = size.height - 6.dp.toPx(),
+                                    x = currentPosition * size.width / state.total + 2.dp.toPx(),
+                                    y = size.height - 8.dp.toPx(),
                                 ),
                         )
                     }
-                },
+                }
+                    .padding(bottom = 2.dp),
             value = sliderState,
             onValueChange = {
                 var start = it.start.toInt()

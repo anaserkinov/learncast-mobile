@@ -36,14 +36,12 @@ import me.anasmusa.learncast.data.network.snip.model.SnipResponse
 import me.anasmusa.learncast.data.network.topic.model.TopicResponse
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 /**
  * Centralized test fixtures and data builders for all network service tests.
  * Contains constants, builders, and helper functions to create test data.
  */
-@OptIn(ExperimentalTime::class)
 object TestFixtures {
 
     // ========== PAGINATION ==========
@@ -561,7 +559,6 @@ object TestFixtures {
     }
 
     // ========== RESPONSE WRAPPERS ==========
-    @OptIn(ExperimentalTime::class)
     inline fun <reified T> T.wrapInBaseResponse(message: String? = null): String {
         return buildJsonObject {
             put("data", Json.encodeToJsonElement(this@wrapInBaseResponse))
@@ -570,7 +567,6 @@ object TestFixtures {
         }.let { Json.encodeToString(it) }
     }
 
-    @OptIn(ExperimentalTime::class)
     inline fun <reified T> List<T>.wrapInPageResponse(nextCursor: String? = "next_page_cursor", message: String? = null): String {
         return buildJsonObject {
             put(
@@ -585,7 +581,6 @@ object TestFixtures {
         }.let { Json.encodeToString(it) }
     }
 
-    @OptIn(ExperimentalTime::class)
     fun baseResponse(message: String? = null): String {
         val baseResponse = buildJsonObject {
             put("data", JsonNull)

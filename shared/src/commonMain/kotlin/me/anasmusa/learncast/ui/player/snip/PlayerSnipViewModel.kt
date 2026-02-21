@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.core.STATE_LOADING
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.Snip
@@ -19,6 +20,7 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class PlayerSnipState(
     val currentPlaying: QueueItem? = null,
@@ -39,14 +41,16 @@ sealed interface PlayerSnipIntent : BaseIntent {
     object TogglePlayback : PlayerSnipIntent
 }
 
-sealed interface SnipEvent : BaseEvent
+sealed interface PlayerSnipEvent : BaseEvent
 
 class PlayerSnipViewModel(
     private val snipRepository: SnipRepository,
     private val playerRepository: PlayerRepository,
-) : BaseViewModel<PlayerSnipState, PlayerSnipIntent, SnipEvent>() {
+) : BaseViewModel<PlayerSnipState, PlayerSnipIntent, PlayerSnipEvent>() {
     final override val state: StateFlow<PlayerSnipState>
         field = MutableStateFlow(PlayerSnipState())
+
+    val snips by state.collectAsPagingState(viewModelScope) { snips }
 
     init {
         viewModelScope.launch {

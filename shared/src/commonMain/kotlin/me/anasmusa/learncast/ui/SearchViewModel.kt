@@ -13,9 +13,12 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.anasmusa.learncast.core.collectAsPagingState
+import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.Topic
 import me.anasmusa.learncast.data.repository.abstraction.LessonRepository
+import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.TopicRepository
 
 data class SearchState(
@@ -38,6 +41,10 @@ sealed interface SearchIntent : BaseIntent {
     data class SelectTab(
         val value: Int,
     ) : SearchIntent
+
+    data class AddToQueue(
+        val lesson: Lesson,
+    ) : SearchIntent
 }
 
 sealed interface SearchEvent : BaseEvent
@@ -46,9 +53,13 @@ sealed interface SearchEvent : BaseEvent
 class SearchViewModel(
     private val lessonRepository: LessonRepository,
     private val topicRepository: TopicRepository,
+    private val playerRepository: PlayerRepository,
 ) : BaseViewModel<SearchState, SearchIntent, SearchEvent>() {
     final override val state: StateFlow<SearchState>
         field = MutableStateFlow(SearchState())
+
+    val lessons by state.collectAsPagingState(viewModelScope) { lessons }
+    val topics by state.collectAsPagingState(viewModelScope) { topics }
 
     override fun handle(intent: SearchIntent) {
         super.handle(intent)
@@ -56,6 +67,7 @@ class SearchViewModel(
             is SearchIntent.Load -> load(intent.authorId, intent.topicId)
             is SearchIntent.UpdateSearchQuery -> state.update { it.copy(searchQuery = intent.query) }
             is SearchIntent.SelectTab -> state.update { it.copy(selectedTab = intent.value) }
+            is SearchIntent.AddToQueue -> addToQueue(intent.lesson)
         }
     }
 
@@ -91,5 +103,9 @@ class SearchViewModel(
                     }
                 }
         }
+    }
+
+    private fun addToQueue(lesson: Lesson) {
+        playerRepository.addToQueue(lesson.toQueueItem())
     }
 }

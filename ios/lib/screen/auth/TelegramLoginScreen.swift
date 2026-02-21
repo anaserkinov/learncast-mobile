@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 import WebKit
 

@@ -1,13 +1,14 @@
 package me.anasmusa.learncast.data.repository.implementation
 
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import me.anasmusa.learncast.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.nowLocalDateTime
+import me.anasmusa.learncast.core.paging.CommonPager
+import me.anasmusa.learncast.core.paging.getDefaultPagingConfig
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.core.toResult
 import me.anasmusa.learncast.data.local.db.lesson.LessonDao
 import me.anasmusa.learncast.data.local.db.outbox.OutboxDao
@@ -22,7 +23,6 @@ import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.model.Snip
 import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import me.anasmusa.learncast.data.network.snip.SnipService
-import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.SnipMediator
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
@@ -118,11 +118,7 @@ internal class SnipRepositoryImpl(
         order: QueryOrder?,
     ): Flow<PagingData<Snip>> =
         CommonPager(
-            config =
-                PagingConfig(
-                    pageSize = 50,
-                    enablePlaceholders = false,
-                ),
+            config = getDefaultPagingConfig(),
             commonMediator =
                 SnipMediator(
                     service = snipService,

@@ -5,7 +5,7 @@
 //  Copyright © 2025 orgName. All rights reserved.
 //
 import Foundation
-import Shared
+internal import Shared
 
 class SwiftKClass<T>: NSObject, KotlinKClass {
     func isInstance(value: Any?) -> Bool { value is T }
@@ -15,6 +15,10 @@ class SwiftKClass<T>: NSObject, KotlinKClass {
 
 func kClass<T>(for type: T.Type) -> KotlinKClass {
     SwiftType(type: type, swiftClazz: SwiftKClass<T>()).getClazz()
+}
+
+func named(name: String) -> Koin_coreQualifier {
+    return KoinUtils.shared.named(name: name)
 }
 
 func inject<T>(

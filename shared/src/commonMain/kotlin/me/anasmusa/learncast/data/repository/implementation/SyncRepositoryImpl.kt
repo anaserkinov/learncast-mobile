@@ -200,6 +200,7 @@ internal class SyncRepositoryImpl(
                 } else {
                     lessonService.removeFavourite(outbox.referenceId)
                 }
+            lessonDao.updateIsFavourite(outbox.referenceId, outbox.actionType == ActionType.FAVOURITE)
             onOutboxSynced(
                 id = outbox.id,
                 actionType = outbox.actionType,

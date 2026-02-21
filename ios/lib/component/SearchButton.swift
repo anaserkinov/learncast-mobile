@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 30/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 struct SearchButton: View {
@@ -85,6 +85,7 @@ struct SearchInput: View {
             }
         }
         .padding(12)
+        .frame(height: 48)
         .background(Colors.tertiaryContainer)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }

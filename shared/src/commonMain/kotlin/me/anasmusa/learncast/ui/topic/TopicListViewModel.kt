@@ -6,19 +6,22 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.model.Topic
 import me.anasmusa.learncast.data.repository.abstraction.TopicRepository
 import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class TopicListState(
     val searchQuery: String? = null,
@@ -42,20 +45,17 @@ class TopicListViewModel(
     final override val state: StateFlow<TopicListState>
         field = MutableStateFlow(TopicListState())
 
+    val topics by state.collectAsPagingState(viewModelScope) { topics }
+
     init {
-        viewModelScope.launch {
-            state
-                .map { it.searchQuery }
-                .distinctUntilChanged()
-                .debounce(500)
-                .collectLatest { query ->
-                    state.update {
-                        it.copy(
-                            topics = topicRepository.page(query, null),
-                        )
-                    }
-                }
-        }
+        state
+            .map { it.searchQuery }
+            .distinctUntilChanged()
+            .debounce(500)
+            .mapLatest { topicRepository.page(it, null) }
+            .onEach { topics ->
+                state.update { it.copy(topics = topics) }
+            }.launchIn(viewModelScope)
     }
 
     override fun handle(intent: TopicListIntent) {

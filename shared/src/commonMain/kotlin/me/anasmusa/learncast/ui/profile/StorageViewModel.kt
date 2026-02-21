@@ -1,12 +1,10 @@
 package me.anasmusa.learncast.ui.profile
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 import me.anasmusa.learncast.data.repository.abstraction.StorageRepository
@@ -70,11 +68,7 @@ class StorageViewModel(
                     cacheSize = format(cacheSize),
                 )
             }
-            val queuedItems = queueRepository.getQueuedItems()
-            withContext(Dispatchers.Main) {
-                playerRepository.restoreService()
-                playerRepository.setToQueue(queuedItems)
-            }
+            playerRepository.startService(null)
             state.update {
                 it.copy(isLoading = false)
             }
@@ -91,11 +85,7 @@ class StorageViewModel(
                     downloadSize = format(downloadSize),
                 )
             }
-            val queuedItems = queueRepository.getQueuedItems()
-            withContext(Dispatchers.Main) {
-                playerRepository.restoreService()
-                playerRepository.setToQueue(queuedItems)
-            }
+            playerRepository.startService(null)
             state.update {
                 it.copy(isLoading = false)
             }

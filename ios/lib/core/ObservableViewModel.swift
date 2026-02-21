@@ -7,14 +7,14 @@
 //
 
 import Foundation
-import Shared
+internal import Shared
 import SwiftUI
 
 extension ObservableViewModel {
-    func binding(
-        getValue: @escaping (State) -> String,
-        getIntent: @escaping (String) -> Intent
-    ) -> Binding<String> {
+    func binding<T>(
+        getValue: @escaping (State) -> T,
+        getIntent: @escaping (T) -> Intent
+    ) -> Binding<T> {
         Binding { [self] in
             getValue(state)
         } set: { newValue in
@@ -33,15 +33,21 @@ extension ObservableViewModel {
     }
 }
 
+@MainActor
 @Observable
 class ObservableViewModel<
     State: BaseState, Intent: BaseIntent, Event: BaseEvent, VM: BaseViewModel<State, Intent, Event>
 > {
+    private var eventContinuation: AsyncStream<Event>.Continuation?
 
     let viewModel: VM
 
     var state: State
-    var event: Event?
+    var events: AsyncStream<Event> {
+        AsyncStream { continuation in
+            self.eventContinuation = continuation
+        }
+    }
 
     init() {
         self.viewModel = inject()
@@ -53,10 +59,10 @@ class ObservableViewModel<
     }
 
     func collect() async {
-        async let eventTask: Void = collectEvents()
-        async let stateTask: Void = collectState()
+        async let event: Void = collectEvents()
+        async let state: Void = collectState()
 
-        _ = await (eventTask, stateTask)
+        _ = await (event, state)
     }
 
     private func collectState() async {
@@ -67,8 +73,12 @@ class ObservableViewModel<
 
     private func collectEvents() async {
         for await newEvent in viewModel.eventsFlow {
-            event = newEvent
+            eventContinuation?.yield(newEvent)
         }
+    }
+
+    deinit {
+        viewModel.onCleared()
     }
 
 }

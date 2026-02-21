@@ -8,9 +8,7 @@ import me.anasmusa.learncast.data.network.snip.SnipService
 import me.anasmusa.learncast.data.network.topic.TopicService
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 internal fun Module.networkModule() {
     single<HttpClient> {
         createHttpClient {

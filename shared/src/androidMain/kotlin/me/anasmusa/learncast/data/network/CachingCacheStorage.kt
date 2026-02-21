@@ -102,7 +102,8 @@ internal class CachingCacheStorage(
         store.remove(url)
     }
 
-    suspend fun clearMap() {
+    fun clear() {
+        (delegate as? FileCacheStorage)?.clear()
         store.clear()
     }
 }
@@ -159,6 +160,11 @@ private class FileCacheStorage(
             val urlHex = key(url)
             deleteCache(urlHex)
         }
+
+    fun clear() {
+        mutexes.clear()
+        directory.deleteRecursively()
+    }
 
     private fun key(url: Url) = hex(MessageDigest.getInstance("SHA-256").digest(url.toString().encodeToByteArray()))
 

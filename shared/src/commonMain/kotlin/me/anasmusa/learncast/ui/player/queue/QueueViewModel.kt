@@ -162,7 +162,9 @@ class QueueViewModel(
                 queuedItems = mutableListOf(),
             )
         }
-        playerRepository.clearQueue(false)
+        viewModelScope.launch {
+            playerRepository.clearQueue(false)
+        }
     }
 
     private fun play(item: QueueItem) {

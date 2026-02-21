@@ -5,51 +5,20 @@
 //  Created by Anas Erkinjonov on 23/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 public struct AppView: View {
 
     @State
     private var viewModel = ObservableViewModel<AppState, AppIntent, AppEvent, AppViewModel>()
+    @State
+    private var playerViewModel = ObservableViewModel<PlayerState, PlayerIntent, PlayerEvent, PlayerViewModel>()
 
     @State
     private var env = AppEnvironment()
     @State
     private var selectedTab: Screen = .entrance
-
-    public init() {}
-
-    public var body: some View {
-        _AppView(
-            state: viewModel.state,
-            env: env,
-            selectedTab: $selectedTab
-        )
-        .task {
-            viewModel.handle(intent: AppIntentLoad())
-            await viewModel.collect()
-        }
-        .onChange(
-            of: viewModel.event, initial: false,
-            { _, event in
-                guard let event = event else { return }
-                switch event {
-                case is AppEvent.ShowLoginScreen:
-                    selectedTab = .login
-                case is AppEvent.ShowHomeScreen:
-                    selectedTab = .home
-                default:
-                    break
-                }
-            })
-    }
-}
-
-private struct _AppView: View {
-
-    var state: AppState
-    var env: AppEnvironment
 
     @State
     private var homeNavController = NavController()
@@ -58,11 +27,10 @@ private struct _AppView: View {
     @State
     private var profileNavController = NavController()
 
-    @Binding
-    var selectedTab: Screen
-
     @State
     private var stringsLoaded = false
+
+    @Namespace private var animation
 
     @ViewBuilder
     private func navStack(
@@ -72,13 +40,15 @@ private struct _AppView: View {
         NavigationStack(path: navController.backStack) {
             root()
                 .navigationDestination(for: Screen.self) { screen in
-                    getView(screen: screen)
+                    return getView(screen: screen)
                 }
         }
     }
 
+    public init() {}
+
     public var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             switch selectedTab {
             case .entrance: EmptyView()
             case .login: LoginScreen()
@@ -87,6 +57,7 @@ private struct _AppView: View {
                     navStack(navController: $homeNavController) {
                         HomeScreen()
                     }
+                    .environment(\.navController, homeNavController)
                     .tag(Screen.home)
                     .tabItem {
                         Image(systemName: "house")
@@ -96,6 +67,7 @@ private struct _AppView: View {
                     navStack(navController: $snipsNavController) {
                         SnipListScreen()
                     }
+                    .environment(\.navController, snipsNavController)
                     .tag(Screen.snips)
                     .tabItem {
                         Image(systemName: "scissors")
@@ -105,15 +77,20 @@ private struct _AppView: View {
                     navStack(navController: $profileNavController) {
                         ProfileScreen()
                     }
+                    .environment(\.navController, profileNavController)
                     .tag(Screen.profile)
                     .tabItem {
                         Image(systemName: "person")
                         Text(Strings.shared.PROFILE.string())
                     }
                 }
-                .navigationBarBackButtonHidden()
+
+                PlayerScreen(viewModel: playerViewModel)
             }
         }
+        .environment(\.env, env)
+        .environment(\.navigationAnimation, animation)
+        .scrollDismissesKeyboard(.interactively)
         .font(Typography.bodyMedium)
         .preferredColorScheme(.dark)
         .onAppear {
@@ -125,6 +102,22 @@ private struct _AppView: View {
                     })
             }
         }
+        .task {
+            viewModel.handle(intent: AppIntentLoad())
+            await viewModel.collect()
+        }
+        .task {
+            for await event in viewModel.events {
+                switch event {
+                case is AppEvent.ShowLoginScreen:
+                    selectedTab = .login
+                case is AppEvent.ShowHomeScreen:
+                    selectedTab = .home
+                default:
+                    break
+                }
+            }
+        }
     }
 }
 
@@ -132,6 +125,7 @@ struct PreviewRoot<Content: View>: View {
     let content: Content
     @State
     private var env = AppEnvironment()
+    @Namespace private var animation
 
     init(@ViewBuilder content: () -> Content) {
         PreviewSetup.setup()
@@ -139,10 +133,13 @@ struct PreviewRoot<Content: View>: View {
     }
 
     var body: some View {
-        content
-            .environment(\.env, env)
-            .font(Typography.bodyMedium)
-            .preferredColorScheme(.dark)
+        NavigationStack(root: {
+            content
+        })
+        .environment(\.env, env)
+        .environment(\.navigationAnimation, animation)
+        .font(Typography.bodyMedium)
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -170,10 +167,6 @@ enum PreviewSetup {
 
 #Preview {
     PreviewRoot {
-        _AppView(
-            state: AppState(isLoggedIn: true),
-            env: AppEnvironment(),
-            selectedTab: .constant(.home)
-        )
+        AppView()
     }
 }

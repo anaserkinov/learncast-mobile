@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 01/02/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 struct FilterChip: View {

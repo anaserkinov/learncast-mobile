@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.repository.abstraction.LessonRepository
@@ -18,6 +19,7 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class TopicState(
     val isLoading: Boolean = false,
@@ -50,6 +52,8 @@ class TopicViewModel(
 ) : BaseViewModel<TopicState, TopicIntent, TopicEvent>() {
     final override val state: StateFlow<TopicState>
         field = MutableStateFlow(TopicState())
+
+    val lessons by state.collectAsPagingState(viewModelScope) { lessons }
 
     override fun handle(intent: TopicIntent) {
         super.handle(intent)
@@ -87,7 +91,7 @@ class TopicViewModel(
             if (queueItems.isNotEmpty()) {
                 playerRepository.setToQueue(queueItems, true)
             }
-            state.update { it.copy(isLoading = true) }
+            state.update { it.copy(isLoading = false) }
         }
     }
 

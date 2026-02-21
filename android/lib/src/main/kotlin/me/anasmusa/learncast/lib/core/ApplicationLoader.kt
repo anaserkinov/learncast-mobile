@@ -16,7 +16,7 @@ abstract class ApplicationLoader : me.anasmusa.learncast.ApplicationLoader() {
     override fun onCreate() {
         super.onCreate()
 
-        AppConfig.Companion.update(
+        AppConfig.update(
             R.string.download_notification_title,
             R.string.download_notification_message,
         )

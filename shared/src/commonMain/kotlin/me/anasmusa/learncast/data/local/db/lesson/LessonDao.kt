@@ -42,6 +42,12 @@ internal interface LessonDao {
         count: Long,
     )
 
+    @Query("UPDATE ${TableNames.LESSON_STATE} SET isFavourite = :isFavourite WHERE lessonId = :lessonId")
+    suspend fun updateIsFavourite(
+        lessonId: Long,
+        isFavourite: Boolean,
+    )
+
     @Query(
         """
         SELECT 

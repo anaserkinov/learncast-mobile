@@ -131,13 +131,14 @@ import me.anasmusa.learncast.lib.theme.icon.MoreVert
 import me.anasmusa.learncast.lib.theme.icon.Pause
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
 import me.anasmusa.learncast.lib.theme.icon.Replay10
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
+import me.anasmusa.learncast.lib.core.darken
+import me.anasmusa.learncast.lib.core.lighten
 import me.anasmusa.learncast.ui.player.PlayerEvent
 import me.anasmusa.learncast.ui.player.PlayerIntent
 import me.anasmusa.learncast.ui.player.PlayerState
 import me.anasmusa.learncast.ui.player.PlayerViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
@@ -181,7 +182,7 @@ private fun PlayerScreenPreview() {
 private fun CollapsedPlayerPreview() {
     AppTheme {
         CollapsedPlayer(
-            offset = 1f,
+            ratio = 1f,
             scope = rememberCoroutineScope(),
             draggableState = AnchoredDraggableState(initialValue = "expanded"),
             color =
@@ -203,7 +204,7 @@ private fun CollapsedPlayerPreview() {
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun CollapsedPlayer(
-    offset: Float,
+    ratio: Float,
     scope: CoroutineScope,
     draggableState: AnchoredDraggableState<String>,
     color: Color,
@@ -219,7 +220,7 @@ private fun CollapsedPlayer(
             Modifier
                 .height(64.dp)
                 .fillMaxWidth()
-                .alpha(1 - (1 - offset) / 0.2f)
+                .alpha(1 - (1 - ratio) / 0.2f)
                 .clickable(onClick = {
                     scope.launch {
                         draggableState.animateTo("expanded")
@@ -327,28 +328,6 @@ private fun CollapsedPlayer(
     }
 }
 
-private fun Int.darken(amount: Float): Color {
-    val hsv = FloatArray(3)
-    android.graphics.Color.colorToHSV(this, hsv)
-
-    // increase saturation
-    hsv[1] = min(1f, hsv[1] + amount)
-
-    // optional: tiny brightness reduction (NOT black)
-    hsv[2] = max(0f, hsv[2] * (1f - amount * 0.6f))
-
-    return Color(android.graphics.Color.HSVToColor(hsv))
-}
-
-private fun Int.lighten(amount: Float): Color {
-    val hsv = FloatArray(3)
-    android.graphics.Color.colorToHSV(this, hsv)
-
-    hsv[2] = min(1f, hsv[2] + hsv[2] * amount)
-
-    return Color(android.graphics.Color.HSVToColor(hsv))
-}
-
 @Composable
 fun PlayerScreen(
     modifier: Modifier,
@@ -390,8 +369,8 @@ private fun _PlayerScreen(
     val context = LocalContext.current
     val windowInfo = LocalWindowInfo.current
 
-    val totalHeight = windowInfo.containerSize.height
-    val offset = draggableState.offset / draggableState.anchors.maxPosition()
+    val screenHeight = windowInfo.containerSize.height
+    val ratio = draggableState.offset / draggableState.anchors.maxPosition()
 
     val statusBarOffset: Dp
     val bottomNavigationBarOffset: Dp
@@ -506,8 +485,8 @@ private fun _PlayerScreen(
             modifier =
                 modifier
                     .padding(
-                        start = (4 * offset).dp,
-                        end = (4 * offset).dp,
+                        start = (4 * ratio).dp,
+                        end = (4 * ratio).dp,
                     ).fillMaxWidth()
                     .offset { IntOffset(0, draggableState.offset.roundToInt()) }
                     .anchoredDraggable(
@@ -515,16 +494,16 @@ private fun _PlayerScreen(
                         orientation = Orientation.Vertical,
                         enabled = showScreen == 0,
                     ).height(
-                        (totalHeight - (totalHeight - 64) * offset).dp,
+                        (screenHeight - (screenHeight - 64) * ratio).dp,
                     ).background(
                         Brush.verticalGradient(colors, startY = gradientStartY, endY = gradientEndY),
-                        shape = RoundedCornerShape((6 * offset).dp),
+                        shape = RoundedCornerShape((6 * ratio).dp),
                     ),
             contentAlignment = Alignment.TopCenter,
         ) {
-            if (offset >= 0.8f) {
+            if (ratio >= 0.8f) {
                 CollapsedPlayer(
-                    offset = offset,
+                    ratio = ratio,
                     scope = scope,
                     draggableState = draggableState,
                     color = collapsedColor,
@@ -551,10 +530,10 @@ private fun _PlayerScreen(
                         .wrapContentHeight(align = Alignment.Top, unbounded = true)
                         .padding(
                             start = 12.dp,
-                            top = statusBarOffset,
+                            top = statusBarOffset + 12.dp,
                             end = 12.dp,
                             bottom = bottomNavigationBarOffset,
-                        ).alpha(1 - offset / 0.8f),
+                        ).alpha(1 - ratio / 0.8f),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Row(

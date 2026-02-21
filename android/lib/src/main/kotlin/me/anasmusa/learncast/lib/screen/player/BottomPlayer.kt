@@ -33,16 +33,36 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
+import me.anasmusa.learncast.core.STATE_PLAYING
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.QueueItem
+import me.anasmusa.learncast.data.model.getSampleQueueItem
+import me.anasmusa.learncast.lib.AppTheme
+import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.theme.icon.Pause
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
+
+@Preview
+@Composable
+fun BottomPlayerComposable(){
+    AppTheme {
+        BottomPlayer(
+            currentPlaying = getSampleQueueItem(),
+            currentPositionMs = 1000,
+            playbackState = STATE_PLAYING,
+            backgroundColors = LocalAppEnvironment.current.playerBackgroundColors,
+            onClicked = {},
+            togglePlaybackState = {}
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

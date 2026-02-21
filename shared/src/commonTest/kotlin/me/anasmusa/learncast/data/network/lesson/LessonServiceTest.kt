@@ -60,10 +60,8 @@ import me.anasmusa.learncast.data.network.createTestHttpClient
 import me.anasmusa.learncast.data.network.lesson.model.UpdateProgressRequest
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 class LessonServiceTest : BehaviorSpec({
 
     val service = LessonService(createHttpClient())
@@ -321,7 +319,6 @@ class LessonServiceTest : BehaviorSpec({
     }
 }) {
     companion object {
-        @OptIn(ExperimentalTime::class)
         fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
@@ -338,7 +335,6 @@ class LessonServiceTest : BehaviorSpec({
             }
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handlePageRequest(request: HttpRequestData) =
             when (request.method) {
                 HttpMethod.Get -> {
@@ -356,7 +352,6 @@ class LessonServiceTest : BehaviorSpec({
                 else -> throw NotImplementedError("Method not supported: ${request.method}")
             }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleDeletedRequest(request: HttpRequestData) =
             when (request.method) {
                 HttpMethod.Get -> {
@@ -373,7 +368,6 @@ class LessonServiceTest : BehaviorSpec({
                 else -> throw NotImplementedError("Method not supported: ${request.method}")
             }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleProgressRequest(
             request: HttpRequestData,
             exists: Boolean
@@ -397,7 +391,6 @@ class LessonServiceTest : BehaviorSpec({
             else -> throw NotImplementedError("Method not supported: ${request.method}")
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleListenRequest(
             request: HttpRequestData,
             exists: Boolean
@@ -416,7 +409,6 @@ class LessonServiceTest : BehaviorSpec({
             else -> throw NotImplementedError("Method not supported: ${request.method}")
         }
 
-        @OptIn(ExperimentalTime::class)
         private fun MockRequestHandleScope.handleFavouriteRequest(
             request: HttpRequestData,
             exists: Boolean

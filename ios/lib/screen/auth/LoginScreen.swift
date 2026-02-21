@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 struct LoginScreen: View {
@@ -31,10 +31,8 @@ struct LoginScreen: View {
         .task {
             await viewModel.collect()
         }
-        .onChange(
-            of: viewModel.event, initial: false,
-            { _, event in
-                guard let event = event else { return }
+        .task {
+            for await event in viewModel.events {
                 switch event {
                 case let showError as LoginEvent.ShowError:
                     snackbarMessage = showError.message
@@ -42,7 +40,8 @@ struct LoginScreen: View {
                 default:
                     break
                 }
-            })
+            }
+        }
     }
 }
 
