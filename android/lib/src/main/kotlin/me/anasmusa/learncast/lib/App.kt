@@ -63,8 +63,8 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.anasmusa.learncast.Resource
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.AppConfig
 import me.anasmusa.learncast.lib.core.ProvideAppEnvironment
@@ -77,7 +77,7 @@ import me.anasmusa.learncast.lib.theme.MontserratTypography
 import me.anasmusa.learncast.lib.theme.darkScheme
 import me.anasmusa.learncast.lib.theme.icon.CutIcon
 import me.anasmusa.learncast.lib.theme.icon.HomeIcon
-import me.anasmusa.learncast.parseStringsXml
+import me.anasmusa.learncast.core.resource.parseStringsXml
 import me.anasmusa.learncast.ui.AppEvent
 import me.anasmusa.learncast.ui.AppIntent
 import me.anasmusa.learncast.ui.AppViewModel

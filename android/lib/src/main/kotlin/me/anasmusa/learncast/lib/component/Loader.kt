@@ -8,17 +8,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun Loader() {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.2f)),
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center),
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false
         )
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.2f)),
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
     }
 }

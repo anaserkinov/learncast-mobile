@@ -17,6 +17,10 @@ object KoinUtils {
             koin = it.koin
         }
 
+    fun named(name: String) =
+        org.koin.core.qualifier
+            .named(name)
+
     @OptIn(BetaInteropApi::class)
     fun <T> koinGet(
         kClass: KClass<*>,

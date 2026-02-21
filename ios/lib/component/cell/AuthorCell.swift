@@ -5,8 +5,8 @@
 //  Created by Anas Erkinjonov on 22/01/26.
 //
 
-import Kingfisher
-import Shared
+internal import Kingfisher
+internal import Shared
 import SwiftUI
 
 struct AuthorCell: View {
@@ -16,25 +16,16 @@ struct AuthorCell: View {
     var body: some View {
         Button(action: onClick) {
             HStack(alignment: .center, spacing: 8) {
-                if let avatarPath = author.avatarPath,
-                    let url = URL(string: UtilsKt.normalizeUrl(avatarPath))
-                {
-                    KFImage(url)
-                        .resizable()
-                        .onSuccess { result in
-                            print("Image loaded from cache: \(result.cacheType)")
-                        }
-                        .clipShape(Circle())
-                        .frame(width: 64, height: 64)
-                        .padding(.trailing, 8)
-                } else {
-                    Image("MainLogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 64, height: 64)
-                        .clipShape(Circle())
-                        .padding(.trailing, 8)
-                }
+                KFImage(URL(string: author.avatarPath?.normalizeUrl() ?? ""))
+                    .placeholder {
+                        Image("MainLogo")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    }
+                    .resizable()
+                    .clipShape(Circle())
+                    .frame(width: 64, height: 64)
+                    .padding(.trailing, 8)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(author.name)
                         .font(Typography.titleMedium)

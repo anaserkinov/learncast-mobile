@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.theme.icon.SearchIcon

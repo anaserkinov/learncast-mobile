@@ -31,7 +31,7 @@ struct LearncastApp: App {
             AppView()
                 .environment(\.env, env)
                 .onOpenURL { url in
-                    _ = Initializer.shared.googleHandleUrl(url: url)
+                    _ = AppInitializer.handle(url: url)
                 }
         }
     }

@@ -3,6 +3,7 @@ package me.anasmusa.learncast
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
@@ -45,6 +46,9 @@ open class ApplicationLoader : Application() {
                 override fun onActivityDestroyed(a: Activity) {}
             },
         )
-        Napier.base(DebugAntilog())
+
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            Napier.base(DebugAntilog())
+        }
     }
 }

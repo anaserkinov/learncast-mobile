@@ -1,18 +1,18 @@
 package me.anasmusa.learncast.data.repository.implementation
 
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.anasmusa.learncast.core.paging.CommonPager
+import me.anasmusa.learncast.core.paging.getDefaultPagingConfig
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
 import me.anasmusa.learncast.data.local.db.topic.TopicDao
 import me.anasmusa.learncast.data.mapper.toUI
 import me.anasmusa.learncast.data.model.Topic
 import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import me.anasmusa.learncast.data.network.topic.TopicService
-import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.paging.TopicMediator
 import me.anasmusa.learncast.data.repository.abstraction.TopicRepository
 
@@ -27,11 +27,7 @@ internal class TopicRepositoryImpl(
         authorId: Long?,
     ): Flow<PagingData<Topic>> =
         CommonPager(
-            config =
-                PagingConfig(
-                    pageSize = 50,
-                    enablePlaceholders = false,
-                ),
+            config = getDefaultPagingConfig(),
             commonMediator =
                 TopicMediator(
                     service = topicService,

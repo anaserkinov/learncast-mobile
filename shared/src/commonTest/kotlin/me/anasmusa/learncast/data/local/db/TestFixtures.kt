@@ -26,8 +26,6 @@ import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 object TestFixtures {
 
@@ -195,7 +193,6 @@ object TestFixtures {
             )
         }
 
-        @OptIn(ExperimentalTime::class)
         fun createLessons(
             count: Int,
             topicId: Long = 1,

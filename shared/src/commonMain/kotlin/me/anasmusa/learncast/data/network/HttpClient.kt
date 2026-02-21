@@ -16,16 +16,13 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import me.anasmusa.learncast.core.InstantSerializer
 import me.anasmusa.learncast.core.appConfig
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 expect fun createHttpClient(
     block: HttpClientConfig<*>.() -> Unit,
 ): HttpClient
 
-@OptIn(ExperimentalTime::class)
 internal fun HttpClientConfig<*>.configure(
     getTokenManager: () -> TokenManager,
     setExplicitNulls: Boolean = true,
@@ -85,6 +82,9 @@ internal fun HttpClientConfig<*>.configure(
                         refreshToken = it.first,
                     )
                 }
+            }
+            sendWithoutRequest {
+                it.url.pathSegments.lastOrNull() != "logout"
             }
         }
     }

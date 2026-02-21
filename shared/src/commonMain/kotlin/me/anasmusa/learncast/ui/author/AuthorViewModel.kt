@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.Topic
@@ -19,6 +20,7 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class AuthorState(
     val selectedTabIndex: Int = 0,
@@ -54,6 +56,9 @@ class AuthorViewModel(
 ) : BaseViewModel<AuthorState, AuthorIntent, AuthorEvent>() {
     final override val state: StateFlow<AuthorState>
         field = MutableStateFlow(AuthorState())
+
+    val lessons by state.collectAsPagingState(viewModelScope) { lessons }
+    val topics by state.collectAsPagingState(viewModelScope) { topics }
 
     override fun handle(intent: AuthorIntent) {
         super.handle(intent)

@@ -38,14 +38,3 @@ public class AppEnvironment {
         )
     }
 }
-
-private struct AppEnvironmentKey: EnvironmentKey {
-    static var defaultValue: AppEnvironment = AppEnvironment()
-}
-
-extension EnvironmentValues {
-    public var env: AppEnvironment {
-        get { self[AppEnvironmentKey.self] }
-        set { self[AppEnvironmentKey.self] = newValue }
-    }
-}

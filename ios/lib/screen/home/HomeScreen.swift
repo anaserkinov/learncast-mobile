@@ -5,47 +5,38 @@
 //  Created by Anas Erkinjonov on 30/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
 struct HomeScreen: View {
     @Environment(\.env) var env: AppEnvironment
+    @Environment(\.navController) var navController: NavController
 
     @State
     private var viewModel = ObservableViewModel<HomeState, HomeIntent, HomeEvent, HomeViewModel>()
 
-    @State
-    private var pagingState = ListPagingState<Lesson>()
-
     var body: some View {
         PagingList(
-            pagingState: pagingState,
-            id: \.?.id,
+            flow: viewModel.viewModel.lessons,
             header: {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(Strings.shared.HOME.string())
-                        .font(Typography.headlineMedium)
-                        .fontWeight(.bold)
-                        .padding(.horizontal, 16)
-                        .padding(.top, 16)
-
                     HStack(spacing: 12) {
                         PrimaryButton(
                             titleKey: Strings.shared.AUTHORS,
                             icon: "person",
                             onClick: {
-
+                                navController.navigate(screen: .authorList)
                             }
                         )
                         PrimaryButton(
                             titleKey: Strings.shared.TOPICS,
                             icon: "square.grid.2x2",
                             onClick: {
-
+                                navController.navigate(screen: .topicList)
                             }
                         )
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 8)
                     .padding(.horizontal, 16)
 
                     SearchButton(
@@ -83,22 +74,14 @@ struct HomeScreen: View {
                 }
             }
         ) { lesson in
-            if let lesson {
-                LessonCell(lesson: lesson) {
-
-                }
-            } else {
-                EmptyView()
+            LessonCell(lesson: lesson) {
+                viewModel.handle(intent: HomeIntentAddToQueue(lesson: lesson))
             }
         }
+        .contentMargins(.bottom, Utils.bottomPadding)
         .background(env.backgroundGradient())
-        .scrollDismissesKeyboard(.interactively)
-        .listStyle(PlainListStyle())
-        .task {
-            for await lessonsFlow in viewModel.viewModel.lessons {
-                pagingState.update(flow: lessonsFlow.castToPagingFlow())
-            }
-        }
+        .navigationTitle(Strings.shared.HOME.string())
+        .navigationBarTitleDisplayMode(.large)
         .task {
             await viewModel.collect()
         }

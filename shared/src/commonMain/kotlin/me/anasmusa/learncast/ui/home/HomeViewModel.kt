@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.mapper.toQueueItem
 import me.anasmusa.learncast.data.model.Filters
 import me.anasmusa.learncast.data.model.Lesson
@@ -26,6 +28,7 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class HomeState(
     val searchQuery: String? = null,
@@ -59,18 +62,14 @@ class HomeViewModel(
     final override val state: StateFlow<HomeState>
         field = MutableStateFlow(HomeState())
 
-    val lessons by lazy {
-        state
-            .map { it.lessons }
-            .distinctUntilChanged()
-    }
+    val lessons by state.collectAsPagingState(viewModelScope) { lessons }
 
     init {
         state
             .map { it.searchQuery to it.selectedFilter }
             .distinctUntilChanged()
             .debounce(500)
-            .onEach { (query, filter) ->
+            .mapLatest { (query, filter) ->
                 var status: UserProgressStatus? = null
                 var isDownloaded: Boolean? = null
                 var sort: QuerySort? = null
@@ -99,21 +98,20 @@ class HomeViewModel(
                         isFavourite = true
                     }
                 }
+                lessonRepository
+                    .page(
+                        search = query,
+                        authorId = null,
+                        topicId = null,
+                        isFavourite = isFavourite,
+                        status = status,
+                        isDownloaded = isDownloaded,
+                        sort = sort,
+                        order = order,
+                    ).cachedIn(viewModelScope)
+            }.onEach { lessons ->
                 state.update {
-                    it.copy(
-                        lessons =
-                            lessonRepository
-                                .page(
-                                    search = query,
-                                    authorId = null,
-                                    topicId = null,
-                                    isFavourite = isFavourite,
-                                    status = status,
-                                    isDownloaded = isDownloaded,
-                                    sort = sort,
-                                    order = order,
-                                ).cachedIn(viewModelScope),
-                    )
+                    it.copy(lessons = lessons)
                 }
             }.launchIn(viewModelScope)
     }

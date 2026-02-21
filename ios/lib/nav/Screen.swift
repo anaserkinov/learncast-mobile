@@ -5,7 +5,7 @@
 //  Created by Anas Erkinjonov on 30/01/26.
 //
 import Foundation
-import Shared
+internal import Shared
 
 enum Screen: Hashable {
     case entrance
@@ -21,5 +21,5 @@ enum Screen: Hashable {
         authorId: Int64,
         topicId: Int64?,
         selectedTab: Int = 0)
-    case storageUsageScreen
+    case storageUsage
 }

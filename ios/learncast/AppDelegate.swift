@@ -5,6 +5,7 @@
 import Foundation
 import Shared
 import UIKit
+import lib
 
 class AppDelegate: NSObject, UIApplicationDelegate {
 
@@ -23,9 +24,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com"
         )
 
-        Initializer.shared.doInitApp()
+        AppInitializer.initialize()
         return true
     }
-
-    // You can add other AppDelegate methods here if needed (like push notifications)
 }

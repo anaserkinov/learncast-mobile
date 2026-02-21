@@ -1,11 +1,12 @@
 package me.anasmusa.learncast.data.repository.implementation
 
 import androidx.paging.ExperimentalPagingApi
-import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import me.anasmusa.learncast.core.paging.CommonPager
+import me.anasmusa.learncast.core.paging.getDefaultPagingConfig
 import me.anasmusa.learncast.data.local.db.author.AuthorDao
 import me.anasmusa.learncast.data.local.db.pagingstate.PagingStateDao
 import me.anasmusa.learncast.data.mapper.toUI
@@ -13,7 +14,6 @@ import me.anasmusa.learncast.data.model.Author
 import me.anasmusa.learncast.data.network.author.AuthorService
 import me.anasmusa.learncast.data.network.common.model.PageRequestQuery
 import me.anasmusa.learncast.data.paging.AuthorMediator
-import me.anasmusa.learncast.data.paging.CommonPager
 import me.anasmusa.learncast.data.repository.abstraction.AuthorRepository
 
 internal class AuthorRepositoryImpl(
@@ -24,11 +24,7 @@ internal class AuthorRepositoryImpl(
     @OptIn(ExperimentalPagingApi::class)
     override fun page(search: String?): Flow<PagingData<Author>> =
         CommonPager(
-            config =
-                PagingConfig(
-                    pageSize = 50,
-                    enablePlaceholders = false,
-                ),
+            config = getDefaultPagingConfig(),
             commonMediator =
                 AuthorMediator(
                     service = authorService,

@@ -73,7 +73,7 @@ internal fun LessonWithState.toUI() =
         snipCount = state.snipCount,
         isFavourite = state.isFavourite,
         startedAt = state.startedAt,
-        lastPositionMs = state.lastPositionMs,
+        lastPositionMs = state.lastPositionMs?.inWholeMilliseconds ?: 0L,
         status = state.status,
         completedAt = state.completedAt,
     )

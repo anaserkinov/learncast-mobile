@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,7 +72,7 @@ fun ConfirmationBottomSheet(
 
             SheetMenuWhiteButton(
                 modifier = Modifier.fillMaxWidth(),
-                title = positiveButtonTitle ?: Strings.YES.string(),
+                title = positiveButtonTitle ?: Strings.YES_TEXT.string(),
                 icon = null,
                 horizontalArrangement = Arrangement.Center,
                 onClick = {

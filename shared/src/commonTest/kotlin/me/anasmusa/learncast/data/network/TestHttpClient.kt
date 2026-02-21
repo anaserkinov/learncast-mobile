@@ -6,9 +6,7 @@ import io.ktor.client.engine.mock.MockEngineConfig
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 fun createTestHttpClient(
     engineConfig: MockEngineConfig.() -> Unit
 ) = HttpClient(

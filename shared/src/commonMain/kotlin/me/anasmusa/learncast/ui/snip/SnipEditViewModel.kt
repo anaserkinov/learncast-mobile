@@ -148,6 +148,8 @@ class SnipEditViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        audioPlayer.destroy()
+        if (::audioPlayer.isInitialized) {
+            audioPlayer.destroy()
+        }
     }
 }

@@ -25,7 +25,7 @@ data class Lesson(
     val createdAt: LocalDateTime,
     val isFavourite: Boolean,
     val startedAt: LocalDateTime?,
-    val lastPositionMs: Duration?,
+    val lastPositionMs: Long,
     val status: UserProgressStatus,
     val completedAt: LocalDateTime?,
 )
@@ -48,7 +48,7 @@ fun getSampleLesson(id: Long = 1) =
         snipCount = id * 2321,
         isFavourite = true,
         startedAt = nowLocalDateTime(),
-        lastPositionMs = 0.toDuration(DurationUnit.MILLISECONDS),
+        lastPositionMs = 0,
         status = UserProgressStatus.IN_PROGRESS,
         completedAt = null,
     )

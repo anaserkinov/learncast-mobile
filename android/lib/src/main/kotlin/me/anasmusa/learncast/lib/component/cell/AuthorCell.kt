@@ -28,7 +28,7 @@ import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.normalizeUrl
 import me.anasmusa.learncast.data.model.Author
-import me.anasmusa.learncast.Resource.quantityString
+import me.anasmusa.learncast.core.resource.Resource.quantityString
 import me.anasmusa.learncast.data.model.getSampleAuthor
 
 @Preview

@@ -7,11 +7,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.data.AppScope
-import me.anasmusa.learncast.data.AuthorizedUserScope
 import me.anasmusa.learncast.data.repository.abstraction.AppRepository
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
-import me.anasmusa.learncast.data.repository.abstraction.QueueRepository
 import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
 import org.koin.mp.KoinPlatform
 
@@ -32,7 +30,6 @@ sealed class AppEvent : BaseEvent {
 class AppViewModel(
     private val appRepository: AppRepository,
     private val authRepository: AuthRepository,
-    private val queueRepository: QueueRepository,
     private val syncRepository: SyncRepository,
     private val playerRepository: PlayerRepository,
 ) : BaseViewModel<AppState, AppIntent, AppEvent>() {
@@ -62,36 +59,17 @@ class AppViewModel(
                 authRepository.isLoggedIn().collect { isLoggedIn ->
                     if (state.value.isLoggedIn != isLoggedIn) {
                         if (state.value.isLoggedIn == null && isLoggedIn) {
-                            loadQueuedItems()
-                        } else if (state.value.isLoggedIn == true && !isLoggedIn) {
-                            clearQueue()
+                            playerRepository.startService(false)
                         }
                         state.update { it.copy(isLoggedIn = isLoggedIn) }
                         if (isLoggedIn) {
                             send(AppEvent.ShowHomeScreen)
                         } else {
-                            KoinPlatform
-                                .getKoin()
-                                .getScopeOrNull(AuthorizedUserScope.ID)
-                                ?.close()
                             send(AppEvent.ShowLoginScreen)
                         }
                     }
                 }
             }
-    }
-
-    private fun loadQueuedItems() {
-        viewModelScope.launch {
-            val queuedItems = queueRepository.getQueuedItems()
-            playerRepository.setToQueue(queuedItems, false)
-        }
-    }
-
-    private fun clearQueue() {
-        viewModelScope.launch {
-            playerRepository.clearQueue(true)
-        }
     }
 
     override fun onCleared() {

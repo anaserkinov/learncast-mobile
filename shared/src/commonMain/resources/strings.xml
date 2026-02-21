@@ -40,6 +40,7 @@
     <string name="play_all">Play all</string>
     <string name="play_now">Play now</string>
     <string name="no_text">No</string>
+    <string name="yes_text">Yes</string>
 
     <string name="download">Download</string>
     <string name="downloading">Downloading... %d%</string>
@@ -57,7 +58,7 @@
     <string name="stop">Stop</string>
     <string name="start">Start</string>
     <string name="end">End</string>
-    <string name="write_note">Write a note…</string>
+    <string name="write_note">Write a note...</string>
     <string name="save">Save</string>
 
     <string name="sync_notification_title">Syncing in background</string>
@@ -82,7 +83,6 @@
         <item quantity="other">%d lessons</item>
     </plurals>
 
-    <string name="yes">Yes</string>
     <string name="remove_downloads">Remove downloads</string>
     <string name="sign_out_confirm_message">You will be logged out from this device and will need to sign in again.</string>
     <string name="clear_cache_confirm_message">Cached data will be removed from this device. This won’t affect your account or downloaded content.</string>

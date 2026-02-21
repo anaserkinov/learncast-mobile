@@ -13,12 +13,14 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.anasmusa.learncast.core.collectAsPagingState
 import me.anasmusa.learncast.data.model.Author
 import me.anasmusa.learncast.data.repository.abstraction.AuthorRepository
 import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import kotlin.getValue
 
 data class AuthorListState(
     val searchQuery: String? = null,
@@ -41,6 +43,8 @@ class AuthorListViewModel(
 ) : BaseViewModel<AuthorListState, AuthorListIntent, AuthorListEvent>() {
     final override val state: StateFlow<AuthorListState>
         field = MutableStateFlow(AuthorListState())
+
+    val authors by state.collectAsPagingState(viewModelScope) { authors }
 
     init {
         viewModelScope.launch {

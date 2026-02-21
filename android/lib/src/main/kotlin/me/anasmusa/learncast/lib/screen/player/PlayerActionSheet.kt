@@ -25,7 +25,7 @@ import me.anasmusa.learncast.lib.theme.icon.RemoveDone
 import me.anasmusa.learncast.lib.theme.icon.RemoveDownload
 import me.anasmusa.learncast.lib.theme.icon.Star
 import me.anasmusa.learncast.lib.theme.icon.StarFilled
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 
 @Preview
 @Composable

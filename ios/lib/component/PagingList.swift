@@ -5,121 +5,86 @@
 //  Created by Anas Erkinjonov on 31/01/26.
 //
 
-import Shared
+internal import Shared
 import SwiftUI
 
-struct PagingList<T: AnyObject & Hashable, Content: View, ID: Hashable, Header: View, Footer: View>:
-    View
-{
+struct PagingList<T: AnyObject & Hashable & Identifiable, Content: View, Header: View>: View {
 
-    private let pagingState: ListPagingState<T>
-    private let cell: (T?) -> Content
-    private let id: KeyPath<ListPagingState<T>.Element, ID>
+    @State private var pagingState = ObservablePagingState<T>()
+    @State private var position = ScrollPosition(idType: T.ID.self)
+
+    private let flow: SkieSwiftFlow<ListPagingState<T>>
+    private let cell: (T) -> Content
     private let header: (() -> Header)?
-    private let footer: (() -> Footer)?
 
     init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
+        flow: SkieSwiftFlow<ListPagingState<T>>,
         header: (() -> Header)? = nil,
-        footer: (() -> Footer)? = nil,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
+        @ViewBuilder cell: @escaping (T) -> Content
     ) {
-        self.pagingState = pagingState
-        self.id = id
+        self.flow = flow
         self.header = header
-        self.footer = footer
         self.cell = cell
     }
 
     var body: some View {
-        List {
-            if let header {
-                header()
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-            }
+        ScrollViewReader { scrollView in
+            ScrollView {
+                LazyVStack {
+                    if let header {
+                        header()
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets())
+                    }
 
-            ForEach(
-                pagingState,
-                id: id
-            ) { item in
-                cell(item)
-            }
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                    ForEach(pagingState.indices, id: \.self) { index in
+                        if let item = pagingState[index] {
+                            cell(item)
+                                .id(item.id)
+                                .onAppear {
+                                    pagingState.notify(index: index)
+                                }
+                        } else {
+                            Spacer()
+                        }
+                    }
+                    .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
 
-            if pagingState.loadState.append is Paging_commonLoadState.Loading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, alignment: .center)
-            }
-
-            if let footer {
-                footer()
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-            }
-        }
-        .listStyle(.plain)
-        .refreshable {
-            pagingState.refresh()
-        }
-    }
-
-}
-
-#Preview {
-    PreviewRoot {
-        let pagingState = ListPagingState<Lesson>()
-        pagingState.update(flow: getLessonSamplePagingData(count: 2))
-        return PagingList(
-            pagingState: pagingState,
-            id: \.?.id
-        ) { lesson in
-            if let lesson {
-                LessonCell(lesson: lesson) {
-                    // handle click
+                    if pagingState.loadState.mediator?.append is Paging_commonLoadState.Loading {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
                 }
-            } else {
-                EmptyView()
+                .scrollTargetLayout()
+            }
+            .scrollPosition($position)
+            .refreshable {
+                await pagingState.refresh()
+            }
+            .task {
+                var task: Task<(), any Error>? = nil
+                for await state in flow {
+                    task?.cancel()
+                    task = Task {
+                        await pagingState.collect(state: state)
+                    }
+                }
+                task?.cancel()
             }
         }
-        .background(AppEnvironment().backgroundGradient())
-        .listStyle(PlainListStyle())
     }
+
 }
 
-extension PagingList where Header == EmptyView, Footer == EmptyView {
+extension PagingList where Header == EmptyView {
     init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
+        flow: SkieSwiftFlow<ListPagingState<T>>,
+        @ViewBuilder cell: @escaping (T) -> Content
     ) {
         self.init(
-            pagingState: pagingState,
-            id: id,
+            flow: flow,
             header: nil,
-            footer: nil,
-            cell: cell
-        )
-    }
-}
-
-extension PagingList where Footer == EmptyView {
-    init(
-        pagingState: ListPagingState<T>,
-        id: KeyPath<ListPagingState<T>.Element, ID>,
-        header: @escaping () -> Header,
-        @ViewBuilder cell: @escaping (ListPagingState<T>.Element) -> Content
-    ) {
-        self.init(
-            pagingState: pagingState,
-            id: id,
-            header: header,
-            footer: nil,
             cell: cell
         )
     }

@@ -34,7 +34,7 @@ import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.PrimaryButton
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.component.ConfirmationBottomSheet
 import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.core.backgroundBrush

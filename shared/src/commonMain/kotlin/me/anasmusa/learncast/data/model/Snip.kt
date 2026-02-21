@@ -49,7 +49,7 @@ fun getSampleSnip(id: Long = 1) =
         clientSnipId = "fdgf",
         startMs = 0L,
         endMs = 124321L,
-        note = "afdgfg",
+        note = "Snip note",
         createdAt = nowLocalDateTime(),
         lessonId = 2,
         title = "Lesson",

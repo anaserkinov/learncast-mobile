@@ -26,7 +26,7 @@
             </intent-filter>
         </service>
 
-        <service android:name="me.anasmusa.learncast.AndroidDownloadService"
+        <service android:name="me.anasmusa.learncast.data.service.AndroidDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync">
             <intent-filter>

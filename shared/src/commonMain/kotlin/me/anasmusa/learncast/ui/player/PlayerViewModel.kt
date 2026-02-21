@@ -20,7 +20,10 @@ import me.anasmusa.learncast.data.repository.abstraction.DownloadRepository
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.abstraction.PlayerRepository
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
-import me.anasmusa.learncast.data.repository.abstraction.SyncRepository
+import me.anasmusa.learncast.ui.BaseEvent
+import me.anasmusa.learncast.ui.BaseIntent
+import me.anasmusa.learncast.ui.BaseState
+import me.anasmusa.learncast.ui.BaseViewModel
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -31,9 +34,9 @@ data class PlayerState(
     val currentPositionMs: Long = 0L,
     val queuedCount: Int = 0,
     val snipCount: Int = -1,
-) : me.anasmusa.learncast.ui.BaseState
+) : BaseState
 
-sealed interface PlayerIntent : me.anasmusa.learncast.ui.BaseIntent {
+sealed interface PlayerIntent : BaseIntent {
     object TogglePlaybackState : PlayerIntent
 
     object Pause : PlayerIntent
@@ -61,17 +64,16 @@ sealed interface PlayerIntent : me.anasmusa.learncast.ui.BaseIntent {
     data object Refresh : PlayerIntent
 }
 
-sealed interface PlayerEvent : me.anasmusa.learncast.ui.BaseEvent {
+sealed interface PlayerEvent : BaseEvent {
     object ShowPlayer : PlayerEvent
 }
 
 class PlayerViewModel(
     private val outboxRepository: OutboxRepository,
-    private val syncRepository: SyncRepository,
     private val playerRepository: PlayerRepository,
     private val downloadRepository: DownloadRepository,
     private val snipRepository: SnipRepository,
-) : me.anasmusa.learncast.ui.BaseViewModel<PlayerState, PlayerIntent, PlayerEvent>() {
+) : BaseViewModel<PlayerState, PlayerIntent, PlayerEvent>() {
     final override val state: StateFlow<PlayerState>
         field = MutableStateFlow(PlayerState())
 
@@ -108,8 +110,8 @@ class PlayerViewModel(
                 }
             }
             launch {
-                playerRepository.queuedCount.collectLatest { queuedCount ->
-                    state.update { it.copy(queuedCount = queuedCount) }
+                playerRepository.observeQueuedCount().collectLatest { queuedCount ->
+                    state.update { it.copy(queuedCount = queuedCount - 1) }
                 }
             }
             launch {
@@ -119,10 +121,6 @@ class PlayerViewModel(
                             send(PlayerEvent.ShowPlayer)
                     }
                 }
-            }
-
-            launch {
-                syncRepository.sync(finishWhenDrained = false)
             }
         }
     }
@@ -159,6 +157,7 @@ class PlayerViewModel(
                     it.referenceId,
                     it.referenceUuid,
                     it.referenceType,
+                    it.title,
                     it.lessonId,
                     it.audioPath,
                     it.startMs,

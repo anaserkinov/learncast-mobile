@@ -1,6 +1,7 @@
 package me.anasmusa.learncast.data.repository.abstraction
 
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import me.anasmusa.learncast.data.model.QueueItem
 
@@ -8,8 +9,9 @@ interface PlayerRepository {
     val currentQueueItem: StateFlow<QueueItem?>
     val playbackPositionMs: StateFlow<Long>
     val playbackState: StateFlow<Int>
-    val queuedCount: StateFlow<Int>
     val events: Channel<Int>
+
+    fun observeQueuedCount(): Flow<Int>
 
     fun addToQueue(item: QueueItem)
 
@@ -38,11 +40,11 @@ interface PlayerRepository {
         id: Long,
     )
 
-    fun clearQueue(completely: Boolean)
+    suspend fun clearQueue(completely: Boolean)
 
     suspend fun stopService()
 
-    fun restoreService()
+    suspend fun startService(playWhenReady: Boolean?)
 
     fun destroy()
 }

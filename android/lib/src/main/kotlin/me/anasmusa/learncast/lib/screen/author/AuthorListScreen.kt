@@ -38,14 +38,12 @@ import me.anasmusa.learncast.lib.component.cell.AuthorCell
 import me.anasmusa.learncast.lib.core.backgroundBrush
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.Resource.string
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.author.AuthorListIntent
 import me.anasmusa.learncast.ui.author.AuthorListViewModel
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun TopicListScreenPreview() {
