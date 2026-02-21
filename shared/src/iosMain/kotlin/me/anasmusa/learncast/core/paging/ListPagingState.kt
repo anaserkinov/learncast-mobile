@@ -60,9 +60,11 @@ actual class ListPagingState<T : Any> actual constructor(
      *
      * @see peek
      */
-    operator fun get(index: Int): T? {
-        pagingDataPresenter[index] // this registers the value load
-        return peek(index)
+    fun notify(index: Int) {
+        try {
+            pagingDataPresenter[index] // this registers the value load
+        } catch (e: IndexOutOfBoundsException) {
+        }
     }
 
     fun getCurrentSnapshot(): ItemSnapshotList<T> = itemSnapshotList.value

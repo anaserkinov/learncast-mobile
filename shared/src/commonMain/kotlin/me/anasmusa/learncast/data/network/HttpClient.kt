@@ -83,6 +83,9 @@ internal fun HttpClientConfig<*>.configure(
                     )
                 }
             }
+            sendWithoutRequest {
+                it.url.pathSegments.lastOrNull() != "logout"
+            }
         }
     }
 

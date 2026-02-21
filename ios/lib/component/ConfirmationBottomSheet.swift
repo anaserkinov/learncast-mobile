@@ -84,7 +84,7 @@ struct ConfirmationBottomSheet: View {
         }
         .padding(.horizontal, 20)
         .presentationDetents([.height(calculateHeight())])
-        .presentationBackground(env.backgroundGradient())
+        .presentationBackground(Colors.surfaceContainerLow)
         .presentationDragIndicator(.visible)
     }
 

@@ -47,7 +47,7 @@ internal actual fun Module.platformModule() {
             SimpleCache(
                 File(cacheDir, "player").apply { mkdir() },
                 LeastRecentlyUsedCacheEvictor(200L * 1024 * 1024),
-                get<DatabaseProvider>(),
+                getKoin().get<DatabaseProvider>(),
             )
         }
     }
@@ -60,7 +60,7 @@ internal actual fun Module.platformModule() {
             SimpleCache(
                 (androidContext().getExternalFilesDir(Environment.DIRECTORY_PODCASTS)!!).apply { mkdirs() },
                 NoOpCacheEvictor(),
-                get<DatabaseProvider>(),
+                getKoin().get<DatabaseProvider>(),
             )
         }
     }

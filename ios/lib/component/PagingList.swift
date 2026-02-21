@@ -38,7 +38,7 @@ struct PagingList<T: AnyObject & Hashable & Identifiable, Content: View, Header:
                             .listRowInsets(EdgeInsets())
                     }
 
-                    ForEach(pagingState.range, id: \.self) { index in
+                    ForEach(pagingState.indices, id: \.self) { index in
                         if let item = pagingState[index] {
                             cell(item)
                                 .id(item.id)

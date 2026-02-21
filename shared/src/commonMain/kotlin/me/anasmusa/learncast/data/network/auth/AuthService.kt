@@ -7,6 +7,7 @@ import io.ktor.client.plugins.auth.authProvider
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.HttpHeaders
 import me.anasmusa.learncast.data.network.auth.model.Credentials
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.LoginResponse
@@ -35,12 +36,17 @@ internal class AuthService(
                 setBody(request)
             }.body<BaseResponse<Credentials>>()
 
-    suspend fun logout() {
+    /**
+     * accessToken is passed explicitly since AuthCircuitBreaker disables
+     * automatic token injection by the Auth (Bearer) plugin for this request.
+     */
+    suspend fun logout(accessToken: String) {
         client
             .authProvider<BearerAuthProvider>()
             ?.clearToken()
         client.post(LOGOUT) {
             attributes.put(AuthCircuitBreaker, Unit)
+            headers.append(HttpHeaders.Authorization, "Bearer $accessToken")
         }
     }
 }

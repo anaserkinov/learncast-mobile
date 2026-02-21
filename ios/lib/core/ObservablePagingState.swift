@@ -16,7 +16,7 @@ class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
 
     private var pagingState: ListPagingState<T>? = nil
 
-    var range: Range<Int> = 0..<0
+    var indices: Range<Int> = 0..<0
     var loadState: Paging_commonCombinedLoadStates = Paging_commonCombinedLoadStates(
         refresh: InitialLoadStates.refresh,
         prepend: InitialLoadStates.prepend,
@@ -39,7 +39,7 @@ class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
 
     func notify(index: Int) {
         if let state = pagingState {
-            state.get(index: Int32(index))
+            state.notify(index: Int32(index))
         }
     }
 
@@ -72,7 +72,7 @@ class ObservablePagingState<T: AnyObject & Identifiable & Equatable> {
 
     private func collectList(pagingState: ListPagingState<T>) async {
         for await list in pagingState.itemSnapshotList {
-            range = 0..<list.count
+            indices = 0..<list.count
         }
     }
 }

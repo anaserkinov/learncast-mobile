@@ -3,7 +3,9 @@ package me.anasmusa.learncast.data.repository.implementation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.PreferenceData
 import me.anasmusa.learncast.Strings
@@ -95,9 +97,11 @@ internal class AuthRepositoryImpl(
                         koin.getScopeOrNull(AuthorizedUserScope.ID)?.close()
                     }
                 tokenManager.cancelRefresh()
-                try {
-                    authService.logout()
-                } catch (e: Exception) {
+                preference.getToken().take(1).first()?.second?.let { accessToken ->
+                    try {
+                        authService.logout(accessToken = accessToken)
+                    } catch (e: Exception) {
+                    }
                 }
                 storageRepository.clearCaches()
                 storageRepository.clearDownloads()

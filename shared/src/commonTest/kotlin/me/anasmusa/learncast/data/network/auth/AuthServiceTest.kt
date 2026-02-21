@@ -135,7 +135,7 @@ class AuthServiceTest : BehaviorSpec({
 
             Then("completes successfully without throwing exceptions") {
                 shouldNotThrow<Throwable> {
-                    service.logout()
+                    service.logout(accessToken = VALID_ACCESS_TOKEN)
                 }
             }
         }

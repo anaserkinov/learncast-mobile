@@ -16,7 +16,7 @@ import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
 
 data class ProfileState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val user: User? = null,
     val isQueueEmpty: Boolean = true,
 ) : BaseState
