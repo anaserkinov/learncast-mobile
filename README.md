@@ -1,62 +1,203 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+<p align="center">
+  <img src="/android/learncast/src/main/ic_launcher-playstore.png" alt="App Logo" width="120" />
+</p>
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+<h1 align="center">LearnCast</h1>
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+<p align="center">
+  LearnCast is an audio learning platform — a podcast-style app for structured educational content. Users can browse lessons by author and topic, build a playback queue, create timestamped snips from any lesson, and listen offline with downloaded audio.
+  The project is built with <b> Kotlin Multiplatform (KMP) </b>. Business logic, data, networking, and ViewModels are written once in the `shared` module and consumed by native Android (Jetpack Compose) and iOS (SwiftUI) UIs.
+</p>
 
-* [/shared](./shared/src) is for the code that will be shared between all targets in the project.
-  The most important subfolder is [commonMain](./shared/src/commonMain/kotlin). If preferred, you
-  can add code to the platform-specific folders here too.
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## 📋 Table of Contents
 
-### SwiftUI-specific note for Flow-based state
+1. [Project Structure](#1-project-structure)
+2. [Kotlin Versions & Key Dependencies](#2-kotlin-versions--key-dependencies)
+3. [Modules at a Glance](#3-modules-at-a-glance)
+4. [String Resources & Localization](#4-string-resources--localization)
+5. [CI / Fastlane](#5-ci--fastlane)
+6. [Code Quality & Git Hooks](#6-code-quality--git-hooks)
+7. [`shared/` — KMP Business Logic → README](shared/README.md)
+   - [1. Module Overview](shared/README.md#1-module-overview)
+   - [2. Tech Stack at a Glance](shared/README.md#2-tech-stack-at-a-glance)
+   - [3. Local Database](shared/README.md#3-local-database)
+   - [4. Preferences / Settings Storage](shared/README.md#4-preferences--settings-storage)
+   - [5. File & Cache Storage](shared/README.md#5-file--cache-storage)
+   - [6. Networking](shared/README.md#6-networking)
+   - [7. Repositories](shared/README.md#7-repositories)
+   - [8. Platform-Specific Implementations](shared/README.md#8-platform-specific-implementations)
+   - [9. ViewModels](shared/README.md#9-viewmodels)
+   - [10. Dependency Injection](shared/README.md#10-dependency-injection)
+   - [11. Testing](shared/README.md#11-testing)
+   - [12. Package Structure](shared/README.md#12-package-structure)
+8. [`android/` — Android UI → README](android/README.md)
+   - [1. Module Overview](android/README.md#1-module-overview)
+   - [2. Tech Stack at a Glance](android/README.md#2-tech-stack-at-a-glance)
+   - [3. Module: `learncast` (App)](android/README.md#3-module-learncast-app)
+   - [4. Module: `lib` (UI Library)](android/README.md#4-module-lib-ui-library)
+   - [5. Application Bootstrapping](android/README.md#5-application-bootstrapping)
+   - [6. Navigation](android/README.md#6-navigation)
+   - [7. Theme & Design System](android/README.md#7-theme--design-system)
+   - [8. Screens](android/README.md#8-screens)
+   - [9. Reusable Components](android/README.md#9-reusable-components)
+   - [10. Notifications & Background Services](android/README.md#10-notifications--background-services)
+   - [11. Localization (String Resources)](android/README.md#11-localization-string-resources)
+   - [12. Build Configuration & Variants](android/README.md#12-build-configuration--variants)
+   - [13. Package Structure](android/README.md#13-package-structure)
+9. [`ios/` — iOS UI → README](ios/README.md)
+   - [1. Source Group Overview](ios/README.md#1-source-group-overview)
+   - [2. Tech Stack at a Glance](ios/README.md#2-tech-stack-at-a-glance)
+   - [3. Group: `learncast` (App)](ios/README.md#3-group-learncast-app)
+   - [4. Group: `lib` (UI Library)](ios/README.md#4-group-lib-ui-library)
+   - [5. Application Bootstrapping](ios/README.md#5-application-bootstrapping)
+   - [6. Koin Integration](ios/README.md#6-koin-integration)
+   - [7. Navigation](ios/README.md#7-navigation)
+   - [8. Theme & Design System](ios/README.md#8-theme--design-system)
+   - [9. Screens](ios/README.md#9-screens)
+   - [10. Reusable Components](ios/README.md#10-reusable-components)
+   - [11. Audio Playback Engine](ios/README.md#11-audio-playback-engine)
+   - [12. Download Manager](ios/README.md#12-download-manager)
+   - [13. Localization (String Resources)](ios/README.md#13-localization-string-resources)
+   - [14. Build Configuration](ios/README.md#14-build-configuration)
+   - [15. Package Structure](ios/README.md#15-package-structure)
 
-Some flows (for example, `lessons` in `HomeViewModel`) are exposed **outside of the state** instead of being stored directly in `HomeState`.
+---
 
-```kotlin
-val lessons by lazy {
-    state.map { it.lessons }
-        .distinctUntilChanged()
-}
+## 1. Project Structure
+
+```
+learncast/
+├── shared/          # KMP module — business logic, data, ViewModels (Android + iOS)
+├── android/
+│   ├── learncast/   # Android application entry point
+│   └── lib/         # Android UI library (Jetpack Compose screens, components, theme)
+├── ios/
+│   ├── learncast/   # iOS application entry point
+│   └── lib/         # iOS UI library (SwiftUI screens, components, theme)
+├── buildSrc/        # Shared build logic and convention plugins
+├── gradle/
+│   └── libs.versions.toml   # Version catalog — single source of truth for all dependency versions
+└── fastlane/        # CI automation (Firebase Distribution + Play Store deployment)
 ```
 
-This pattern exists mainly for **SwiftUI interoperability**.
+### Gradle modules
 
-When using `Flow<PagingData<T>>` inside state objects:
+| Module | Plugin | Description |
+|---|---|---|
+| `:shared` | `kotlin.multiplatform` | All KMP source sets: `commonMain`, `androidMain`, `iosMain` |
+| `:android:learncast` | `com.android.application` | Android app entry point |
+| `:android:lib` | `com.android.library` | Android UI library |
 
-* `Flow` is **not `Equatable`** on the Swift side
-* SwiftUI cannot reliably detect whether the value actually changed
-* This can cause **unnecessary re-renders** in `List` / `ForEach`
+The iOS source groups (`ios/learncast`, `ios/lib`) are not Gradle modules — they are compiled by Xcode using the `Shared.framework` produced by `:shared`.
 
-By exposing such flows separately, we reduce redundant UI updates on iOS.
+---
 
-> **Note:** This is not an issue on Android. In Android builds, this indirection is expected to be optimized away by **R8**, so it has no negative performance impact.
+## 2. Kotlin Versions & Key Dependencies
+
+| Dependency | Version |
+|---|---|
+| Kotlin | 2.3.0 |
+| AGP (Android Gradle Plugin) | 9.0.0 |
+| KSP | 2.3.4 |
+| SKIE | 0.10.9 |
+| Ktor | 3.4.0 |
+| Koin | 4.1.1 |
+| Room | 2.8.4 |
+| Paging | 3.4.1 |
+| Media3 | 1.9.0 |
+| Jetpack Compose BOM | 2026.01.00 |
+| Material3 | 1.5.0-alpha12 |
+| Coil | 3.3.0 |
+| Haze | 1.7.1 |
+| Firebase BOM | 34.8.0 |
+| Coroutines | 1.10.2 |
+| kotlinx-datetime | 0.7.1 |
+| kotlinx-serialization-json | 1.9.0 |
+| Kotest | 6.1.1 |
+| Napier (logging) | 2.7.1 |
+
+**Android SDK targets:** min 26 · compile 36 · target 36
+
+All versions are declared in `gradle/libs.versions.toml` (Gradle version catalog) and referenced throughout all `build.gradle.kts` files via the `libs.*` type-safe accessor.
+
+---
+
+## 3. Modules at a Glance
+
+### `shared`
+
+The heart of the project. Contains all source sets compiled for Android and iOS:
+
+- `commonMain` — ViewModels, repositories, use cases, network (Ktor), database (Room / SQLite), paging (Paging 3), DI graph (Koin), domain models, and string resources
+- `androidMain` — Android-specific implementations (ExoPlayer delegate, `AndroidDownloadService`, WorkManager sync worker)
+- `iosMain` — iOS-specific Ktor engine (`Darwin`), SQLite bundled driver
+
+SKIE (`co.touchlab.skie`) is applied to the `:shared` module to generate Swift-friendly wrappers for Kotlin flows, sealed classes, and suspend functions, making the shared API ergonomic to consume from SwiftUI.
+
+### `android/learncast` + `android/lib`
+
+Native Android UI built with Jetpack Compose. `learncast` is the thin application module; `lib` contains all screens, components, navigation, and the theme. See the [Android README](android/README.md) for full details.
+
+### `ios/learncast` + `ios/lib`
+
+Native iOS UI built with SwiftUI. `learncast` is the thin app target; `lib` contains all screens, components, the AVFoundation player engine, the background download manager, and the theme. See the [iOS README](ios/README.md) for full details.
+
+---
+
+## 4. String Resources & Localization
+
+String resources are defined once in `shared/src/commonMain/resources/` and shared across all three modules:
+
+| File | Content |
+|---|---|
+| `strings.xml` | English strings |
+| `strings-uz.xml` | Uzbek strings |
+
+Two Gradle tasks copy these files into the platform-specific locations before each build:
+
+| Task | Defined in | Copies to | Triggered by |
+|---|---|---|---|
+| `copyStringsToAndroid` | `android/lib/build.gradle.kts` | `android/lib/src/main/assets/` | every Android build (`preBuild`) |
+| `copyStringsToIos` | `shared/build.gradle.kts` | `ios/Resources/` | every `embedAndSign` step |
+
+At runtime, `Resource.shared.setLocale(locale:)` loads the appropriate XML file, and all UI strings are resolved via the `Strings` constants object (e.g. `Strings.shared.HOME.string()`).
+
+---
+
+## 5. CI / Fastlane
+
+**File:** `fastlane/Fastfile`
+
+Two lanes are defined for the Android platform:
+
+| Lane | Command | Description |
+|---|---|---|
+| `distribute` | `bundle exec fastlane distribute` | Assembles a `release` APK with `environment=dev` and uploads it to Firebase App Distribution. Automatically builds a changelog from PR commits (on `pull_request` events) or push commits (on `push` events) using the GitHub API |
+| `deploy` | `bundle exec fastlane deploy` | Assembles a release APK and uploads it to Google Play Store via `upload_to_play_store` |
+
+The `versionNameSuffix` Gradle property is set by the `distribute` lane to the sanitised branch name (for PRs) or `"dev"` (for push events), so testers can identify builds by branch.
+
+Firebase App Distribution credentials are read from `firebase_distribution.json` (not committed) and `APP_ID` / `GITHUB_TOKEN` environment variables.
+
+---
+
+## 6. Code Quality & Git Hooks
+
+A `pre-commit` hook is installed automatically before every Android build via the `installGitHook` Gradle task registered in the root `build.gradle.kts`. It runs on every `git commit` and enforces formatting and linting for both Kotlin and Swift files in the staged changeset.
+
+### Kotlin (ktlint)
+
+1. Runs `./gradlew ktlintFormat -Pincludes=<changed files>` — auto-formats staged Kotlin/KTS files
+2. Re-stages the formatted files
+3. Runs `./gradlew ktlintCheck -Pincludes=<changed files>` — fails the commit if any lint errors remain
+
+### Swift (swift-format)
+
+1. Runs `swift-format format <changed files> -i --configuration ios/.swift-format` — auto-formats staged Swift files
+2. Re-stages the formatted files
+3. Runs `swift-format lint <changed files> -s --configuration ios/.swift-format` — fails the commit if any lint violations remain
+
+The hook exits with code `1` on any failure, blocking the commit until errors are resolved.

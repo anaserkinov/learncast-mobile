@@ -96,9 +96,3 @@ extension String {
         Resource.shared.quantityString(self, arg: value)
     }
 }
-
-extension Kotlinx_coroutines_coreFlow {
-    func castToPagingFlow<T>() -> SkieSwiftFlow<Paging_commonPagingData<T>> {
-        SkieSwiftFlow(SkieKotlinFlow<Paging_commonPagingData<T>>(self))
-    }
-}
