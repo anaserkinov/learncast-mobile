@@ -67,6 +67,7 @@
 /* Begin PBXFileReference section */
 		A81B4FA22F30AB8100937968 /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
 		A8257F4D2F22771300C2EA7B /* learncast.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = learncast.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A848A16E2F4B8F9400198324 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A8B1B4802F43570D000627F4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		A8B1B4822F43570D000627F4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		A8B5D7B72F23A8C1007A433E /* lib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = lib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,6 +161,7 @@
 		F6ABD0B12E8ED841F94D8F97 = {
 			isa = PBXGroup;
 			children = (
+				A848A16E2F4B8F9400198324 /* README.md */,
 				A81B4FA22F30AB8100937968 /* .swift-format */,
 				A8B5D7CF2F23B86B007A433E /* Resources */,
 				475A449428F32ABF0FE14394 /* Configuration */,
