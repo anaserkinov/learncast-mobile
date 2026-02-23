@@ -49,7 +49,7 @@ import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.snip.SnipListIntent
 import me.anasmusa.learncast.ui.snip.SnipListState
 import me.anasmusa.learncast.ui.snip.SnipListViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Preview
 @Composable
@@ -76,7 +76,7 @@ private fun SnipListScreenPreview() {
 
 @Composable
 fun SnipListScreen(
-    viewModel: SnipListViewModel = koinViewModel<SnipListViewModel>()
+    viewModel: SnipListViewModel = koinInject<SnipListViewModel>()
 ) {
     val env = LocalAppEnvironment.current
     val state by viewModel.state.collectAsState()
@@ -122,7 +122,10 @@ private fun _SnipListScreen(
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
+                ),
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(

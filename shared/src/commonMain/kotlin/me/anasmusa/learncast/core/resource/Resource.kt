@@ -13,6 +13,7 @@ object Resource {
     ) {
         if (strings.isEmpty()) {
             setStrings("en", readStringFile("en"))
+            if (locale == "en") onLoad()
         }
         if (currentLocale == locale) {
             return

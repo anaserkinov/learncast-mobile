@@ -58,7 +58,7 @@ import me.anasmusa.learncast.lib.theme.icon.PersonIcon
 import me.anasmusa.learncast.ui.home.HomeIntent
 import me.anasmusa.learncast.ui.home.HomeState
 import me.anasmusa.learncast.ui.home.HomeViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Preview
 @Composable
@@ -84,7 +84,7 @@ private fun HomeScreenPreview() {
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel<HomeViewModel>()
+    viewModel: HomeViewModel = koinInject<HomeViewModel>()
 ) {
     val env = LocalAppEnvironment.current
     val navController = LocalNavController.current
