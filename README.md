@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/android/learncast/src/main/ic_launcher-playstore.png" alt="App Logo" width="120" />
+  <img src="/assets/images/logo.png" alt="App Logo" width="120" />
 </p>
 
 <h1 align="center">LearnCast</h1>
