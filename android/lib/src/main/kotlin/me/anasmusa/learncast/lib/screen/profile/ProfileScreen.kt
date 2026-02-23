@@ -49,7 +49,7 @@ import me.anasmusa.learncast.lib.theme.icon.Storage
 import me.anasmusa.learncast.ui.profile.ProfileIntent
 import me.anasmusa.learncast.ui.profile.ProfileState
 import me.anasmusa.learncast.ui.profile.ProfileViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import org.koin.compose.koinInject
 
 @Preview
 @Composable
@@ -68,7 +68,7 @@ private fun ProfileScreenPreview() {
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinViewModel<ProfileViewModel>()
+    viewModel: ProfileViewModel = koinInject<ProfileViewModel>()
 ) {
     val state by viewModel.state.collectAsState()
 

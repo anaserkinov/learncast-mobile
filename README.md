@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/android/learncast/src/main/ic_launcher-playstore.png" alt="App Logo" width="120" />
+  <img src="/assets/images/logo.png" alt="App Logo" width="120" />
 </p>
 
 <h1 align="center">LearnCast</h1>
@@ -9,6 +9,27 @@
   The project is built with <b> Kotlin Multiplatform (KMP) </b>. Business logic, data, networking, and ViewModels are written once in the `shared` module and consumed by native Android (Jetpack Compose) and iOS (SwiftUI) UIs.
 </p>
 
+### Android App
+<div>
+  <img src="/assets/images/android_home.webp" width="18%" alt="Home"/>
+  <img src="/assets/images/android_player.webp" width="18%" alt="Player"/>
+  <img src="/assets/images/android_queue.webp" width="18%" alt="Queue"/>
+  <img src="/assets/images/android_snip_create.webp" width="18%" alt="Snip Create"/>
+  <img src="/assets/images/android_snip_list.webp" width="18%" alt="Snips"/>
+</div>
+
+[See All](android/README.md#app)
+
+### iOS App
+<div>
+  <img src="/assets/images/ios_home.webp" width="18%" alt="Home"/>
+  <img src="/assets/images/ios_player.webp" width="18%" alt="Player"/>
+  <img src="/assets/images/ios_queue.webp" width="18%" alt="Queue"/>
+  <img src="/assets/images/ios_snip_create.webp" width="18%" alt="Snip Create"/>
+  <img src="/assets/images/ios_snip_list.webp" width="18%" alt="Snips"/>
+</div>
+
+[See All](ios/README.md#app)
 
 ---
 
