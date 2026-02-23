@@ -222,3 +222,11 @@ A `pre-commit` hook is installed automatically before every Android build via th
 3. Runs `swift-format lint <changed files> -s --configuration ios/.swift-format` — fails the commit if any lint violations remain
 
 The hook exits with code `1` on any failure, blocking the commit until errors are resolved.
+
+---
+
+### 7. [`shared/` — KMP Business Logic → README](shared/README.md)
+
+### 8. [`android/` — Android UI → README](android/README.md)
+
+### 9. [`ios/` — iOS UI → README](ios/README.md)
