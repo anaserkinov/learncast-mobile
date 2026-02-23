@@ -10,24 +10,26 @@
 </p>
 
 ### Android App
-<p align="center">
-  <img src="/assets/images/android_home.webp" width="22%" alt="Home"/>
-  <img src="/assets/images/android_player.webp" width="22%" alt="Player"/>
-  <img src="/assets/images/android_queue.webp" width="22%" alt="Queue"/>
-  <img src="/assets/images/android_snip_list.webp" width="22%" alt="Snips"/>
-</p>
+<div>
+  <img src="/assets/images/android_home.webp" width="18%" alt="Home"/>
+  <img src="/assets/images/android_player.webp" width="18%" alt="Player"/>
+  <img src="/assets/images/android_queue.webp" width="18%" alt="Queue"/>
+  <img src="/assets/images/android_snip_create.webp" width="18%" alt="Snip Create"/>
+  <img src="/assets/images/android_snip_list.webp" width="18%" alt="Snips"/>
+</div>
 
-[See All](#3-modules-at-a-glance)
+[See All](android/README.md#app)
 
 ### iOS App
-<p align="center">
-  <img src="/assets/images/ios_home.webp" width="22%" alt="Home"/>
-  <img src="/assets/images/ios_player.webp" width="22%" alt="Player"/>
-  <img src="/assets/images/ios_queue.webp" width="22%" alt="Queue"/>
-  <img src="/assets/images/ios_snip_list.webp" width="22%" alt="Snips"/>
-</p>
+<div>
+  <img src="/assets/images/ios_home.webp" width="18%" alt="Home"/>
+  <img src="/assets/images/ios_player.webp" width="18%" alt="Player"/>
+  <img src="/assets/images/ios_queue.webp" width="18%" alt="Queue"/>
+  <img src="/assets/images/ios_snip_create.webp" width="18%" alt="Snip Create"/>
+  <img src="/assets/images/ios_snip_list.webp" width="18%" alt="Snips"/>
+</div>
 
-[See All](#3-modules-at-a-glance)
+[See All](ios/README.md#app)
 
 ---
 
