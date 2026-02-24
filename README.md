@@ -5,8 +5,15 @@
 <h1 align="center">LearnCast</h1>
 
 <p align="center">
-  LearnCast is an audio learning platform — a podcast-style app for structured educational content. Users can browse lessons by author and topic, build a playback queue, create timestamped snips from any lesson, and listen offline with downloaded audio.
-  The project is built with <b> Kotlin Multiplatform (KMP) </b>. Business logic, data, networking, and ViewModels are written once in the `shared` module and consumed by native Android (Jetpack Compose) and iOS (SwiftUI) UIs.
+  <b>LearnCast</b> is an audio learning platform — a podcast-style app for structured educational content. Users can browse lessons by author and topic, build a playback queue, create timestamped snips from any lesson, and listen offline with downloaded audio.
+</p>
+
+<p align="center">
+  We built this app solely for learning purposes. All podcast materials in the app are sourced from the <a href="https://www.kaggle.com/datasets/listennotes/all-podcast-episodes-published-in-december-2017" target="_blank">ListenNotes Kaggle dataset</a>.
+</p>
+
+<p align="center">
+  The project is built with <b>Kotlin Multiplatform (KMP)</b>. Business logic, data, networking, and ViewModels are written once in the `shared` module and consumed by native Android (Jetpack Compose) and iOS (SwiftUI) UIs.
 </p>
 
 ### Android App
