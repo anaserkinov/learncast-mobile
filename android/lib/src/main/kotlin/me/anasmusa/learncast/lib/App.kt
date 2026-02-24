@@ -67,6 +67,7 @@ import me.anasmusa.learncast.core.resource.Resource
 import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.AppConfig
+import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.lib.core.ProvideAppEnvironment
 import me.anasmusa.learncast.lib.nav.ProvideNavController
 import me.anasmusa.learncast.lib.nav.Screen
@@ -119,7 +120,7 @@ fun App(
 
     var stringsLoaded by remember { mutableStateOf(Resource.isLoaded) }
 
-    Resource.setLocale("uz") {
+    Resource.setLocale(appConfig.preferredLang) {
         stringsLoaded = true
     }
 
@@ -360,6 +361,7 @@ fun AppTheme(content: @Composable () -> Unit) {
         publicBaseUrl = "http://localhost:3000",
         telegramBotId = 8292515516L,
         googleClientId = "",
+        preferredLang = "uz"
     )
     val assets = LocalContext.current.assets
     Resource.setStrings(

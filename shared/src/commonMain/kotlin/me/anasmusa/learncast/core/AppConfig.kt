@@ -11,6 +11,7 @@ data class AppConfig(
     val publicBaseUrl: String = "",
     val telegramBotId: Long = 0L,
     val googleClientId: String = "",
+    val preferredLang: String = "en",
     val downloadNotificationTitle: Int = 0,
     val downloadNotificationMessage: Int = 0,
 ) {
@@ -35,6 +36,7 @@ data class AppConfig(
             publicBaseUrl: String,
             telegramBotId: Long,
             googleClientId: String,
+            preferredLang: String,
         ) {
             appConfig =
                 appConfig.copy(
@@ -45,6 +47,7 @@ data class AppConfig(
                     publicBaseUrl = publicBaseUrl,
                     telegramBotId = telegramBotId,
                     googleClientId = googleClientId,
+                    preferredLang = preferredLang,
                 )
         }
 

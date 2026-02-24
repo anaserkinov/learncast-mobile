@@ -14,6 +14,7 @@ class ApplicationLoader : ApplicationLoader() {
             publicBaseUrl = "https://learncast.anasmusa.me",
             telegramBotId = 8538344134L,
             googleClientId = "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
+            preferredLang = "en"
         )
         super.onCreate()
     }
