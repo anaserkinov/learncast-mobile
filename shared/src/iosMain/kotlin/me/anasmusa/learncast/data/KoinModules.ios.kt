@@ -5,6 +5,8 @@ import me.anasmusa.learncast.core.player.avplayer.cache.CacheIndex
 import me.anasmusa.learncast.core.player.avplayer.cache.MetadataIndex
 import me.anasmusa.learncast.data.local.preference.DataStoreFactory
 import me.anasmusa.learncast.data.local.preference.IosDataStoreFactory
+import me.anasmusa.learncast.data.local.storage.IosStorageManager
+import me.anasmusa.learncast.data.local.storage.StorageManager
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -27,5 +29,9 @@ internal actual fun Module.platformModule() {
 
     factory<DataStoreFactory> {
         IosDataStoreFactory()
+    }
+
+    factory<StorageManager> {
+        IosStorageManager()
     }
 }

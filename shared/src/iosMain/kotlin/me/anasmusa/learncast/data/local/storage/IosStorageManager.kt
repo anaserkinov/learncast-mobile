@@ -59,5 +59,3 @@ class IosStorageManager :
         fileManager.removeItemAtURL(audioDirUrl, null)
     }
 }
-
-actual fun createStorageManager(): StorageManager = IosStorageManager()

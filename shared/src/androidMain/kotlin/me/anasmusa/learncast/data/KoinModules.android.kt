@@ -12,6 +12,8 @@ import androidx.media3.datasource.cache.SimpleCache
 import me.anasmusa.learncast.core.getOrCreateScope
 import me.anasmusa.learncast.data.local.preference.AndroidDataStoreFactory
 import me.anasmusa.learncast.data.local.preference.DataStoreFactory
+import me.anasmusa.learncast.data.local.storage.AndroidStorageManager
+import me.anasmusa.learncast.data.local.storage.StorageManager
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import me.anasmusa.learncast.data.network.FileStorage
 import org.koin.android.ext.koin.androidContext
@@ -72,5 +74,9 @@ internal actual fun Module.platformModule() {
 
     factory<DataStoreFactory> {
         AndroidDataStoreFactory(androidContext())
+    }
+
+    factory<StorageManager> {
+        AndroidStorageManager(androidContext())
     }
 }

@@ -14,8 +14,6 @@ import me.anasmusa.learncast.data.local.db.snip.SnipDao
 import me.anasmusa.learncast.data.local.db.topic.TopicDao
 import me.anasmusa.learncast.data.local.preference.PreferenceImpl
 import me.anasmusa.learncast.data.local.preference.Preferences
-import me.anasmusa.learncast.data.local.storage.StorageManager
-import me.anasmusa.learncast.data.local.storage.createStorageManager
 import me.anasmusa.learncast.data.repository.abstraction.OutboxRepository
 import me.anasmusa.learncast.data.repository.implementation.OutboxRepositoryImpl
 import org.koin.core.module.Module
@@ -26,10 +24,6 @@ internal fun Module.localModule() {
     }
     single<AppDatabase> {
         getAppDatabase()
-    }
-
-    factory<StorageManager> {
-        createStorageManager()
     }
 
     factory<DBConnection> {
