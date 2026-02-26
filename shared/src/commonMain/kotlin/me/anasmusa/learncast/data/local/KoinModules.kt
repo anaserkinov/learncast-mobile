@@ -22,7 +22,7 @@ import org.koin.core.module.Module
 
 internal fun Module.localModule() {
     single<Preferences> {
-        PreferenceImpl()
+        PreferenceImpl(get())
     }
     single<AppDatabase> {
         getAppDatabase()

@@ -11,6 +11,8 @@ import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.getOrCreateScope
+import me.anasmusa.learncast.data.local.preference.AndroidDataStoreFactory
+import me.anasmusa.learncast.data.local.preference.DataStoreFactory
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import me.anasmusa.learncast.data.network.FileStorage
 import org.koin.android.ext.koin.androidContext
@@ -67,5 +69,9 @@ internal actual fun Module.platformModule() {
         FileStorage(
             File(cacheDir, "http"),
         )
+    }
+
+    factory<DataStoreFactory> {
+        AndroidDataStoreFactory(androidContext())
     }
 }
