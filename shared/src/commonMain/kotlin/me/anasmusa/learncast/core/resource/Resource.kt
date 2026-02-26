@@ -1,5 +1,7 @@
 package me.anasmusa.learncast.core.resource
 
+import org.koin.mp.KoinPlatform
+
 object Resource {
     private var currentLocale = "en"
     private val strings = HashMap<String, String>()
@@ -11,8 +13,10 @@ object Resource {
         locale: String,
         onLoad: () -> Unit,
     ) {
+        val resourceManager = KoinPlatform.getKoin().get<ResourceManager>()
+
         if (strings.isEmpty()) {
-            setStrings("en", readStringFile("en"))
+            setStrings("en", resourceManager.readStringFile("en"))
             if (locale == "en") onLoad()
         }
         if (currentLocale == locale) {
@@ -20,7 +24,7 @@ object Resource {
         }
         setStrings(
             locale,
-            readStringFile(locale),
+            resourceManager.readStringFile(locale),
         )
         onLoad()
     }
@@ -76,5 +80,3 @@ object Resource {
             ?: ""
     }
 }
-
-expect fun readStringFile(locale: String): List<Pair<String, String>>

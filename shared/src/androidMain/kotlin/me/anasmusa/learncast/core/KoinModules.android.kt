@@ -10,6 +10,8 @@ import me.anasmusa.learncast.core.player.AndroidAudioPlayer
 import me.anasmusa.learncast.core.player.AndroidPlayerController
 import me.anasmusa.learncast.core.player.AudioPlayer
 import me.anasmusa.learncast.core.player.PlayerController
+import me.anasmusa.learncast.core.resource.AndroidResourceManager
+import me.anasmusa.learncast.core.resource.ResourceManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 
@@ -29,5 +31,9 @@ actual fun Module.platformModule() {
 
     factory<AudioPlayer> {
         AndroidAudioPlayer(androidContext(), it[0], it[1])
+    }
+
+    factory<ResourceManager> {
+        AndroidResourceManager(androidContext())
     }
 }

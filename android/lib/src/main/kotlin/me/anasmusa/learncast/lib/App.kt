@@ -68,6 +68,7 @@ import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.AppConfig
 import me.anasmusa.learncast.core.appConfig
+import me.anasmusa.learncast.core.resource.AndroidResourceManager
 import me.anasmusa.learncast.lib.core.ProvideAppEnvironment
 import me.anasmusa.learncast.lib.nav.ProvideNavController
 import me.anasmusa.learncast.lib.nav.Screen
@@ -78,7 +79,6 @@ import me.anasmusa.learncast.lib.theme.MontserratTypography
 import me.anasmusa.learncast.lib.theme.darkScheme
 import me.anasmusa.learncast.lib.theme.icon.CutIcon
 import me.anasmusa.learncast.lib.theme.icon.HomeIcon
-import me.anasmusa.learncast.core.resource.parseStringsXml
 import me.anasmusa.learncast.ui.AppEvent
 import me.anasmusa.learncast.ui.AppIntent
 import me.anasmusa.learncast.ui.AppViewModel
@@ -363,11 +363,12 @@ fun AppTheme(content: @Composable () -> Unit) {
         googleClientId = "",
         preferredLang = "uz"
     )
-    val assets = LocalContext.current.assets
+    val context = LocalContext.current
+    val resourceManager = AndroidResourceManager(context)
     Resource.setStrings(
         "en",
-        parseStringsXml(
-            assets.open("strings.xml").bufferedReader().use(BufferedReader::readText),
+        resourceManager.parseStringsXml(
+            context.assets.open("strings.xml").bufferedReader().use(BufferedReader::readText),
         ),
     )
 
