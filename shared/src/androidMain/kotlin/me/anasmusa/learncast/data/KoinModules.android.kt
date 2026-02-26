@@ -9,7 +9,6 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.getOrCreateScope
 import me.anasmusa.learncast.data.local.preference.AndroidDataStoreFactory
 import me.anasmusa.learncast.data.local.preference.DataStoreFactory
@@ -24,7 +23,7 @@ import java.io.File
 internal actual fun Module.platformModule() {
     single<SQLiteDatabase> {
         SQLiteDatabase.openOrCreateDatabase(
-            ApplicationLoader.context.getDatabasePath("app.db"),
+            androidContext().getDatabasePath("app.db"),
             null,
         )
     }
