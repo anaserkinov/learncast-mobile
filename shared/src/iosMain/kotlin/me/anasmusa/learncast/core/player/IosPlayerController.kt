@@ -40,7 +40,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private class IOSPlayerController :
+internal class IosPlayerController :
     PlayerController,
     KoinComponent {
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -92,7 +92,7 @@ private class IOSPlayerController :
 
                     if (
                         !isPlaying &&
-                        this@IOSPlayerController.isPlaying.value &&
+                        this@IosPlayerController.isPlaying.value &&
                         playerDelegate?.playbackState() == PlaybackState.STATE_READY &&
                         itemId.value == playerDelegate?.currentItem()?.id &&
                         (playerDelegate?.getCurrentPosition() ?: 0L) > 0L
@@ -104,7 +104,7 @@ private class IOSPlayerController :
                             )
                         }
                     }
-                    this@IOSPlayerController.isPlaying.update { isPlaying }
+                    this@IosPlayerController.isPlaying.update { isPlaying }
                 }
 
                 override fun onItemTransition(
@@ -396,6 +396,3 @@ private class IOSPlayerController :
         playerDelegate = null
     }
 }
-
-// MARK: - Factory Function
-internal actual fun createPlayer(): PlayerController = IOSPlayerController()

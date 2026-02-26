@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
 import me.anasmusa.learncast.core.STATE_PLAYING
@@ -23,7 +22,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @UnstableApi
-private class AndroidPlayerController(
+internal class AndroidPlayerController(
     private val context: Context,
 ) : PlayerController {
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -259,6 +258,3 @@ private class AndroidPlayerController(
         }
     }
 }
-
-@UnstableApi
-internal actual fun createPlayer(): PlayerController = AndroidPlayerController(ApplicationLoader.context)

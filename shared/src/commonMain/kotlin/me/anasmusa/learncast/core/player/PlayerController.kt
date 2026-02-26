@@ -52,5 +52,3 @@ internal interface PlayerController {
 
     fun destroy()
 }
-
-internal expect fun createPlayer(): PlayerController

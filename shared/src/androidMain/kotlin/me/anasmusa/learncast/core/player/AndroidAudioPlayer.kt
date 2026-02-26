@@ -1,14 +1,12 @@
 package me.anasmusa.learncast.core.player
 
 import android.content.Context
-import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import kotlinx.coroutines.flow.MutableStateFlow
-import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
 import me.anasmusa.learncast.core.STATE_PLAYING
@@ -104,9 +102,3 @@ internal class AndroidAudioPlayer(
         exoPlayer.release()
     }
 }
-
-@OptIn(UnstableApi::class)
-internal actual fun createAudioPlayer(
-    audioPath: String,
-    startPosition: Long,
-): AudioPlayer = AndroidAudioPlayer(ApplicationLoader.context, audioPath, startPosition)

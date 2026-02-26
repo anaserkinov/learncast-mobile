@@ -11,8 +11,6 @@ import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.getOrCreateScope
-import me.anasmusa.learncast.core.player.PlayerController
-import me.anasmusa.learncast.core.player.createPlayer
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import me.anasmusa.learncast.data.network.FileStorage
 import org.koin.android.ext.koin.androidContext
@@ -35,10 +33,6 @@ internal actual fun Module.platformModule() {
 
             override fun getReadableDatabase(): SQLiteDatabase = get<SQLiteDatabase>()
         }
-    }
-
-    factory<PlayerController> {
-        createPlayer()
     }
 
     scope<PlaybackCacheScope> {
