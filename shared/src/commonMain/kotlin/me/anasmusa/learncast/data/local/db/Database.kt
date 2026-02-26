@@ -5,8 +5,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import me.anasmusa.learncast.data.local.db.author.AuthorDao
 import me.anasmusa.learncast.data.local.db.author.AuthorEntity
 import me.anasmusa.learncast.data.local.db.download.DownloadDao
@@ -77,10 +75,3 @@ abstract class AppDatabase : RoomDatabase() {
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
 }
-
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
-
-fun getAppDatabase(): AppDatabase =
-    getDatabaseBuilder()
-        .setQueryCoroutineContext(Dispatchers.IO)
-        .build()

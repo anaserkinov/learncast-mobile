@@ -10,6 +10,8 @@ import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import me.anasmusa.learncast.core.getOrCreateScope
+import me.anasmusa.learncast.data.local.db.AndroidDatabaseBuilder
+import me.anasmusa.learncast.data.local.db.DatabaseBuilder
 import me.anasmusa.learncast.data.local.preference.AndroidDataStoreFactory
 import me.anasmusa.learncast.data.local.preference.DataStoreFactory
 import me.anasmusa.learncast.data.local.storage.AndroidStorageManager
@@ -78,5 +80,9 @@ internal actual fun Module.platformModule() {
 
     factory<StorageManager> {
         AndroidStorageManager(androidContext())
+    }
+
+    factory<DatabaseBuilder> {
+        AndroidDatabaseBuilder(androidContext())
     }
 }

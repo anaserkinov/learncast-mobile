@@ -3,6 +3,8 @@ package me.anasmusa.learncast.data
 import me.anasmusa.learncast.core.player.avplayer.cache.AVCache
 import me.anasmusa.learncast.core.player.avplayer.cache.CacheIndex
 import me.anasmusa.learncast.core.player.avplayer.cache.MetadataIndex
+import me.anasmusa.learncast.data.local.db.DatabaseBuilder
+import me.anasmusa.learncast.data.local.db.IosDatabaseBuilder
 import me.anasmusa.learncast.data.local.preference.DataStoreFactory
 import me.anasmusa.learncast.data.local.preference.IosDataStoreFactory
 import me.anasmusa.learncast.data.local.storage.IosStorageManager
@@ -33,5 +35,9 @@ internal actual fun Module.platformModule() {
 
     factory<StorageManager> {
         IosStorageManager()
+    }
+
+    factory<DatabaseBuilder> {
+        IosDatabaseBuilder()
     }
 }
