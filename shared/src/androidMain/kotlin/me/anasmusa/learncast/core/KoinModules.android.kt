@@ -9,7 +9,7 @@ import org.koin.core.module.Module
 
 actual fun Module.platformModule() {
     factory<GoogleAuthManager> {
-        AndroidGoogleAuthManager()
+        AndroidGoogleAuthManager(androidContext())
     }
 
     factory<DownloadManager> {

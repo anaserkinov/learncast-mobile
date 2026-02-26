@@ -102,6 +102,7 @@ internal class AuthRepositoryImpl(
                     } catch (e: Exception) {
                     }
                 }
+                googleAuthManager.signOut()
                 storageRepository.clearCaches()
                 storageRepository.clearDownloads()
                 notificationManager.unSubscribe()
