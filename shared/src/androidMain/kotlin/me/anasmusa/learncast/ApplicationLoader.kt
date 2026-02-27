@@ -1,5 +1,6 @@
 package me.anasmusa.learncast
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.pm.ApplicationInfo
@@ -9,6 +10,7 @@ import io.github.aakira.napier.Napier
 
 open class ApplicationLoader : Application() {
     companion object {
+        @SuppressLint("StaticFieldLeak")
         var currentActivity: Activity? = null
             private set
     }

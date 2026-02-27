@@ -98,6 +98,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
 import coil3.ImageLoader
+import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.allowHardware
@@ -431,7 +432,7 @@ private fun _PlayerScreen(
     if (currentPlaying != null) {
         LaunchedEffect(currentPlaying.coverImagePath) {
             if (currentPlaying.coverImagePath != null) {
-                val loader = ImageLoader(context)
+                val loader = SingletonImageLoader.get(context)
 
                 val req =
                     ImageRequest
