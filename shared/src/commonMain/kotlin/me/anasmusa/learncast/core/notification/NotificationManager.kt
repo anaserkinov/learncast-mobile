@@ -5,5 +5,3 @@ internal interface NotificationManager {
 
     fun unSubscribe()
 }
-
-internal expect fun createNotificationManager(): NotificationManager

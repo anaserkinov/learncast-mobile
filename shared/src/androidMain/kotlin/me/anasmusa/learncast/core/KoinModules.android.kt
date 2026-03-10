@@ -6,6 +6,8 @@ import me.anasmusa.learncast.core.download.AndroidDownloadManager
 import me.anasmusa.learncast.core.download.DownloadManager
 import me.anasmusa.learncast.core.google.AndroidGoogleAuthManager
 import me.anasmusa.learncast.core.google.GoogleAuthManager
+import me.anasmusa.learncast.core.notification.AndroidNotificationManager
+import me.anasmusa.learncast.core.notification.NotificationManager
 import me.anasmusa.learncast.core.player.AndroidAudioPlayer
 import me.anasmusa.learncast.core.player.AndroidPlayerController
 import me.anasmusa.learncast.core.player.AudioPlayer
@@ -35,5 +37,9 @@ actual fun Module.platformModule() {
 
     factory<ResourceManager> {
         AndroidResourceManager(androidContext())
+    }
+
+    factory<NotificationManager> {
+        AndroidNotificationManager()
     }
 }
