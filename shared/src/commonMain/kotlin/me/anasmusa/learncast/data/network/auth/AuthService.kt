@@ -18,14 +18,14 @@ internal class AuthService(
     private val client: HttpClient,
 ) {
     companion object {
-        const val SIGN_IN = "v1/user/auth/signin"
+        const val LOGIN = "v1/user/auth/login"
         const val REFRESH_TOKEN = "v1/user/auth/refresh-token"
         const val LOGOUT = "v1/user/auth/logout"
     }
 
     suspend fun login(request: LoginRequest) =
         client
-            .post(SIGN_IN) {
+            .post(LOGIN) {
                 setBody(request)
             }.body<BaseResponse<LoginResponse>>()
 

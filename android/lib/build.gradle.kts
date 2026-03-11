@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.haze)
+    implementation(libs.telegram.login.widget)
 
     implementation(libs.androidx.media3.session)
 
