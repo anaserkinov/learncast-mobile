@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A81B4FA32F30AB8100937968 /* .swift-format in Resources */ = {isa = PBXBuildFile; fileRef = A81B4FA22F30AB8100937968 /* .swift-format */; };
+		A84461AC2F6211A6000B562D /* TelegramLoginWidget in Frameworks */ = {isa = PBXBuildFile; productRef = A84461AB2F6211A6000B562D /* TelegramLoginWidget */; };
 		A8750E352F41D31E00D9EF8D /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = A8750E342F41D31E00D9EF8D /* GoogleSignIn */; };
 		A8750E372F41D31E00D9EF8D /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A8750E362F41D31E00D9EF8D /* GoogleSignInSwift */; };
 		A8750E452F42172C00D9EF8D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A8750E442F42172C00D9EF8D /* FirebaseAnalytics */; };
@@ -122,6 +123,7 @@
 				A8750E492F42172C00D9EF8D /* FirebaseMessaging in Frameworks */,
 				A8750E372F41D31E00D9EF8D /* GoogleSignInSwift in Frameworks */,
 				A8787D432F2FC2DB000B631A /* Kingfisher in Frameworks */,
+				A84461AC2F6211A6000B562D /* TelegramLoginWidget in Frameworks */,
 				A8750E472F42172C00D9EF8D /* FirebaseCrashlytics in Frameworks */,
 				A8750E452F42172C00D9EF8D /* FirebaseAnalytics in Frameworks */,
 				A8750E352F41D31E00D9EF8D /* GoogleSignIn in Frameworks */,
@@ -236,6 +238,7 @@
 				A8750E442F42172C00D9EF8D /* FirebaseAnalytics */,
 				A8750E462F42172C00D9EF8D /* FirebaseCrashlytics */,
 				A8750E482F42172C00D9EF8D /* FirebaseMessaging */,
+				A84461AB2F6211A6000B562D /* TelegramLoginWidget */,
 			);
 			productName = lib;
 			productReference = A8B5D7B72F23A8C1007A433E /* lib.framework */;
@@ -272,6 +275,7 @@
 				A8787D412F2FC2DB000B631A /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				A8750E332F41D31E00D9EF8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				A8750E432F42172C00D9EF8D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				A84461AA2F6211A6000B562D /* XCRemoteSwiftPackageReference "telegram-login-widget-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 34F9245C1419FF786238759F /* Products */;
@@ -667,6 +671,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A84461AA2F6211A6000B562D /* XCRemoteSwiftPackageReference "telegram-login-widget-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/anaserkinov/telegram-login-widget-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
 		A8750E332F41D31E00D9EF8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
@@ -694,6 +706,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A84461AB2F6211A6000B562D /* TelegramLoginWidget */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A84461AA2F6211A6000B562D /* XCRemoteSwiftPackageReference "telegram-login-widget-swift" */;
+			productName = TelegramLoginWidget;
+		};
 		A8750E342F41D31E00D9EF8D /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A8750E332F41D31E00D9EF8D /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
