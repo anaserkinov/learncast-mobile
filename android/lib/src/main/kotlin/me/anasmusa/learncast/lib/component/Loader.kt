@@ -15,11 +15,12 @@ import androidx.compose.ui.window.DialogProperties
 fun Loader() {
     Dialog(
         onDismissRequest = {},
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
-            usePlatformDefaultWidth = false
-        )
+        properties =
+            DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false,
+            ),
     ) {
         Box(
             modifier =

@@ -32,8 +32,8 @@ import me.anasmusa.learncast.lib.AppTheme
 
 @Preview
 @Composable
-private fun LessonCellPreview(){
-    AppTheme{
+private fun LessonCellPreview() {
+    AppTheme {
         LessonCell(lesson = getSampleLesson()) { }
     }
 }
@@ -92,7 +92,7 @@ fun LessonCell(
                             .alpha(0.7f),
                     text = lesson.authorName,
                     style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
             Text(

@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.DownloadState
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SheetMenuButton
@@ -25,7 +26,6 @@ import me.anasmusa.learncast.lib.theme.icon.RemoveDone
 import me.anasmusa.learncast.lib.theme.icon.RemoveDownload
 import me.anasmusa.learncast.lib.theme.icon.Star
 import me.anasmusa.learncast.lib.theme.icon.StarFilled
-import me.anasmusa.learncast.core.resource.Resource.string
 
 @Preview
 @Composable

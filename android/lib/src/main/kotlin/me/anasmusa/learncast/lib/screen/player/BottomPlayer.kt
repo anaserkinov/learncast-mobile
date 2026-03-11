@@ -51,7 +51,7 @@ import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
 
 @Preview
 @Composable
-fun BottomPlayerComposable(){
+fun BottomPlayerComposable() {
     AppTheme {
         BottomPlayer(
             currentPlaying = getSampleQueueItem(),
@@ -59,7 +59,7 @@ fun BottomPlayerComposable(){
             playbackState = STATE_PLAYING,
             backgroundColors = LocalAppEnvironment.current.playerBackgroundColors,
             onClicked = {},
-            togglePlaybackState = {}
+            togglePlaybackState = {},
         )
     }
 }

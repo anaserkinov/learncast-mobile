@@ -25,7 +25,7 @@ import me.anasmusa.learncast.lib.theme.icon.Sidebar
 
 @Composable
 @Preview
-private fun QueueButtonPreview(){
+private fun QueueButtonPreview() {
     AppTheme {
         QueueButton(count = 100) { }
     }

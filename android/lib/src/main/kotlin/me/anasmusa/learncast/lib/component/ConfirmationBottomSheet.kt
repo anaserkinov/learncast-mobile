@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

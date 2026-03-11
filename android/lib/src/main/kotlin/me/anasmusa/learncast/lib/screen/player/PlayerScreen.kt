@@ -97,7 +97,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
-import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -113,6 +112,7 @@ import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PAUSED
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.normalizeUrl
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.ReferenceType
 import me.anasmusa.learncast.data.model.UserProgressStatus
@@ -121,7 +121,9 @@ import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.QueueButton
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
+import me.anasmusa.learncast.lib.core.darken
 import me.anasmusa.learncast.lib.core.formatTime
+import me.anasmusa.learncast.lib.core.lighten
 import me.anasmusa.learncast.lib.screen.player.queue.QueueScreen
 import me.anasmusa.learncast.lib.screen.player.snip.PlayerSnipScreen
 import me.anasmusa.learncast.lib.screen.snip.SnipEditScreen
@@ -132,9 +134,6 @@ import me.anasmusa.learncast.lib.theme.icon.MoreVert
 import me.anasmusa.learncast.lib.theme.icon.Pause
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
 import me.anasmusa.learncast.lib.theme.icon.Replay10
-import me.anasmusa.learncast.core.resource.Resource.string
-import me.anasmusa.learncast.lib.core.darken
-import me.anasmusa.learncast.lib.core.lighten
 import me.anasmusa.learncast.ui.player.PlayerEvent
 import me.anasmusa.learncast.ui.player.PlayerIntent
 import me.anasmusa.learncast.ui.player.PlayerState

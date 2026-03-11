@@ -26,12 +26,12 @@ import coil3.compose.AsyncImage
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.appConfig
 import me.anasmusa.learncast.core.normalizeUrl
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.getSampleQueueItem
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SheetMenuButton
 import me.anasmusa.learncast.lib.theme.icon.PlayArrowIcon
-import me.anasmusa.learncast.core.resource.Resource.string
 
 @Preview
 @Composable

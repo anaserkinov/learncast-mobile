@@ -39,8 +39,8 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.flowOf
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.Filters
 import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.getSampleLesson
@@ -84,7 +84,7 @@ private fun HomeScreenPreview() {
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = koinInject<HomeViewModel>()
+    viewModel: HomeViewModel = koinInject<HomeViewModel>(),
 ) {
     val env = LocalAppEnvironment.current
     val navController = LocalNavController.current
@@ -134,10 +134,11 @@ private fun _HomeScreen(
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent,
+                    ),
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(
@@ -148,7 +149,7 @@ private fun _HomeScreen(
                         Text(
                             text = Strings.HOME.string(),
                             style = MaterialTheme.typography.headlineMediumEmphasized,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                         Row(
                             modifier =

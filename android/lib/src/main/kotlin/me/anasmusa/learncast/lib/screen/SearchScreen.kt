@@ -34,6 +34,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import dev.chrisbanes.haze.hazeSource
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.Lesson
 import me.anasmusa.learncast.data.model.Topic
 import me.anasmusa.learncast.lib.AppTheme
@@ -43,10 +44,9 @@ import me.anasmusa.learncast.lib.component.cell.TopicCell
 import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.core.backgroundBrush
-import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.nav.Screen
+import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
 import me.anasmusa.learncast.ui.SearchIntent
 import me.anasmusa.learncast.ui.SearchState
 import me.anasmusa.learncast.ui.SearchViewModel
@@ -220,7 +220,7 @@ private fun _SearchScreen(
                                 topic = any as Topic,
                                 onClick = {
                                     navController.navigate(
-                                        Screen.Topic(any)
+                                        Screen.Topic(any),
                                     )
                                 },
                             )

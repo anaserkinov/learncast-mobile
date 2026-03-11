@@ -10,7 +10,7 @@ import dev.chrisbanes.haze.HazeState
 class AppEnvironment(
     val hazeState: HazeState,
     val backgroundColors: List<Color>,
-    val playerBackgroundColors: List<Color>
+    val playerBackgroundColors: List<Color>,
 )
 
 val LocalAppEnvironment = staticCompositionLocalOf<AppEnvironment> { error("LocalAppEnvironment error") }
@@ -27,7 +27,7 @@ fun ProvideAppEnvironment(
             AppEnvironment(
                 hazeState,
                 backgroundColors,
-                playerBackgroundColors
+                playerBackgroundColors,
             )
         }
 

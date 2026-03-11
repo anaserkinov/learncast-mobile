@@ -49,6 +49,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.QueueItem
 import me.anasmusa.learncast.data.model.getSampleQueueItem
 import me.anasmusa.learncast.lib.AppTheme
@@ -57,7 +58,6 @@ import me.anasmusa.learncast.lib.component.drag.rememberDragDropState
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.screen.player.BottomPlayer
 import me.anasmusa.learncast.lib.theme.icon.Close
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.player.queue.QueueIntent
 import me.anasmusa.learncast.ui.player.queue.QueueState
 import me.anasmusa.learncast.ui.player.queue.QueueViewModel
@@ -150,8 +150,9 @@ private fun _QueueScreen(
                     ).padding(it),
         ) {
             Spacer(
-                modifier = Modifier
-                    .height(12.dp)
+                modifier =
+                    Modifier
+                        .height(12.dp),
             )
             Box(
                 modifier =

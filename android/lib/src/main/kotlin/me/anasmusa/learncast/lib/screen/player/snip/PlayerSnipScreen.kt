@@ -38,6 +38,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import kotlinx.coroutines.flow.flowOf
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.Snip
 import me.anasmusa.learncast.data.model.getSampleQueueItem
 import me.anasmusa.learncast.data.model.getSampleSnip
@@ -46,7 +47,6 @@ import me.anasmusa.learncast.lib.component.cell.SnipCell
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.screen.player.BottomPlayer
 import me.anasmusa.learncast.lib.theme.icon.Close
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipIntent
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipState
 import me.anasmusa.learncast.ui.player.snip.PlayerSnipViewModel
@@ -136,8 +136,9 @@ private fun _PlayerSnipScreen(
                     ).padding(it),
         ) {
             Spacer(
-                modifier = Modifier
-                    .height(12.dp)
+                modifier =
+                    Modifier
+                        .height(12.dp),
             )
             Box(
                 modifier =
