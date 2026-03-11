@@ -15,5 +15,3 @@ internal class AndroidNotificationManager : NotificationManager {
             .unsubscribeFromTopic("news")
     }
 }
-
-internal actual fun createNotificationManager(): NotificationManager = AndroidNotificationManager()

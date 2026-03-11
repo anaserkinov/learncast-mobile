@@ -13,7 +13,6 @@ import kotlinx.coroutines.withContext
 import me.anasmusa.learncast.core.STATE_LOADING
 import me.anasmusa.learncast.core.STATE_PLAYING
 import me.anasmusa.learncast.core.player.AudioPlayer
-import me.anasmusa.learncast.core.player.createAudioPlayer
 import me.anasmusa.learncast.data.model.fold
 import me.anasmusa.learncast.data.model.onSuccess
 import me.anasmusa.learncast.data.repository.abstraction.SnipRepository
@@ -21,6 +20,9 @@ import me.anasmusa.learncast.ui.BaseEvent
 import me.anasmusa.learncast.ui.BaseIntent
 import me.anasmusa.learncast.ui.BaseState
 import me.anasmusa.learncast.ui.BaseViewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.parameter.parametersOf
 
 data class SnipEditState(
     val playbackState: Int = STATE_LOADING,
@@ -65,7 +67,8 @@ sealed interface SnipEditEvent : BaseEvent {
 
 class SnipEditViewModel(
     private val snipRepository: SnipRepository,
-) : BaseViewModel<SnipEditState, SnipEdiIntent, SnipEditEvent>() {
+) : BaseViewModel<SnipEditState, SnipEdiIntent, SnipEditEvent>(),
+    KoinComponent {
     private lateinit var audioPlayer: AudioPlayer
 
     final override val state: StateFlow<SnipEditState>
@@ -84,7 +87,10 @@ class SnipEditViewModel(
     }
 
     private fun init(intent: SnipEdiIntent.Init) {
-        audioPlayer = createAudioPlayer(intent.audioPath, intent.startPosition)
+        audioPlayer =
+            get {
+                parametersOf(intent.audioPath, intent.startPosition)
+            }
         viewModelScope.launch {
             if (!intent.clientSnipId.isEmpty()) {
                 launch {

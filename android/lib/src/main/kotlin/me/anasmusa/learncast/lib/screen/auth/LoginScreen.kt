@@ -4,24 +4,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -34,16 +32,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.appConfig
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.Loader
 import me.anasmusa.learncast.lib.component.SnackBarHost
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
 import me.anasmusa.learncast.lib.theme.icon.Google
-import me.anasmusa.learncast.lib.theme.icon.Telegram
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.auth.LoginEvent
 import me.anasmusa.learncast.ui.auth.LoginIntent
 import me.anasmusa.learncast.ui.auth.LoginViewModel
+import me.anasmusa.shared.TelegramLoginResult
+import me.anasmusa.telegramloginwidget.TelegramButtonIcon
+import me.anasmusa.telegramloginwidget.TelegramDefaults
+import me.anasmusa.telegramloginwidget.TelegramLoginButton
+import me.anasmusa.telegramloginwidget.rememberTelegramLoginState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
@@ -85,7 +87,6 @@ private fun _LoginScreen(
     login: (intent: LoginIntent) -> Unit = {},
     snackBarState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    var showTelegramLogin by remember { mutableStateOf(false) }
     val gradientStartY = LocalWindowInfo.current.containerSize.height * (-0.5f)
     val gradientEndY = LocalWindowInfo.current.containerSize.height * 0.5f
 
@@ -103,11 +104,11 @@ private fun _LoginScreen(
         snackbarHost = {
             SnackBarHost(snackBarState)
         },
-    ) {
+    ) { paddingValues ->
         Column(
             modifier =
                 Modifier
-                    .padding(it),
+                    .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
@@ -148,7 +149,7 @@ private fun _LoginScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth(),
-                    text = Strings.SIGN_IN_CONTINUE.string(),
+                    text = Strings.LOG_IN_CONTINUE.string(),
                     textAlign = TextAlign.Center,
                 )
 
@@ -158,31 +159,46 @@ private fun _LoginScreen(
                             .fillMaxWidth()
                             .padding(top = 24.dp),
                 ) {
-                    Button(
+                    TelegramLoginButton(
+                        state =
+                            rememberTelegramLoginState(
+                                botId = appConfig.telegramBotId,
+                                botUsername = appConfig.telegramBotUsername,
+                                websiteUrl = appConfig.publicBaseUrl,
+                                languageCode = appConfig.defaultLang,
+                            ),
+                        onResult = {
+                            if (it is TelegramLoginResult.Success) {
+                                login(
+                                    LoginIntent.LoginWithTelegram(
+                                        id = it.id,
+                                        firstName = it.firstName,
+                                        lastName = it.lastName,
+                                        username = it.username,
+                                        photoUrl = it.photoUrl,
+                                        authDate = it.authDate,
+                                        hash = it.hash,
+                                    ),
+                                )
+                            }
+                        },
+                        left = {
+                            TelegramButtonIcon(tint = TelegramDefaults.primaryColor)
+                        },
                         modifier =
                             Modifier
                                 .fillMaxWidth(),
-                        onClick = {
-                            showTelegramLogin = true
-                        },
-                    ) {
-                        Image(
-                            modifier =
-                                Modifier
-                                    .padding(end = 12.dp)
-                                    .size(28.dp),
-                            imageVector = Telegram,
-                            contentDescription = null,
-                        )
-                        Text(
-                            text = Strings.CONTINUE_TELEGRAM.string(),
-                        )
-                    }
+                        colors =
+                            TelegramDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                            ),
+                    )
 
                     Button(
                         modifier =
                             Modifier
-                                .padding(top = 12.dp)
+                                .padding(top = 8.dp)
                                 .fillMaxWidth(),
                         onClick = {
                             login(LoginIntent.LoginWithGoogle)
@@ -192,37 +208,20 @@ private fun _LoginScreen(
                             modifier =
                                 Modifier
                                     .padding(end = 12.dp)
-                                    .size(28.dp),
+                                    .size(24.dp),
                             imageVector = Google,
                             contentDescription = null,
                         )
                         Text(
                             text = Strings.CONTINUE_GOOGLE.string(),
                         )
+                        Spacer(
+                            modifier =
+                                Modifier
+                                    .width(24.dp),
+                        )
                     }
                 }
-            }
-        }
-
-        if (showTelegramLogin) {
-            val sheetState =
-                rememberModalBottomSheetState(
-                    skipPartiallyExpanded = true,
-                )
-            ModalBottomSheet(
-                sheetState = sheetState,
-                onDismissRequest = { showTelegramLogin = false },
-                containerColor = Color.White,
-            ) {
-                TelegramLoginScreen(
-                    onGetResult = {
-                        showTelegramLogin = false
-                        login(LoginIntent.LoginWithTelegram(it))
-                    },
-                    onCancel = {
-                        showTelegramLogin = false
-                    }
-                )
             }
         }
 

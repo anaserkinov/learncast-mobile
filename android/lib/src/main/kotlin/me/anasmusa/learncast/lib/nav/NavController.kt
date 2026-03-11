@@ -8,7 +8,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 
 class NavController(
-    private val backStack: NavBackStack<NavKey>
+    private val backStack: NavBackStack<NavKey>,
 ) {
     fun navigate(screen: Screen) {
         backStack.add(screen)
@@ -22,7 +22,10 @@ class NavController(
 val LocalNavController = staticCompositionLocalOf<NavController> { error("LocalNavController error") }
 
 @Composable
-fun ProvideNavController(navBackStack: NavBackStack<NavKey>, content: @Composable () -> Unit) {
+fun ProvideNavController(
+    navBackStack: NavBackStack<NavKey>,
+    content: @Composable () -> Unit,
+) {
     val navController =
         remember(navBackStack) {
             NavController(navBackStack)

@@ -6,7 +6,9 @@ import me.anasmusa.learncast.PreferenceData
 
 const val DATA_STORE_FILE_NAME = "preference_data.pb"
 
-expect fun getDataStore(): DataStore<PreferenceData>
+interface DataStoreFactory {
+    fun create(): DataStore<PreferenceData>
+}
 
 interface Preferences {
     suspend fun updateToken(

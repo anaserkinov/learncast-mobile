@@ -20,8 +20,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             apiBaseUrl: "https://api.anasmusa.me/learncast/",
             publicBaseUrl: "https://learncast.anasmusa.me",
             telegramBotId: 8_538_344_134,
+            telegramBotUsername: "learncast_bot",
             googleClientId:
-                "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com"
+                "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
+            preferredLang: "en"
         )
 
         AppInitializer.initialize()

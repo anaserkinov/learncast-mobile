@@ -4,7 +4,34 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class LoginRequest(
-    @SerialName("telegram_data") val telegramData: String? = null,
-    @SerialName("google_data") val googleData: String? = null,
+internal class LoginRequest(
+    val method: LoginMethod,
+    val data: LoginData,
 )
+
+internal enum class LoginMethod {
+    @SerialName("telegram")
+    TELEGRAM,
+
+    @SerialName("google")
+    GOOGLE,
+}
+
+@Serializable
+internal sealed interface LoginData {
+    @Serializable
+    class Telegram(
+        val id: Long,
+        @SerialName("first_name") val firstName: String,
+        @SerialName("last_name") val lastName: String?,
+        val username: String?,
+        @SerialName("photo_url") val photoUrl: String?,
+        @SerialName("auth_date") val authDate: Long,
+        val hash: String,
+    ) : LoginData
+
+    @Serializable
+    class Google(
+        @SerialName("id_token") val idToken: String,
+    ) : LoginData
+}

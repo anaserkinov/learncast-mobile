@@ -468,7 +468,15 @@ class TokenManagerTest : BehaviorSpec({
 
             // Other AuthRepository methods - not used in TokenManager tests
             override fun isLoggedIn(): Flow<Boolean> = throw NotImplementedError()
-            override suspend fun loginWithTelegram(hash: String): Result<Unit> = throw NotImplementedError()
+            override suspend fun loginWithTelegram(
+                id: Long,
+                firstName: String,
+                lastName: String?,
+                username: String?,
+                photoUrl: String?,
+                authDate: Long,
+                hash: String,
+            ): Result<Unit> = throw NotImplementedError()
             override suspend fun loginWithGoogle(): Result<Unit> = throw NotImplementedError()
         }
     }

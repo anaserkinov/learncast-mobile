@@ -23,7 +23,7 @@ import org.koin.core.component.inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-private class IosAudioPlayer(
+internal class IosAudioPlayer(
     audioPath: String,
     startPosition: Long,
 ) : AudioPlayer,
@@ -133,8 +133,3 @@ private class IosAudioPlayer(
         scope.cancel()
     }
 }
-
-internal actual fun createAudioPlayer(
-    audioPath: String,
-    startPosition: Long,
-): AudioPlayer = IosAudioPlayer(audioPath = audioPath, startPosition = startPosition)

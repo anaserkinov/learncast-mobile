@@ -9,10 +9,13 @@ import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.getOrCreateScope
-import me.anasmusa.learncast.core.player.PlayerController
-import me.anasmusa.learncast.core.player.createPlayer
+import me.anasmusa.learncast.data.local.db.AndroidDatabaseBuilder
+import me.anasmusa.learncast.data.local.db.DatabaseBuilder
+import me.anasmusa.learncast.data.local.preference.AndroidDataStoreFactory
+import me.anasmusa.learncast.data.local.preference.DataStoreFactory
+import me.anasmusa.learncast.data.local.storage.AndroidStorageManager
+import me.anasmusa.learncast.data.local.storage.StorageManager
 import me.anasmusa.learncast.data.network.CachingCacheStorage
 import me.anasmusa.learncast.data.network.FileStorage
 import org.koin.android.ext.koin.androidContext
@@ -24,7 +27,7 @@ import java.io.File
 internal actual fun Module.platformModule() {
     single<SQLiteDatabase> {
         SQLiteDatabase.openOrCreateDatabase(
-            ApplicationLoader.context.getDatabasePath("app.db"),
+            androidContext().getDatabasePath("app.db"),
             null,
         )
     }
@@ -35,10 +38,6 @@ internal actual fun Module.platformModule() {
 
             override fun getReadableDatabase(): SQLiteDatabase = get<SQLiteDatabase>()
         }
-    }
-
-    factory<PlayerController> {
-        createPlayer()
     }
 
     scope<PlaybackCacheScope> {
@@ -73,5 +72,17 @@ internal actual fun Module.platformModule() {
         FileStorage(
             File(cacheDir, "http"),
         )
+    }
+
+    factory<DataStoreFactory> {
+        AndroidDataStoreFactory(androidContext())
+    }
+
+    factory<StorageManager> {
+        AndroidStorageManager(androidContext())
+    }
+
+    factory<DatabaseBuilder> {
+        AndroidDatabaseBuilder(androidContext())
     }
 }

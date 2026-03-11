@@ -18,6 +18,12 @@ data class LoginState(
 
 sealed interface LoginIntent : BaseIntent {
     data class LoginWithTelegram(
+        val id: Long,
+        val firstName: String,
+        val lastName: String?,
+        val username: String?,
+        val photoUrl: String?,
+        val authDate: Long,
         val hash: String,
     ) : LoginIntent
 
@@ -38,17 +44,26 @@ class LoginViewModel(
 
     override fun handle(intent: LoginIntent) {
         when (intent) {
-            is LoginIntent.LoginWithTelegram -> loginWithTelegram(intent.hash)
+            is LoginIntent.LoginWithTelegram -> loginWithTelegram(intent)
             is LoginIntent.LoginWithGoogle -> loginWithGoogle()
         }
     }
 
-    private fun loginWithTelegram(data: String) {
+    private fun loginWithTelegram(intent: LoginIntent.LoginWithTelegram) {
         viewModelScope.launch {
-            authRepository.loginWithTelegram(data).onFailure { message, tag ->
-                state.update { it.copy(isLoading = false) }
-                send(LoginEvent.ShowError(message))
-            }
+            authRepository
+                .loginWithTelegram(
+                    id = intent.id,
+                    firstName = intent.firstName,
+                    lastName = intent.lastName,
+                    username = intent.username,
+                    photoUrl = intent.photoUrl,
+                    authDate = intent.authDate,
+                    hash = intent.hash,
+                ).onFailure { message, _ ->
+                    state.update { it.copy(isLoading = false) }
+                    send(LoginEvent.ShowError(message))
+                }
         }
     }
 

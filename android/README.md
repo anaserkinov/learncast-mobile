@@ -45,6 +45,7 @@ The `learncast` app module is intentionally thin. It depends on `lib`, which in 
 | Navigation | AndroidX Navigation 3 (`navigation3-runtime`, `navigation3-ui`) |
 | Image loading | Coil 3 + OkHttp fetcher |
 | Dependency injection | Koin Compose (`koin-compose`, `koin-compose-viewmodel`, `koin-compose-viewmodel-navigation`) |
+| Telegram login | [telegram-login-widget](https://github.com/anaserkinov/telegram-login-widget) |
 | Glass / blur effects | Haze |
 | Analytics & crash reporting | Firebase Analytics + Firebase Crashlytics |
 | Push notifications | Firebase Cloud Messaging (FCM) |
@@ -228,9 +229,9 @@ All screens follow the same pattern: a public composable (e.g. `HomeScreen()`) o
 
 ### Auth
 
-**`LoginScreen`** — Full-screen login page with a gradient background, a large app logo, and two sign-in buttons (Telegram, Google). Errors are shown via a `SnackbarHost`. Tapping "Continue with Telegram" opens a `ModalBottomSheet` containing `TelegramLoginScreen`.
+**`LoginScreen`** — Full-screen login page with a gradient background, a large app logo, and two sign-in buttons (Telegram, Google).
 
-**`TelegramLoginScreen`** — A `WebView` that loads the Telegram OAuth widget at `https://oauth.telegram.org/auth?bot_id=...`. Intercepts the result URL redirect (whose fragment contains the base64-encoded auth hash) via `WebViewClient.shouldOverrideUrlLoading`. A `JavascriptInterface` (`AndroidCancelHandler`) is also injected to detect when the user taps the Telegram cancel button. JavaScript injection (`injectCancelInterceptor`) overrides `window.loginCancel` and adds a document-level click listener to catch the cancel button click before the WebView handles it natively.
+Telegram authentication uses the [telegram-login-widget](https://github.com/anaserkinov/telegram-login-widget) library. A `TelegramLoginButton` is rendered directly in the button column, configured via `rememberTelegramLoginState` with `botId`, `botUsername`, `websiteUrl`, and `languageCode` from `appConfig`.
 
 ### Home
 
@@ -443,7 +444,6 @@ android/
 </div>
 <div>
   <img src="../assets/images/android_login.webp" width="18%" alt="Login"/>
-  <img src="../assets/images/android_telegram.webp" width="18%" alt="Telegram"/>
   <img src="../assets/images/android_profile.webp" width="18%" alt="Profile"/>
   <img src="../assets/images/android_storage.webp" width="18%" alt="Storage Usage"/>
 </div>

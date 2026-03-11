@@ -1,8 +1,8 @@
 package me.anasmusa.learncast
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import io.github.aakira.napier.DebugAntilog
@@ -10,15 +10,13 @@ import io.github.aakira.napier.Napier
 
 open class ApplicationLoader : Application() {
     companion object {
-        lateinit var context: Context
-            private set
+        @SuppressLint("StaticFieldLeak")
         var currentActivity: Activity? = null
             private set
     }
 
     override fun onCreate() {
         super.onCreate()
-        context = this
         registerActivityLifecycleCallbacks(
             object : ActivityLifecycleCallbacks {
                 override fun onActivityResumed(activity: Activity) {

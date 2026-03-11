@@ -60,9 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.core.formatTime
-import me.anasmusa.learncast.core.resource.Resource.string
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.min
@@ -195,21 +195,21 @@ fun TimeRangeSelector(
     ) {
         RangeSlider(
             modifier =
-                Modifier.drawWithContent {
-                    drawContent()
-                    if (currentPosition != -1) {
-                        drawCircle(
-                            color = Color.Red,
-                            radius = 2.dp.toPx(),
-                            center =
-                                Offset(
-                                    x = currentPosition * size.width / state.total + 2.dp.toPx(),
-                                    y = size.height - 8.dp.toPx(),
-                                ),
-                        )
-                    }
-                }
-                    .padding(bottom = 2.dp),
+                Modifier
+                    .drawWithContent {
+                        drawContent()
+                        if (currentPosition != -1) {
+                            drawCircle(
+                                color = Color.Red,
+                                radius = 2.dp.toPx(),
+                                center =
+                                    Offset(
+                                        x = currentPosition * size.width / state.total + 2.dp.toPx(),
+                                        y = size.height - 8.dp.toPx(),
+                                    ),
+                            )
+                        }
+                    }.padding(bottom = 2.dp),
             value = sliderState,
             onValueChange = {
                 var start = it.start.toInt()

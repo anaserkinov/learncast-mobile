@@ -31,15 +31,15 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.Author
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.SearchButton
 import me.anasmusa.learncast.lib.component.cell.AuthorCell
 import me.anasmusa.learncast.lib.core.backgroundBrush
+import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.lib.nav.Screen
 import me.anasmusa.learncast.lib.theme.icon.ArrowBackIcon
-import me.anasmusa.learncast.core.resource.Resource.string
-import me.anasmusa.learncast.lib.nav.LocalNavController
 import me.anasmusa.learncast.ui.author.AuthorListIntent
 import me.anasmusa.learncast.ui.author.AuthorListViewModel
 import org.koin.compose.viewmodel.koinViewModel

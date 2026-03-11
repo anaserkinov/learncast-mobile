@@ -13,8 +13,3 @@ internal interface AudioPlayer {
 
     fun destroy()
 }
-
-internal expect fun createAudioPlayer(
-    audioPath: String,
-    startPosition: Long,
-): AudioPlayer

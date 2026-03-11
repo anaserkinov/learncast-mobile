@@ -9,9 +9,8 @@
 
     <string name="cancel">Cancel</string>
 
-    <string name="sign_in_continue">Sign in to continue</string>
-    <string name="continue_telegram">Continue with Telegram</string>
-    <string name="continue_google">Continue with Google</string>
+    <string name="log_in_continue">Log in to continue</string>
+    <string name="continue_google">Log in with Google</string>
 
     <string name="home">Home</string>
     <string name="profile">Profile</string>

@@ -1,5 +1,8 @@
 package me.anasmusa.learncast.core.google
 
+import android.app.Activity
+import android.content.Context
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -13,7 +16,9 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Co
 import me.anasmusa.learncast.ApplicationLoader
 import me.anasmusa.learncast.core.appConfig
 
-internal class AndroidGoogleAuthManager : GoogleAuthManager {
+internal class AndroidGoogleAuthManager(
+    private val context: Context,
+) : GoogleAuthManager {
     private fun handleSignIn(result: GetCredentialResponse): String? {
         val credential = result.credential
         return if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
@@ -25,11 +30,21 @@ internal class AndroidGoogleAuthManager : GoogleAuthManager {
     }
 
     override suspend fun signIn(): String? {
-        val credentialManager = CredentialManager.create(ApplicationLoader.context)
+        val activity = ApplicationLoader.currentActivity ?: return null
+        return signIn(activity, true)
+    }
+
+    private suspend fun signIn(
+        activity: Activity,
+        firstTry: Boolean,
+    ): String? {
+        val credentialManager = CredentialManager.create(context)
         val googleIdOption =
             GetGoogleIdOption
                 .Builder()
                 .setServerClientId(appConfig.googleClientId)
+                .setAutoSelectEnabled(true)
+                .setFilterByAuthorizedAccounts(true)
                 .build()
 
         val request =
@@ -41,7 +56,7 @@ internal class AndroidGoogleAuthManager : GoogleAuthManager {
         return try {
             val result =
                 credentialManager.getCredential(
-                    context = ApplicationLoader.currentActivity!!,
+                    context = activity,
                     request = request,
                 )
 
@@ -58,19 +73,28 @@ internal class AndroidGoogleAuthManager : GoogleAuthManager {
                         .Builder()
                         .addCredentialOption(signInWithGoogleOption)
                         .build()
-                val result =
-                    CredentialManager
-                        .create(ApplicationLoader.context)
-                        .getCredential(
-                            context = ApplicationLoader.currentActivity!!,
-                            request = request,
-                        )
-                handleSignIn(result)
+                credentialManager.getCredential(
+                    context = activity,
+                    request = request,
+                )
+                if (firstTry) {
+                    signIn(activity, false)
+                } else {
+                    null
+                }
             } catch (e: Exception) {
                 null
             }
         } catch (e: GetCredentialException) {
             null
         }
+    }
+
+    override suspend fun signOut() {
+        CredentialManager
+            .create(context)
+            .clearCredentialState(
+                ClearCredentialStateRequest(),
+            )
     }
 }

@@ -33,9 +33,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.appConfig
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.User
 import me.anasmusa.learncast.lib.AppTheme
 import me.anasmusa.learncast.lib.component.ConfirmationBottomSheet
@@ -68,7 +68,7 @@ private fun ProfileScreenPreview() {
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinInject<ProfileViewModel>()
+    viewModel: ProfileViewModel = koinInject<ProfileViewModel>(),
 ) {
     val state by viewModel.state.collectAsState()
 

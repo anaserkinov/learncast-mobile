@@ -17,6 +17,8 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.put
 import me.anasmusa.learncast.data.model.UserProgressStatus
 import me.anasmusa.learncast.data.network.auth.model.Credentials
+import me.anasmusa.learncast.data.network.auth.model.LoginData
+import me.anasmusa.learncast.data.network.auth.model.LoginMethod
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.LoginResponse
 import me.anasmusa.learncast.data.network.auth.model.UserResponse
@@ -42,7 +44,7 @@ import kotlin.time.Instant
  * Centralized test fixtures and data builders for all network service tests.
  * Contains constants, builders, and helper functions to create test data.
  */
-object TestFixtures {
+internal object TestFixtures {
 
     // ========== PAGINATION ==========
     object Pagination {
@@ -63,21 +65,48 @@ object TestFixtures {
         const val TEST_USER_AVATAR_PATH = "/avatars/user1.jpg"
 
         // Authentication Data
-        const val VALID_TELEGRAM_DATA = "valid_telegram"
-        const val VALID_GOOGLE_DATA = "valid_google"
         const val VALID_ACCESS_TOKEN = "AccessToken123"
         const val VALID_REFRESH_TOKEN = "RefreshToken123"
-        const val INVALID_DATA = "invalid"
         const val INVALID_REFRESH_TOKEN = "invalid_refresh_token"
         const val EXPIRED_REFRESH_TOKEN = "expired_refresh_token"
 
-        fun createLoginRequest(
-            telegramData: String? = null,
-            googleData: String? = null,
-        ) = LoginRequest(
-            telegramData = telegramData,
-            googleData = googleData,
+        val VALID_TELEGRAM_DATA = LoginData.Telegram(
+            id = TEST_USER_ID,
+            firstName = TEST_USER_FIRST_NAME,
+            lastName = TEST_USER_LAST_NAME,
+            username = TEST_USER_TELEGRAM_USERNAME,
+            photoUrl = TEST_USER_AVATAR_PATH,
+            authDate = 1_700_000_000L,
+            hash = "valid_hash",
         )
+
+        val VALID_GOOGLE_DATA = LoginData.Google(
+            idToken = "valid_google_id_token",
+        )
+
+        val INVALID_TELEGRAM_DATA = LoginData.Telegram(
+            id = -1L,
+            firstName = "",
+            lastName = null,
+            username = null,
+            photoUrl = null,
+            authDate = 0L,
+            hash = "invalid_hash",
+        )
+
+        val INVALID_GOOGLE_DATA = LoginData.Google(
+            idToken = "invalid_google_id_token",
+        )
+
+        fun createLoginRequest(telegramData: LoginData.Telegram?) =
+            telegramData?.let {
+                LoginRequest(method = LoginMethod.TELEGRAM, data = it)
+            }
+
+        fun createLoginRequest(googleData: LoginData.Google?) =
+            googleData?.let {
+                LoginRequest(method = LoginMethod.GOOGLE, data = it)
+            }
 
         fun createUserResponse(
             id: Long = TEST_USER_ID,

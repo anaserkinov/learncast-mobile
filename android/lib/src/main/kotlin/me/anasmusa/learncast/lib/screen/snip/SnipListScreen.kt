@@ -38,6 +38,7 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.flow.flowOf
 import me.anasmusa.learncast.Strings
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.data.model.Snip
 import me.anasmusa.learncast.data.model.getSampleSnip
 import me.anasmusa.learncast.lib.AppTheme
@@ -45,7 +46,6 @@ import me.anasmusa.learncast.lib.component.SearchButton
 import me.anasmusa.learncast.lib.component.cell.SnipCell
 import me.anasmusa.learncast.lib.core.BOTTOM_PADDING
 import me.anasmusa.learncast.lib.core.LocalAppEnvironment
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.ui.snip.SnipListIntent
 import me.anasmusa.learncast.ui.snip.SnipListState
 import me.anasmusa.learncast.ui.snip.SnipListViewModel
@@ -76,7 +76,7 @@ private fun SnipListScreenPreview() {
 
 @Composable
 fun SnipListScreen(
-    viewModel: SnipListViewModel = koinInject<SnipListViewModel>()
+    viewModel: SnipListViewModel = koinInject<SnipListViewModel>(),
 ) {
     val env = LocalAppEnvironment.current
     val state by viewModel.state.collectAsState()
@@ -122,10 +122,11 @@ private fun _SnipListScreen(
         containerColor = Color.Transparent,
         topBar = {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent,
+                    ),
                 scrollBehavior = scrollBehavior,
                 title = {
                     Column(

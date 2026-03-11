@@ -6,9 +6,8 @@
     <string name="unknown_error">Noma'lum xatolik</string>
     <string name="not_found">Topilmadi</string>
     <string name="cancel">Bekor qilish</string>
-    <string name="sign_in_continue">Davom etish uchun tizimga kiring</string>
-    <string name="continue_telegram">Telegram orqali davom etish</string>
-    <string name="continue_google">Google orqali davom etish</string>
+    <string name="log_in_continue">Davom etish uchun tizimga kiring</string>
+    <string name="continue_google">Google bilan kirish</string>
     <string name="home">Asosiy</string>
     <string name="profile">Profil</string>
     <string name="search">Qidiruv</string>

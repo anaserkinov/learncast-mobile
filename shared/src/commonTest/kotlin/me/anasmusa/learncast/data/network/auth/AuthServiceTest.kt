@@ -6,14 +6,14 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.datatest.withData
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.auth.AuthCircuitBreaker
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import me.anasmusa.learncast.data.network.TestFixtures.Auth.EXPIRED_REFRESH_TOKEN
-import me.anasmusa.learncast.data.network.TestFixtures.Auth.INVALID_DATA
+import me.anasmusa.learncast.data.network.TestFixtures.Auth.INVALID_GOOGLE_DATA
+import me.anasmusa.learncast.data.network.TestFixtures.Auth.INVALID_TELEGRAM_DATA
 import me.anasmusa.learncast.data.network.TestFixtures.Auth.INVALID_REFRESH_TOKEN
 import me.anasmusa.learncast.data.network.TestFixtures.Auth.TEST_USER_AVATAR_PATH
 import me.anasmusa.learncast.data.network.TestFixtures.Auth.TEST_USER_EMAIL
@@ -32,6 +32,8 @@ import me.anasmusa.learncast.data.network.TestFixtures.baseResponse
 import me.anasmusa.learncast.data.network.TestFixtures.parse
 import me.anasmusa.learncast.data.network.TestFixtures.respondJson
 import me.anasmusa.learncast.data.network.TestFixtures.wrapInBaseResponse
+import me.anasmusa.learncast.data.network.auth.model.LoginData
+import me.anasmusa.learncast.data.network.auth.model.LoginMethod
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.RefreshTokenRequest
 import me.anasmusa.learncast.data.network.createTestHttpClient
@@ -48,7 +50,7 @@ class AuthServiceTest : BehaviorSpec({
             And("using telegram authentication") {
                 Then("returns user data with valid access and refresh tokens") {
                     val response = service.login(
-                        createLoginRequest(telegramData = VALID_TELEGRAM_DATA)
+                        createLoginRequest(telegramData = VALID_TELEGRAM_DATA)!!
                     )
 
                     response.data shouldNotBe null
@@ -66,7 +68,7 @@ class AuthServiceTest : BehaviorSpec({
             And("using google authentication") {
                 Then("returns user data with valid access and refresh tokens") {
                     val response = service.login(
-                        createLoginRequest(googleData = VALID_GOOGLE_DATA)
+                        createLoginRequest(googleData = VALID_GOOGLE_DATA)!!
                     )
 
                     response.data shouldNotBe null
@@ -82,12 +84,8 @@ class AuthServiceTest : BehaviorSpec({
             withData(
                 nameFn = { "returns BadRequest for ${it.first}" },
                 listOf(
-                    "empty telegram data" to createLoginRequest(telegramData = ""),
-                    "null telegram data" to createLoginRequest(telegramData = null),
-                    "invalid telegram data" to createLoginRequest(telegramData = INVALID_DATA),
-                    "empty google data" to createLoginRequest(googleData = ""),
-                    "null google data" to createLoginRequest(googleData = null),
-                    "invalid google data" to createLoginRequest(googleData = INVALID_DATA),
+                    "invalid telegram data" to LoginRequest(LoginMethod.TELEGRAM, INVALID_TELEGRAM_DATA),
+                    "invalid google data" to LoginRequest(LoginMethod.GOOGLE, INVALID_GOOGLE_DATA),
                 )
             ) { (_, request) ->
                 shouldThrow<ClientRequestException> {
@@ -145,7 +143,7 @@ class AuthServiceTest : BehaviorSpec({
         fun createHttpClient() = createTestHttpClient {
             addHandler {
                 when (it.url.encodedPath.removePrefix("/")) {
-                    AuthService.SIGN_IN -> handleSignIn(it)
+                    AuthService.LOGIN -> handleLogin(it)
                     AuthService.REFRESH_TOKEN -> handleRefreshToken(it)
                     AuthService.LOGOUT -> handleLogout(it)
                     else -> throw NotImplementedError("Endpoint not mocked: ${it.url.encodedPath}")
@@ -153,19 +151,18 @@ class AuthServiceTest : BehaviorSpec({
             }
         }
 
-        private fun MockRequestHandleScope.handleSignIn(request: io.ktor.client.request.HttpRequestData) =
+        private fun MockRequestHandleScope.handleLogin(request: io.ktor.client.request.HttpRequestData) =
             when (request.method) {
                 HttpMethod.Post -> {
                     val body = request.body.parse<LoginRequest>()
-                    when {
-                        body.telegramData == VALID_TELEGRAM_DATA ||
-                            body.googleData == VALID_GOOGLE_DATA -> {
-                            val response = createLoginResponse()
-                            respondJson(
-                                content = response.wrapInBaseResponse()
-                            )
-                        }
-                        else -> respondJson(
+                    val isValid = when (val data = body.data) {
+                        is LoginData.Telegram -> data.hash == VALID_TELEGRAM_DATA.hash
+                        is LoginData.Google -> data.idToken == VALID_GOOGLE_DATA.idToken
+                    }
+                    if (isValid) {
+                        respondJson(content = createLoginResponse().wrapInBaseResponse())
+                    } else {
+                        respondJson(
                             content = baseResponse(message = "Invalid credentials"),
                             status = HttpStatusCode.BadRequest
                         )

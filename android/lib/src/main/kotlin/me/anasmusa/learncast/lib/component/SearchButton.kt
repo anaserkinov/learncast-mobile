@@ -31,18 +31,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.anasmusa.learncast.Strings
-import me.anasmusa.learncast.lib.theme.icon.SearchIcon
 import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.AppTheme
+import me.anasmusa.learncast.lib.theme.icon.SearchIcon
 
 @Preview
 @Composable
-private fun SearchButtonPreview(){
+private fun SearchButtonPreview() {
     AppTheme {
         Row {
             SearchButton(
                 searchQuery = null,
-                onQueryChanged = {}
+                onQueryChanged = {},
             )
         }
     }
@@ -51,7 +51,7 @@ private fun SearchButtonPreview(){
 @Composable
 fun RowScope.SearchButton(
     searchQuery: String?,
-    onQueryChanged: (value: String?) -> Unit
+    onQueryChanged: (value: String?) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
 

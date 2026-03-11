@@ -4,8 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import me.anasmusa.learncast.PreferenceData
 
-internal class PreferenceImpl : Preferences {
-    private val dataStore = getDataStore()
+internal class PreferenceImpl(
+    dataStoreFactory: DataStoreFactory,
+) : Preferences {
+    private val dataStore = dataStoreFactory.create()
 
     override suspend fun updateToken(
         refreshToken: String,

@@ -24,4 +24,9 @@ class IosGoogleAuthManager: GoogleAuthManager {
         }
     }
 
+    // swift-format-ignore
+    func __signOut() async throws {
+        GIDSignIn.sharedInstance.signOut()
+    }
+
 }

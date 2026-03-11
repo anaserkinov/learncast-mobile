@@ -19,10 +19,11 @@ captures
 node_modules/
 shared/schemas
 
-**/app/release
+**/learncast/release
 **/ios/Resources
 **/lib/src/main/assets/
 
 **/fastlane/report.xml
 
 **/firebase_distribution.json
+**/release.jks

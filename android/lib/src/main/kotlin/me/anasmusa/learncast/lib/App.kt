@@ -55,7 +55,6 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import me.anasmusa.learncast.lib.theme.icon.PersonIcon
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
@@ -63,10 +62,12 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.anasmusa.learncast.core.resource.Resource
-import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.Strings
 import me.anasmusa.learncast.core.AppConfig
+import me.anasmusa.learncast.core.appConfig
+import me.anasmusa.learncast.core.resource.AndroidResourceManager
+import me.anasmusa.learncast.core.resource.Resource
+import me.anasmusa.learncast.core.resource.Resource.string
 import me.anasmusa.learncast.lib.core.ProvideAppEnvironment
 import me.anasmusa.learncast.lib.nav.ProvideNavController
 import me.anasmusa.learncast.lib.nav.Screen
@@ -77,7 +78,7 @@ import me.anasmusa.learncast.lib.theme.MontserratTypography
 import me.anasmusa.learncast.lib.theme.darkScheme
 import me.anasmusa.learncast.lib.theme.icon.CutIcon
 import me.anasmusa.learncast.lib.theme.icon.HomeIcon
-import me.anasmusa.learncast.core.resource.parseStringsXml
+import me.anasmusa.learncast.lib.theme.icon.PersonIcon
 import me.anasmusa.learncast.ui.AppEvent
 import me.anasmusa.learncast.ui.AppIntent
 import me.anasmusa.learncast.ui.AppViewModel
@@ -119,7 +120,7 @@ fun App(
 
     var stringsLoaded by remember { mutableStateOf(Resource.isLoaded) }
 
-    Resource.setLocale("uz") {
+    Resource.setLocale(appConfig.defaultLang) {
         stringsLoaded = true
     }
 
@@ -130,10 +131,11 @@ fun App(
         val hazeState = rememberHazeState()
 
         var selectedPage by rememberSaveable(
-            saver = Saver(
-                save = { it.value.toPosition() },
-                restore = { mutableStateOf(it.toScreen()) }
-            )
+            saver =
+                Saver(
+                    save = { it.value.toPosition() },
+                    restore = { mutableStateOf(it.toScreen()) },
+                ),
         ) { mutableStateOf<Screen>(Screen.Entrance) }
 
         LaunchedEffect(viewModel) {
@@ -172,7 +174,7 @@ fun App(
         ProvideAppEnvironment(
             hazeState = hazeState,
             backgroundColors = backgroundColors,
-            playerBackgroundColors = playerBackgroundColors
+            playerBackgroundColors = playerBackgroundColors,
         ) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
                 when (selectedPage) {
@@ -205,8 +207,7 @@ fun App(
                                                                 draggableState.anchors.maxPosition() - draggableState.offset,
                                                                 80f + windowBottomInset,
                                                             ).dp,
-                                                    )
-                                                    .fillMaxWidth()
+                                                    ).fillMaxWidth()
                                                     .hazeEffect(
                                                         state = hazeState,
                                                         style =
@@ -266,20 +267,22 @@ fun App(
                                 }
                             },
                         ) { _ ->
-                            val decorators = listOf(
-                                rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
-                                rememberViewModelStoreNavEntryDecorator()
-                            )
+                            val decorators =
+                                listOf(
+                                    rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
+                                    rememberViewModelStoreNavEntryDecorator(),
+                                )
                             val animationSpec = tween<IntOffset>(300)
 
-                            val backStack = when (selectedPage) {
-                                Screen.Home -> homeBackStack
-                                Screen.Snips -> snipsBackStack
-                                else -> profileBackStack
-                            }
+                            val backStack =
+                                when (selectedPage) {
+                                    Screen.Home -> homeBackStack
+                                    Screen.Snips -> snipsBackStack
+                                    else -> profileBackStack
+                                }
                             var withAnimation by remember(selectedPage) { mutableStateOf(false) }
                             LaunchedEffect(withAnimation) {
-                                if (!withAnimation){
+                                if (!withAnimation) {
                                     delay(350)
                                     withAnimation = true
                                 }
@@ -294,7 +297,7 @@ fun App(
                                     onBack = { backStack.removeLastOrNull() },
                                     entryProvider = entryProvider(),
                                     transitionSpec = {
-                                        if (withAnimation)
+                                        if (withAnimation) {
                                             slideInHorizontally(
                                                 initialOffsetX = { it },
                                                 animationSpec = animationSpec,
@@ -303,10 +306,12 @@ fun App(
                                                     targetOffsetX = { (-it * 0.2f).toInt() },
                                                     animationSpec = animationSpec,
                                                 )
-                                        else EnterTransition.None togetherWith ExitTransition.None
+                                        } else {
+                                            EnterTransition.None togetherWith ExitTransition.None
+                                        }
                                     },
                                     popTransitionSpec = {
-                                        if (withAnimation)
+                                        if (withAnimation) {
                                             slideInHorizontally(
                                                 initialOffsetX = { (-it * 0.2f).toInt() },
                                                 animationSpec = animationSpec,
@@ -315,7 +320,9 @@ fun App(
                                                     targetOffsetX = { it },
                                                     animationSpec = animationSpec,
                                                 )
-                                        else EnterTransition.None togetherWith ExitTransition.None
+                                        } else {
+                                            EnterTransition.None togetherWith ExitTransition.None
+                                        }
                                     },
                                     predictivePopTransitionSpec = {
                                         slideInHorizontally(
@@ -334,20 +341,21 @@ fun App(
     }
 }
 
-private fun Screen.toPosition() = when (this) {
-    Screen.Home -> 0
-    Screen.Snips -> 1
-    Screen.Profile -> 2
-    else -> -1
-}
+private fun Screen.toPosition() =
+    when (this) {
+        Screen.Home -> 0
+        Screen.Snips -> 1
+        Screen.Profile -> 2
+        else -> -1
+    }
 
-private fun Int.toScreen() = when (this) {
-    0 -> Screen.Home
-    1 -> Screen.Snips
-    2 -> Screen.Profile
-    else -> Screen.Login
-}
-
+private fun Int.toScreen() =
+    when (this) {
+        0 -> Screen.Home
+        1 -> Screen.Snips
+        2 -> Screen.Profile
+        else -> Screen.Login
+    }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -358,27 +366,35 @@ fun AppTheme(content: @Composable () -> Unit) {
         transparentLogo = R.drawable.logo_transparent,
         apiBaseUrl = "http://localhost:3000",
         publicBaseUrl = "http://localhost:3000",
-        telegramBotId = 8292515516L,
+        telegramBotId = 123L,
+        telegramBotUsername = "botUsername",
         googleClientId = "",
+        preferredLang = "uz",
     )
-    val assets = LocalContext.current.assets
+    val context = LocalContext.current
+    val resourceManager = AndroidResourceManager(context)
     Resource.setStrings(
         "en",
-        parseStringsXml(
-            assets.open("strings.xml").bufferedReader().use(BufferedReader::readText),
+        resourceManager.parseStringsXml(
+            context.assets
+                .open("strings.xml")
+                .bufferedReader()
+                .use(BufferedReader::readText),
         ),
     )
 
     ProvideAppEnvironment(
         hazeState = rememberHazeState(),
-        backgroundColors = listOf(
-            Color(0.094f, 0.122f, 0.2f, 1.0f),
-            Color(0.055f, 0.071f, 0.122f, 1.0f),
-        ),
-        playerBackgroundColors = listOf(
-            Color(0.224f, 0.282f, 0.42f, 1.0f),
-            Color(0.075f, 0.094f, 0.157f, 1.0f),
-        )
+        backgroundColors =
+            listOf(
+                Color(0.094f, 0.122f, 0.2f, 1.0f),
+                Color(0.055f, 0.071f, 0.122f, 1.0f),
+            ),
+        playerBackgroundColors =
+            listOf(
+                Color(0.224f, 0.282f, 0.42f, 1.0f),
+                Color(0.075f, 0.094f, 0.157f, 1.0f),
+            ),
     ) {
         CompositionLocalProvider(
             LocalContentColor provides Color.White,

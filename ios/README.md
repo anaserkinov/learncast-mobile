@@ -51,6 +51,7 @@ The `learncast` group is intentionally thin. It declares the `@main` `App` struc
 | Lock screen / Control Center | `MediaPlayer` (`MPNowPlayingInfoCenter`, `MPRemoteCommandCenter`) |
 | Push notifications | Firebase Cloud Messaging (via `firebase-ios-sdk`) |
 | Analytics / Crash reporting | Firebase Analytics + Firebase Crashlytics |
+| Telegram login | [telegram-login-widget-swift](https://github.com/anaserkinov/telegram-login-widget-swift) |
 | Google Sign-In | GoogleSignIn-iOS 9 |
 | Color palette extraction | Custom `Palette` class (port of Android's `androidx.palette`) |
 | Haptic feedback | `UIImpactFeedbackGenerator` / `UISelectionFeedbackGenerator` |
@@ -275,9 +276,7 @@ All screens follow the same pattern: a single View struct obtains its Observable
 
 ### Auth
 
-**`LoginScreen`** — Full-screen login page with gradient background, large app logo, and two sign-in buttons (Telegram, Google). Errors are shown via `.snackbar(...)` modifier. Tapping "Continue with Telegram" presents `TelegramLoginScreen` as a sheet.
-
-**`TelegramLoginScreen`** — A `WKWebView` embedded in SwiftUI via `UIViewRepresentable`. Loads the Telegram OAuth widget at `https://oauth.telegram.org/auth?bot_id=...`. A `WKScriptMessageHandler` named `iosHandler` receives the auth result from a JavaScript message posted when the Telegram callback fires. A cancel handler detects when the user taps the Telegram cancel button.
+**`LoginScreen`** — Full-screen login page with gradient background, large app logo, and two sign-in buttons (Telegram, Google). Errors are shown via `.snackbar(...)` modifier.
 
 ### Home
 
@@ -475,19 +474,20 @@ These are the same files that live in `shared/src/commonMain/resources/` — on 
 
 ### Swift Package Dependencies (`Package.resolved`)
 
-| Package | Version |
-|---|---|
-| `firebase-ios-sdk` | 12.9.0 |
-| `googlesignin-ios` | 9.1.0 |
-| `kingfisher` | 8.6.2 |
-| `appauth-ios` | 2.0.0 |
-| `gtmappauth` | 5.0.0 |
-| `gtm-session-fetcher` | 3.5.0 |
-| `googleappmeasurement` | 12.8.0 |
-| `googledatatransport` | 10.1.0 |
-| `googleutilities` | 8.1.0 |
-| `promises` | 2.4.0 |
-| `app-check` | 11.2.0 |
+| Package                        | Version                  |
+|--------------------------------|--------------------------|
+| `firebase-ios-sdk`             | 12.9.0                   |
+| `telegram-login-widget-swift`  | 1.0.1                    |
+| `googlesignin-ios`             | 9.1.0                    |
+| `kingfisher`                   | 8.6.2                    |
+| `appauth-ios`                  | 2.0.0                    |
+| `gtmappauth`                   | 5.0.0                    |
+| `gtm-session-fetcher`          | 3.5.0                    |
+| `googleappmeasurement`         | 12.8.0                   |
+| `googledatatransport`          | 10.1.0                   |
+| `googleutilities`              | 8.1.0                    |
+| `promises`                     | 2.4.0                    |
+| `app-check`                    | 11.2.0                   |
 | _(gRPC/Abseil/LevelDB/nanopb)_ | Firebase transitive deps |
 
 ---
@@ -549,7 +549,6 @@ ios/
 </div>
 <div>
   <img src="../assets/images/ios_login.webp" width="18%" alt="Login"/>
-  <img src="../assets/images/ios_telegram.webp" width="18%" alt="Telegram"/>
   <img src="../assets/images/ios_profile.webp" width="18%" alt="Profile"/>
   <img src="../assets/images/ios_storage.webp" width="18%" alt="Storage Usage"/>
 </div>

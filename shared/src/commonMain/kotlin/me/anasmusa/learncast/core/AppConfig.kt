@@ -10,7 +10,9 @@ data class AppConfig(
     val apiBaseUrl: String = "",
     val publicBaseUrl: String = "",
     val telegramBotId: Long = 0L,
+    val telegramBotUsername: String = "",
     val googleClientId: String = "",
+    val defaultLang: String = "en",
     val downloadNotificationTitle: Int = 0,
     val downloadNotificationMessage: Int = 0,
 ) {
@@ -34,7 +36,9 @@ data class AppConfig(
             apiBaseUrl: String,
             publicBaseUrl: String,
             telegramBotId: Long,
+            telegramBotUsername: String,
             googleClientId: String,
+            preferredLang: String,
         ) {
             appConfig =
                 appConfig.copy(
@@ -44,7 +48,9 @@ data class AppConfig(
                     apiBaseUrl = apiBaseUrl,
                     publicBaseUrl = publicBaseUrl,
                     telegramBotId = telegramBotId,
+                    telegramBotUsername = telegramBotUsername,
                     googleClientId = googleClientId,
+                    defaultLang = preferredLang,
                 )
         }
 
@@ -55,7 +61,9 @@ data class AppConfig(
             apiBaseUrl: String,
             publicBaseUrl: String,
             telegramBotId: Long,
+            telegramBotUsername: String,
             googleClientId: String,
+            preferredLang: String,
         ) {
             appConfig =
                 appConfig.copy(
@@ -65,7 +73,9 @@ data class AppConfig(
                     apiBaseUrl = apiBaseUrl,
                     publicBaseUrl = publicBaseUrl,
                     telegramBotId = telegramBotId,
+                    telegramBotUsername = telegramBotUsername,
                     googleClientId = googleClientId,
+                    defaultLang = preferredLang,
                 )
         }
 

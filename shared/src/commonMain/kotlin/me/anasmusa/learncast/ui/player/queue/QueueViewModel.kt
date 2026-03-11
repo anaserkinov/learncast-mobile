@@ -103,7 +103,7 @@ class QueueViewModel(
                     isLoading = false,
                     queuedItems =
                         ArrayList(queueRepository.getQueuedItems()).apply {
-                            if (isNotEmpty()) removeFirst()
+                            if (isNotEmpty()) removeAt(0)
                         },
                 )
             }
@@ -130,7 +130,7 @@ class QueueViewModel(
             if (!state.value.queuedItems.isEmpty()) {
                 state.update {
                     it.copy(
-                        queuedItems = it.queuedItems.toMutableList().apply { removeFirst() },
+                        queuedItems = it.queuedItems.toMutableList().apply { removeAt(0) },
                     )
                 }
             }

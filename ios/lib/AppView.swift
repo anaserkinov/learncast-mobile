@@ -158,7 +158,9 @@ enum PreviewSetup {
             apiBaseUrl: "https://api.anasmusa.me/learncast/",
             publicBaseUrl: "https://learncast.anasmusa.me",
             telegramBotId: 8_538_344_134,
-            googleClientId: "preview-google-client-id"
+            telegramBotUsername: "learncast_bot",
+            googleClientId: "preview-google-client-id",
+            preferredLang: "en"
         )
 
         Resource.shared.setLocale(locale: "uz", onLoad: {})

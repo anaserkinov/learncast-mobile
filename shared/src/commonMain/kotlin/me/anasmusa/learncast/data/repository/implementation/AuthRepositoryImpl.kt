@@ -19,6 +19,8 @@ import me.anasmusa.learncast.data.local.preference.Preferences
 import me.anasmusa.learncast.data.model.Result
 import me.anasmusa.learncast.data.network.TokenManager
 import me.anasmusa.learncast.data.network.auth.AuthService
+import me.anasmusa.learncast.data.network.auth.model.LoginData
+import me.anasmusa.learncast.data.network.auth.model.LoginMethod
 import me.anasmusa.learncast.data.network.auth.model.LoginRequest
 import me.anasmusa.learncast.data.network.auth.model.LoginResponse
 import me.anasmusa.learncast.data.repository.abstraction.AuthRepository
@@ -55,13 +57,31 @@ internal class AuthRepositoryImpl(
         playerRepository.startService(false)
     }
 
-    override suspend fun loginWithTelegram(hash: String): Result<Unit> {
+    override suspend fun loginWithTelegram(
+        id: Long,
+        firstName: String,
+        lastName: String?,
+        username: String?,
+        photoUrl: String?,
+        authDate: Long,
+        hash: String,
+    ): Result<Unit> {
         return try {
             val result =
                 authService
                     .login(
                         LoginRequest(
-                            telegramData = hash,
+                            method = LoginMethod.TELEGRAM,
+                            data =
+                                LoginData.Telegram(
+                                    id = id,
+                                    firstName = firstName,
+                                    lastName = lastName,
+                                    username = username,
+                                    photoUrl = photoUrl,
+                                    authDate = authDate,
+                                    hash = hash,
+                                ),
                         ),
                     ).data
             handleResponse(result)
@@ -78,7 +98,11 @@ internal class AuthRepositoryImpl(
                 authService
                     .login(
                         LoginRequest(
-                            googleData = tokenId,
+                            method = LoginMethod.GOOGLE,
+                            data =
+                                LoginData.Google(
+                                    idToken = tokenId,
+                                ),
                         ),
                     ).data
             handleResponse(result)
@@ -102,6 +126,7 @@ internal class AuthRepositoryImpl(
                     } catch (e: Exception) {
                     }
                 }
+                googleAuthManager.signOut()
                 storageRepository.clearCaches()
                 storageRepository.clearDownloads()
                 notificationManager.unSubscribe()

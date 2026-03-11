@@ -208,9 +208,6 @@ wire {
 }
 
 skie {
-    features {
-        enableSwiftUIObservingPreview = true
-    }
     analytics {
         disableUpload.set(true)
     }

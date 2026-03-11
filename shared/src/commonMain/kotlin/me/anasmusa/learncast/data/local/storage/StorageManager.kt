@@ -9,5 +9,3 @@ interface StorageManager {
 
     suspend fun clearDownloads()
 }
-
-expect fun createStorageManager(): StorageManager
