@@ -159,16 +159,16 @@ private fun _LoginScreen(
                             .fillMaxWidth()
                             .padding(top = 24.dp),
                 ) {
-
                     TelegramLoginButton(
-                        state = rememberTelegramLoginState(
-                            botId = appConfig.telegramBotId,
-                            botUsername = appConfig.telegramBotUsername,
-                            websiteUrl = appConfig.publicBaseUrl,
-                            languageCode = appConfig.preferredLang
-                        ),
+                        state =
+                            rememberTelegramLoginState(
+                                botId = appConfig.telegramBotId,
+                                botUsername = appConfig.telegramBotUsername,
+                                websiteUrl = appConfig.publicBaseUrl,
+                                languageCode = appConfig.defaultLang,
+                            ),
                         onResult = {
-                            if (it is TelegramLoginResult.Success){
+                            if (it is TelegramLoginResult.Success) {
                                 login(
                                     LoginIntent.LoginWithTelegram(
                                         id = it.id,
@@ -177,20 +177,22 @@ private fun _LoginScreen(
                                         username = it.username,
                                         photoUrl = it.photoUrl,
                                         authDate = it.authDate,
-                                        hash = it.hash
-                                    )
+                                        hash = it.hash,
+                                    ),
                                 )
                             }
                         },
                         left = {
                             TelegramButtonIcon(tint = TelegramDefaults.primaryColor)
                         },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        colors = TelegramDefaults.buttonColors(
-                            containerColor = Color.White,
-                            contentColor = Color.Black
-                        )
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        colors =
+                            TelegramDefaults.buttonColors(
+                                containerColor = Color.White,
+                                contentColor = Color.Black,
+                            ),
                     )
 
                     Button(
@@ -214,8 +216,9 @@ private fun _LoginScreen(
                             text = Strings.CONTINUE_GOOGLE.string(),
                         )
                         Spacer(
-                            modifier = Modifier
-                                .width(24.dp)
+                            modifier =
+                                Modifier
+                                    .width(24.dp),
                         )
                     }
                 }

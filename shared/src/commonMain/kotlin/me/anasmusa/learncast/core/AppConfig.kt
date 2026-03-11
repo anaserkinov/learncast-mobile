@@ -12,7 +12,7 @@ data class AppConfig(
     val telegramBotId: Long = 0L,
     val telegramBotUsername: String = "",
     val googleClientId: String = "",
-    val preferredLang: String = "en",
+    val defaultLang: String = "en",
     val downloadNotificationTitle: Int = 0,
     val downloadNotificationMessage: Int = 0,
 ) {
@@ -50,7 +50,7 @@ data class AppConfig(
                     telegramBotId = telegramBotId,
                     telegramBotUsername = telegramBotUsername,
                     googleClientId = googleClientId,
-                    preferredLang = preferredLang,
+                    defaultLang = preferredLang,
                 )
         }
 
@@ -75,7 +75,7 @@ data class AppConfig(
                     telegramBotId = telegramBotId,
                     telegramBotUsername = telegramBotUsername,
                     googleClientId = googleClientId,
-                    preferredLang = preferredLang,
+                    defaultLang = preferredLang,
                 )
         }
 

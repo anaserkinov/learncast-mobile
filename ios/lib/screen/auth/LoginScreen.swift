@@ -28,7 +28,7 @@ struct LoginScreen: View {
         botId: 8_538_344_134,
         botUsername: "learncast_bot",
         websiteUrl: "https://learncast.anasmusa.me",
-        languageCode: AppConfigKt.appConfig.preferredLang
+        languageCode: AppConfigKt.appConfig.defaultLang
     )
 
     var body: some View {

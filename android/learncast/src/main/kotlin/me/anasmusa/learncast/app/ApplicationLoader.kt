@@ -15,7 +15,7 @@ class ApplicationLoader : ApplicationLoader() {
             telegramBotId = 8538344134L,
             telegramBotUsername = "learncast_bot",
             googleClientId = "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
-            preferredLang = "uz"
+            preferredLang = "en",
         )
         super.onCreate()
     }
