@@ -61,7 +61,9 @@ data class AppConfig(
             apiBaseUrl: String,
             publicBaseUrl: String,
             telegramBotId: Long,
+            telegramBotUsername: String,
             googleClientId: String,
+            preferredLang: String,
         ) {
             appConfig =
                 appConfig.copy(
@@ -71,7 +73,9 @@ data class AppConfig(
                     apiBaseUrl = apiBaseUrl,
                     publicBaseUrl = publicBaseUrl,
                     telegramBotId = telegramBotId,
+                    telegramBotUsername = telegramBotUsername,
                     googleClientId = googleClientId,
+                    preferredLang = preferredLang,
                 )
         }
 
