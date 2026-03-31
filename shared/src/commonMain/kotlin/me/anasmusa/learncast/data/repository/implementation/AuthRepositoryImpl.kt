@@ -57,31 +57,14 @@ internal class AuthRepositoryImpl(
         playerRepository.startService(false)
     }
 
-    override suspend fun loginWithTelegram(
-        id: Long,
-        firstName: String,
-        lastName: String?,
-        username: String?,
-        photoUrl: String?,
-        authDate: Long,
-        hash: String,
-    ): Result<Unit> {
+    override suspend fun loginWithTelegram(idToken: String): Result<Unit> {
         return try {
             val result =
                 authService
                     .login(
                         LoginRequest(
                             method = LoginMethod.TELEGRAM,
-                            data =
-                                LoginData.Telegram(
-                                    id = id,
-                                    firstName = firstName,
-                                    lastName = lastName,
-                                    username = username,
-                                    photoUrl = photoUrl,
-                                    authDate = authDate,
-                                    hash = hash,
-                                ),
+                            data = LoginData.Telegram(idToken = idToken.removeSurrounding("\"")),
                         ),
                     ).data
             handleResponse(result)
@@ -123,7 +106,7 @@ internal class AuthRepositoryImpl(
                 preference.getToken().take(1).first()?.second?.let { accessToken ->
                     try {
                         authService.logout(accessToken = accessToken)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                     }
                 }
                 googleAuthManager.signOut()

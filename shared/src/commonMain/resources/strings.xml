@@ -10,6 +10,7 @@
     <string name="cancel">Cancel</string>
 
     <string name="log_in_continue">Log in to continue</string>
+    <string name="continue_telegram">Log in with Telegram</string>
     <string name="continue_google">Log in with Google</string>
 
     <string name="home">Home</string>

@@ -157,8 +157,7 @@ enum PreviewSetup {
             transparentLogo: "TransparentLogo",
             apiBaseUrl: "https://api.anasmusa.me/learncast/",
             publicBaseUrl: "https://learncast.anasmusa.me",
-            telegramBotId: 8_538_344_134,
-            telegramBotUsername: "learncast_bot",
+            telegramBotClientId: 8_538_344_134,
             googleClientId: "preview-google-client-id",
             preferredLang: "en"
         )

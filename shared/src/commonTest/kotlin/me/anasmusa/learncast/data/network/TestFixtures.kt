@@ -71,13 +71,7 @@ internal object TestFixtures {
         const val EXPIRED_REFRESH_TOKEN = "expired_refresh_token"
 
         val VALID_TELEGRAM_DATA = LoginData.Telegram(
-            id = TEST_USER_ID,
-            firstName = TEST_USER_FIRST_NAME,
-            lastName = TEST_USER_LAST_NAME,
-            username = TEST_USER_TELEGRAM_USERNAME,
-            photoUrl = TEST_USER_AVATAR_PATH,
-            authDate = 1_700_000_000L,
-            hash = "valid_hash",
+            idToken = "valid_telegram_id_token",
         )
 
         val VALID_GOOGLE_DATA = LoginData.Google(
@@ -85,13 +79,7 @@ internal object TestFixtures {
         )
 
         val INVALID_TELEGRAM_DATA = LoginData.Telegram(
-            id = -1L,
-            firstName = "",
-            lastName = null,
-            username = null,
-            photoUrl = null,
-            authDate = 0L,
-            hash = "invalid_hash",
+            idToken = "invalid_telegram_id_token",
         )
 
         val INVALID_GOOGLE_DATA = LoginData.Google(

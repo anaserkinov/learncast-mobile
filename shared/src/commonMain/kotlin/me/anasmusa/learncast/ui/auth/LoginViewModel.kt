@@ -18,13 +18,7 @@ data class LoginState(
 
 sealed interface LoginIntent : BaseIntent {
     data class LoginWithTelegram(
-        val id: Long,
-        val firstName: String,
-        val lastName: String?,
-        val username: String?,
-        val photoUrl: String?,
-        val authDate: Long,
-        val hash: String,
+        val idToken: String,
     ) : LoginIntent
 
     object LoginWithGoogle : LoginIntent
@@ -52,15 +46,8 @@ class LoginViewModel(
     private fun loginWithTelegram(intent: LoginIntent.LoginWithTelegram) {
         viewModelScope.launch {
             authRepository
-                .loginWithTelegram(
-                    id = intent.id,
-                    firstName = intent.firstName,
-                    lastName = intent.lastName,
-                    username = intent.username,
-                    photoUrl = intent.photoUrl,
-                    authDate = intent.authDate,
-                    hash = intent.hash,
-                ).onFailure { message, _ ->
+                .loginWithTelegram(idToken = intent.idToken)
+                .onFailure { message, _ ->
                     state.update { it.copy(isLoading = false) }
                     send(LoginEvent.ShowError(message))
                 }
@@ -69,7 +56,7 @@ class LoginViewModel(
 
     private fun loginWithGoogle() {
         viewModelScope.launch {
-            authRepository.loginWithGoogle().onFailure { message, tag ->
+            authRepository.loginWithGoogle().onFailure { message, _ ->
                 state.update { it.copy(isLoading = false) }
                 send(LoginEvent.ShowError(message))
             }

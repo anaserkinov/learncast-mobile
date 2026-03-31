@@ -7,8 +7,7 @@
 
 internal import Shared
 import SwiftUI
-internal import TelegramLoginData
-internal import TelegramLoginWidget
+internal import TelegramLogin
 
 struct LoginScreen: View {
     @Environment(\.env) var env: AppEnvironment
@@ -23,13 +22,6 @@ struct LoginScreen: View {
     private var state: LoginState {
         viewModel.state
     }
-
-    @State private var telegramState = TelegramLoginState(
-        botId: 8_538_344_134,
-        botUsername: "learncast_bot",
-        websiteUrl: "https://learncast.anasmusa.me",
-        languageCode: AppConfigKt.appConfig.defaultLang
-    )
 
     var body: some View {
         ZStack {
@@ -55,27 +47,22 @@ struct LoginScreen: View {
 
                         VStack(spacing: 12) {
                             TelegramLoginButton(
-                                state: telegramState,
-                                onResult: { result in
-                                    if let data = result as? TelegramLoginResultSuccess {
-                                        viewModel.handle(
-                                            intent: LoginIntentLoginWithTelegram(
-                                                id: data.id, firstName: data.firstName, lastName: data.lastName, username: data.username, photoUrl: data.photoUrl, authDate: data.authDate,
-                                                hash: data.hash_)
-                                        )
-                                    }
+                                config: TelegramLoginConfig(
+                                    clientId: appConfig.telegramBotClientId,
+                                    redirectURI: appConfig.publicBaseUrl
+                                )
+                            ) { result in
+                                if case .success(let data) = result {
+                                    viewModel.handle(
+                                        intent: LoginIntentLoginWithTelegram(idToken: data.idToken)
+                                    )
                                 }
-                            ) { state in
+                            } content: {
                                 HStack {
                                     TelegramButtonIcon()
                                         .foregroundStyle(TelegramDefaults.primaryColor)
-                                    TelegramButtonText(state: state)
+                                    Text(Strings.shared.CONTINUE_TELEGRAM.string())
                                         .foregroundStyle(.black)
-                                    TelegramButtontUserPhotoBox(
-                                        state: state, preservesSpace: false,
-                                        progress: {
-                                            TelegramButtonCircularProgress(tint: .black)
-                                        })
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.horizontal, 8)

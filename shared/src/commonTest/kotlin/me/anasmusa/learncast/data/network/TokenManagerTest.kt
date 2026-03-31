@@ -241,7 +241,7 @@ class TokenManagerTest : BehaviorSpec({
                     val result = refreshDeferred.await()
 
                     // After cancellation, tokens should remain unchanged or be null
-                    // since the job was cancelled before completion
+                    // since the job was canceled before completion
                     if (result != null) {
                         // If result is not null, it means the update happened before cancellation
                         result shouldBe Pair(NEW_REFRESH_TOKEN, NEW_ACCESS_TOKEN)
@@ -468,15 +468,7 @@ class TokenManagerTest : BehaviorSpec({
 
             // Other AuthRepository methods - not used in TokenManager tests
             override fun isLoggedIn(): Flow<Boolean> = throw NotImplementedError()
-            override suspend fun loginWithTelegram(
-                id: Long,
-                firstName: String,
-                lastName: String?,
-                username: String?,
-                photoUrl: String?,
-                authDate: Long,
-                hash: String,
-            ): Result<Unit> = throw NotImplementedError()
+            override suspend fun loginWithTelegram(idToken: String): Result<Unit> = throw NotImplementedError()
             override suspend fun loginWithGoogle(): Result<Unit> = throw NotImplementedError()
         }
     }

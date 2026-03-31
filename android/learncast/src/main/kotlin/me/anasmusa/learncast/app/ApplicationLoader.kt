@@ -12,8 +12,7 @@ class ApplicationLoader : ApplicationLoader() {
             transparentLogo = R.drawable.logo_transparent,
             apiBaseUrl = "https://api.anasmusa.me/learncast/",
             publicBaseUrl = "https://learncast.anasmusa.me",
-            telegramBotId = 8538344134L,
-            telegramBotUsername = "learncast_bot",
+            telegramBotClientId = 8538344134,
             googleClientId = "22454749576-42ii04497d5aceqndkbvpnvn29nvub02.apps.googleusercontent.com",
             preferredLang = "en",
         )

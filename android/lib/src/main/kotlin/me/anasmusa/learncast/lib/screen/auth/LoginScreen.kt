@@ -41,11 +41,11 @@ import me.anasmusa.learncast.lib.theme.icon.Google
 import me.anasmusa.learncast.ui.auth.LoginEvent
 import me.anasmusa.learncast.ui.auth.LoginIntent
 import me.anasmusa.learncast.ui.auth.LoginViewModel
-import me.anasmusa.shared.TelegramLoginResult
-import me.anasmusa.telegramloginwidget.TelegramButtonIcon
-import me.anasmusa.telegramloginwidget.TelegramDefaults
-import me.anasmusa.telegramloginwidget.TelegramLoginButton
-import me.anasmusa.telegramloginwidget.rememberTelegramLoginState
+import me.anasmusa.telegramlogin.TelegramButtonIcon
+import me.anasmusa.telegramlogin.TelegramDefaults
+import me.anasmusa.telegramlogin.TelegramLoginButton
+import me.anasmusa.telegramlogin.TelegramLoginConfig
+import me.anasmusa.telegramlogin.TelegramLoginResult
 import org.koin.compose.viewmodel.koinViewModel
 
 @Preview
@@ -160,29 +160,20 @@ private fun _LoginScreen(
                             .padding(top = 24.dp),
                 ) {
                     TelegramLoginButton(
-                        state =
-                            rememberTelegramLoginState(
-                                botId = appConfig.telegramBotId,
-                                botUsername = appConfig.telegramBotUsername,
-                                websiteUrl = appConfig.publicBaseUrl,
+                        config =
+                            TelegramLoginConfig(
+                                clientId = appConfig.telegramBotClientId,
+                                redirectURI = appConfig.publicBaseUrl,
                                 languageCode = appConfig.defaultLang,
                             ),
                         onResult = {
                             if (it is TelegramLoginResult.Success) {
                                 login(
-                                    LoginIntent.LoginWithTelegram(
-                                        id = it.id,
-                                        firstName = it.firstName,
-                                        lastName = it.lastName,
-                                        username = it.username,
-                                        photoUrl = it.photoUrl,
-                                        authDate = it.authDate,
-                                        hash = it.hash,
-                                    ),
+                                    LoginIntent.LoginWithTelegram(idToken = it.idToken),
                                 )
                             }
                         },
-                        left = {
+                        icon = {
                             TelegramButtonIcon(tint = TelegramDefaults.primaryColor)
                         },
                         modifier =
@@ -193,7 +184,11 @@ private fun _LoginScreen(
                                 containerColor = Color.White,
                                 contentColor = Color.Black,
                             ),
-                    )
+                    ) {
+                        Text(
+                            text = Strings.CONTINUE_TELEGRAM.string(),
+                        )
+                    }
 
                     Button(
                         modifier =

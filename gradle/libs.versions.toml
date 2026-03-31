@@ -43,7 +43,7 @@ crashlytics = "3.0.6"
 firebaseBom = "34.10.0"
 kotest = "6.1.5"
 androidxTest = "1.7.0"
-telegram-login-widget = "1.0.0-RC3"
+telegram-login = "1.0.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -131,7 +131,7 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 coroutine-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutine" }
 
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
-telegram-login-widget = { module = "me.anasmusa:telegram-login-widget", version.ref = "telegram-login-widget" }
+telegram-login = { module = "me.anasmusa:telegram-login", version.ref = "telegram-login" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

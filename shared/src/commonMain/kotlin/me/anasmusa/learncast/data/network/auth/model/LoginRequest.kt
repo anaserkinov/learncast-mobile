@@ -21,13 +21,7 @@ internal enum class LoginMethod {
 internal sealed interface LoginData {
     @Serializable
     class Telegram(
-        val id: Long,
-        @SerialName("first_name") val firstName: String,
-        @SerialName("last_name") val lastName: String?,
-        val username: String?,
-        @SerialName("photo_url") val photoUrl: String?,
-        @SerialName("auth_date") val authDate: Long,
-        val hash: String,
+        @SerialName("id_token") val idToken: String,
     ) : LoginData
 
     @Serializable

@@ -366,8 +366,7 @@ fun AppTheme(content: @Composable () -> Unit) {
         transparentLogo = R.drawable.logo_transparent,
         apiBaseUrl = "http://localhost:3000",
         publicBaseUrl = "http://localhost:3000",
-        telegramBotId = 123L,
-        telegramBotUsername = "botUsername",
+        telegramBotClientId = 1234L,
         googleClientId = "",
         preferredLang = "uz",
     )

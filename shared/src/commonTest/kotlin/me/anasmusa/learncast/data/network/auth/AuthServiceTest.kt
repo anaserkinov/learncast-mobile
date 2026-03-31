@@ -156,7 +156,7 @@ class AuthServiceTest : BehaviorSpec({
                 HttpMethod.Post -> {
                     val body = request.body.parse<LoginRequest>()
                     val isValid = when (val data = body.data) {
-                        is LoginData.Telegram -> data.hash == VALID_TELEGRAM_DATA.hash
+                        is LoginData.Telegram -> data.idToken == VALID_TELEGRAM_DATA.idToken
                         is LoginData.Google -> data.idToken == VALID_GOOGLE_DATA.idToken
                     }
                     if (isValid) {
